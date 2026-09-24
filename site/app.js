@@ -202,7 +202,11 @@ function card(x) {
   const url = safeUrl(n.url);
   const lhs = (n.lhUrls ?? (n.lhUrl ? [n.lhUrl] : [])).map(safeUrl).filter(Boolean);
   const home = safeUrl(n.homepage);
-  const meta = [where(n), n.kind && n.kind !== SOURCE_LABEL[n.source] ? n.kind : null, ...(n.flags ?? []), n.units ? `${n.units.toLocaleString('ko-KR')}세대` : null, n.moveIn ? `입주 ${n.moveIn.replace('-', '.')}` : null].filter(Boolean);
+  const hasComplex = n.complexUnits > 0 && n.complexUnits !== n.units;
+  const meta = [where(n), n.kind && n.kind !== SOURCE_LABEL[n.source] ? n.kind : null, ...(n.flags ?? []),
+    n.units ? `${n.units.toLocaleString('ko-KR')}세대${hasComplex ? ' 모집' : ''}` : null,
+    hasComplex ? `단지 전체 ${n.complexUnits.toLocaleString('ko-KR')}세대` : null,
+    n.moveIn ? `입주 ${n.moveIn.replace('-', '.')}` : null].filter(Boolean);
   const sched = (n.schedule ?? []).filter((p) => !p.hidden);
   if (n.winnerDate) sched.push({ label: '당첨 발표', start: n.winnerDate, end: n.winnerDate });
   // '최소 현금'은 가장 싼 상한 이하 주택형의 최고 분양가 × 계약금 비율 가정 — 실제 비율은 공고문 확인
@@ -252,6 +256,7 @@ function card(x) {
     ${sched.length ? `<ul class="sched">${sched.map((p) => `<li class="${(p.end ?? p.start) < today ? 'past' : ''}"><span>${esc(p.label)}</span>${span(p.start, p.end)}</li>`).join('')}</ul>` : ''}
     <div class="actions">
       ${url ? `<a class="btn primary" href="${esc(url)}" target="_blank" rel="noopener">공고 보기</a>` : ''}
+      ${safeUrl(n.complexUrl) ? `<a class="btn" href="${esc(safeUrl(n.complexUrl))}" target="_blank" rel="noopener">본청약 공고</a>` : ''}
       ${lhs.map((u, i) => `<a class="btn" href="${esc(u)}" target="_blank" rel="noopener">LH 공고${lhs.length > 1 ? ` ${i + 1}` : ''}</a>`).join('')}
       ${n.address ? `<a class="btn" href="${esc(mapUrl(n.address))}" target="_blank" rel="noopener" title="${esc(n.address)}">지도</a>` : ''}
       ${home ? `<a class="btn" href="${esc(home)}" target="_blank" rel="noopener">분양 홈페이지</a>` : ''}
@@ -379,7 +384,8 @@ function audit() {
       <p><b>판정 기준</b> 청약홈 주택형별 최고 공급금액(LTTOT_TOP_AMOUNT·오피스텔 SUPLY_AMOUNT)이 상한 이하인 주택형이 1개라도 있으면 목록에 올립니다. 최고가 기준이라 그 주택형은 모든 세대가 상한 이하입니다. 상한 초과 10% 이내는 저층 등 일부 세대가 상한 이하일 수 있어 ‘경계’로, 분양가를 모르는 공고는 ‘가격 미확인’으로 따로 보여줍니다 — 조용히 빼지 않습니다.</p>
       <p><b>돈 준비(참고)</b> 카드의 ‘최소 현금’은 가장 싼 상한 이하 주택형의 최고 분양가 × 선택한 계약금 비율(기본 10%)로 계산한 <b>가정치</b>입니다. 실제 계약금·중도금·잔금 비율과 발코니 확장비·유상 옵션·취득세는 공고마다 달라 청약홈 API가 제공하지 않습니다 — 통상 계약금 10~20% · 중도금 60% · 잔금 20~30% 구조가 많지만, 반드시 모집공고문에서 확인하세요.</p>
       <p><b>시세차익(참고)</b> ‘주변 실거래 대비’는 국토교통부 실거래가 공개 데이터에서 같은 시군구·최근 6개월·비슷한 면적대(60㎡ 미만 / 60~85 / 85 초과) 아파트 매매의 <b>중위 ㎡당가</b>로 추정한 값입니다. 해제 신고된 거래와 토지임대부는 제외하며, 표본이 5건 미만이면 표시하지 않습니다. 신축 프리미엄·법정동(동네)·연식·층·브랜드 차이는 반영되지 않으므로 투자 판단이 아닌 참고 지표로만 쓰세요.</p>
-      <p><b>공급 대상(참고)</b> 카드의 ‘공급 대상’ 칩과 분양가 표의 세대수 분해(일반+특공)는 주택형 API의 일반·특별공급 세대수를 합산한 것입니다(아파트는 신혼부부·생애최초·다자녀 등 유형별 제공). 소득·자산·무주택·거주지역 같은 <b>세부 자격 요건과 무순위·임의공급의 신청 자격, 단지 ‘전체’ 세대수(무순위의 본청약 규모)는 API가 제공하지 않습니다</b> — 모집공고문에서 확인하세요.</p>
+      <p><b>공급 대상(참고)</b> 카드의 ‘공급 대상’ 칩과 분양가 표의 세대수 분해(일반+특공)는 주택형 API의 일반·특별공급 세대수를 합산한 것입니다(아파트는 신혼부부·생애최초·다자녀 등 유형별 제공). 소득·자산·무주택·거주지역 같은 <b>세부 자격 요건은 API가 제공하지 않습니다</b> — 모집공고문에서 확인하세요.</p>
+      <p><b>단지 전체 세대수(참고)</b> 무순위·임의공급 카드의 ‘단지 전체’는 청약홈에 남아 있는 <b>같은 이름·같은 지역의 본청약 공고(2019년 이후)</b>의 공급규모를 연결한 값입니다. 이름이 다르거나 본청약이 청약홈 밖(2019년 이전 등)이면 표시하지 않으며, ‘본청약 공고’ 버튼으로 원공고를 직접 확인할 수 있습니다. 임대분 등이 빠진 분양 기준 규모라 실제 단지 총세대수와 다를 수 있습니다.</p>
       <p><b>수집 범위</b> 청약홈 APT·무순위/잔여세대·임의공급·오피스텔/도시형생활주택(민간임대·생활숙박시설 제외) + LH 분양주택·신혼희망타운 공고. 받은 건수가 API 총건수와 다르면 그 주는 실패로 기록하고 다음 실행이 빠진 기간을 다시 훑습니다. 한 번 올라온 공고는 API에서 사라져도 지우지 않습니다.</p>
       <p><b>한계</b> SH·GH가 자체 청약시스템에만 올리는 공고는 공개 API가 없어 자동 수집 대상이 아닙니다. 무순위는 접수가 하루인 경우가 많아 주 1회 갱신으로는 접수 전에 못 볼 수 있습니다. 최종 기준은 항상 입주자모집공고 원문입니다.</p>
       <div class="links">

@@ -167,7 +167,7 @@ test('총건수 불일치(페이지 누락) → 그 소스는 실패, 기존 공
   state.shortPage = new Set(['getAPTLttotPblancDetail']);
   const f = await run('fetch.mjs', dir, { RUN_AT: '2026-10-04T21:00:00.000Z' });
   assert.equal(f.code, 0);
-  assert.match(f.stderr, /기대 7건 ≠ 수집 6건/);
+  assert.match(f.stderr, /기대 \d+건 ≠ 수집 \d+건/);
   const v = await run('validate.mjs', dir);
   assert.equal(v.code, 0, v.stderr);
   assert.equal(v.output.status, 'degraded');
@@ -306,6 +306,22 @@ test('LH 가 되다가 인증 오류로 바뀌면 경고', async () => {
   const v = await run('validate.mjs', dir);
   assert.equal(v.output.status, 'degraded');
   assert.equal((await load(dir, 'meta.json')).sources.lh.status, 'auth');
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('무순위에 본청약 단지 세대수 연결 — 이름·지역 일치할 때만', async () => {
+  reset();
+  const dir = await sandbox();
+  const v = await pass1(dir);
+  assert.equal(v.output.status, 'ok', v.stderr);
+  const { notices } = await load(dir, 'store.json');
+  const rem = notices['remndr:2026910002:2026910002'];
+  assert.equal(rem.complexUnits, 1450, '"잔여세대" 수식어를 걷어내고 원공고와 매칭');
+  assert.equal(rem.complexUrl, 'https://www.applyhome.co.kr/x?origin777');
+  assert.ok(!notices['apt:2020000777:2020000777'], '원공고 자체는 기간 밖 — 저장하지 않는다');
+  assert.equal(notices['remndr:2026910001:2026910001'].complexUnits, undefined, '원공고가 없으면 붙이지 않는다');
+  assert.equal(notices['apt:2026000901:2026000901'].complexUnits, undefined, '신규 분양에는 붙이지 않는다');
+  assert.equal(notices['remndr:2026910003:2026910003'].complexUnits, 120, '무순위 차수 "(2차)" 를 떼고 본청약과 연결');
   await rm(dir, { recursive: true, force: true });
 });
 

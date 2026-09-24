@@ -34,6 +34,53 @@ const SOURCES = [
 // 범위 밖: 임대(분양가 개념 없음)·생활숙박시설(주택 아님). 버리지 않고 건수는 점검표에 남긴다.
 const EXCLUDED_KIND = /민간임대|생활숙박/;
 
+// 무순위·임의공급 ↔ 본청약(원공고) 연결용 이름 정규화.
+// 재공급 수식어만 걷어내고 차수 "(2차)" 같은 구분은 남긴다 — 다른 차수를 같은 단지로 합치지 않기 위해.
+const RESUPPLY_WORDS = '무순위|잔여\\s*세대|임의공급|계약\\s*취소|취소\\s*후\\s*재공급|재공급|사후\\s*접수|선착순|불법\\s*행위';
+const RESUPPLY_RE = new RegExp(RESUPPLY_WORDS, 'g');
+const RESUPPLY_TEST = new RegExp(`${RESUPPLY_WORDS}|공고|접수`);
+function complexKey(name) {
+  let s = String(name ?? '').replace(/\[.*?\]/g, ' ');
+  s = s.replace(/\(([^()]*)\)/g, (m, inner) => (RESUPPLY_TEST.test(inner) ? ' ' : m));
+  s = s.replace(RESUPPLY_RE, ' ').replace(/입주자\s*모집\s*공고|모집\s*공고|정정\s*공고|공고/g, ' ');
+  return s.replace(/\s+/g, '').toUpperCase();
+}
+
+/**
+ * 무순위·임의공급 공고에 본청약의 공급규모(단지 세대수)를 연결한다.
+ * 청약홈 APT·오피스텔 목록은 매주 전량(2019~) 내려받으므로 원공고가 그 안에 있다.
+ * 이름(차수 포함)·지역이 정확히 같고, 원공고가 더 크고 더 과거일 때만 — 애매하면 붙이지 않는다.
+ * 이번 주 목록을 못 받았으면(origins 비어 있음) 기존 값을 지우지 않고 그대로 둔다.
+ */
+function annotateComplex(store, origins) {
+  if (!origins.length) return { linked: 0, total: 0 };
+  const byKey = new Map();
+  for (const o of origins) {
+    if (!o.key) continue;
+    const k = `${o.region}|${o.key}`;
+    byKey.set(k, [...(byKey.get(k) ?? []), o]);
+  }
+  let linked = 0;
+  let total = 0;
+  const lookup = (n, name) => (byKey.get(`${n.region}|${complexKey(name)}`) ?? []).filter((o) =>
+    o.units >= (n.units ?? 0) && (!o.noticeDate || !n.noticeDate || o.noticeDate <= n.noticeDate));
+  for (const n of Object.values(store)) {
+    if (!['remndr', 'opt'].includes(n.source)) continue;
+    total += 1;
+    // "○○(2차)" 의 (2차)는 대개 '무순위 2차'라는 뜻 — 차수 포함 정확 일치를 먼저, 실패하면 차수를 떼고 재시도
+    let cands = lookup(n, n.name);
+    if (!cands.length && /\(\s*\d+\s*차\s*\)/.test(n.name)) {
+      cands = lookup(n, n.name.replace(/\(\s*\d+\s*차\s*\)/g, ' '));
+    }
+    if (!cands.length) continue;
+    const best = cands.sort((a, b) => (b.noticeDate ?? '').localeCompare(a.noticeDate ?? ''))[0];
+    n.complexUnits = best.units;
+    if (best.url) n.complexUrl = best.url;
+    linked += 1;
+  }
+  return { linked, total };
+}
+
 const LH_REGION = { 11: '서울', 41: '경기' };
 const LH_TYPES = { '05': '분양주택', 39: '신혼희망타운' };
 
@@ -336,6 +383,10 @@ async function runApplySource(src, ctx) {
       continue;
     }
     st.inRegion += 1;
+    // 본청약(원공고) 색인 — 기간 필터 '앞'에서 모은다(무순위의 원공고는 수년 전일 수 있음)
+    if ((src.key === 'apt' || src.key === 'urbty') && n.units > 0) {
+      ctx.origins.push({ key: complexKey(n.name), region: n.region, units: n.units, noticeDate: n.noticeDate, url: n.url });
+    }
     // 세부유형이 있을 때만 제외한다. 없으면 묶음 이름("도시형/오피스텔/생활숙박시설/민간임대")에 걸려 전부 빠지므로 남긴다.
     if (src.key === 'urbty' && EXCLUDED_KIND.test(n.detailKind ?? '')) {
       st.excluded += 1;
@@ -551,10 +602,12 @@ async function main() {
     lastSuccessAt: prevMeta.lastSuccessAt ?? null, lastSuccessToday: prevMeta.lastSuccessToday ?? null,
     sources: {}, price: { calls: 0, empty: 0, errors: 0 }, warnings: [], newIds: [],
   };
-  const ctx = { store, meta, prevMeta, opCache: { ...(prevMeta.opCache ?? {}) }, priceFill: {} };
+  const ctx = { store, meta, prevMeta, opCache: { ...(prevMeta.opCache ?? {}) }, priceFill: {}, origins: [] };
 
   for (const src of SOURCES) await runApplySource(src, ctx);
   await runLh(ctx);
+  const cx = annotateComplex(store, ctx.origins);
+  if (cx.total) console.log(`단지 연결(본청약): ${cx.linked}/${cx.total} (무순위·임의공급)`);
   const dup = dedupeLh(store);
 
   meta.opCache = ctx.opCache;

@@ -63,6 +63,14 @@ export function makeFixtures(today) {
       HOUSE_SECD_NM: 'APT', SUBSCRPT_AREA_CODE_NM: '서울', HSSPLY_ADRES: '서울특별시 노원구 월계동 1',
       RCRIT_PBLANC_DE: T(-120), RCEPT_BGNDE: T(-105), RCEPT_ENDDE: T(-100),
     },
+    {
+      // 광명 센트럴 무순위(2026910002)의 본청약 원공고 — 수집 기간 밖이지만 단지 연결 색인에는 쓰인다
+      HOUSE_MANAGE_NO: '2020000777', PBLANC_NO: '2020000777', HOUSE_NM: '[예시] 광명 센트럴',
+      HOUSE_SECD_NM: 'APT', HOUSE_DTL_SECD_NM: '민영', SUBSCRPT_AREA_CODE_NM: '경기',
+      HSSPLY_ADRES: '경기도 광명시 광명동 12', TOT_SUPLY_HSHLDCO: 1450,
+      RCRIT_PBLANC_DE: T(-700), RCEPT_BGNDE: T(-690), RCEPT_ENDDE: T(-688),
+      PBLANC_URL: 'https://www.applyhome.co.kr/x?origin777',
+    },
   ];
   const aptMdl = {
     2026000901: [
@@ -101,6 +109,13 @@ export function makeFixtures(today) {
       TOT_SUPLY_HSHLDCO: 5, RCRIT_PBLANC_DE: T(-3), GNRL_RCEPT_BGNDE: T(1), GNRL_RCEPT_ENDDE: T(1),
       PBLANC_URL: 'https://www.applyhome.co.kr/r?2',
     },
+    {
+      // '(2차)' 가 무순위 차수인 경우 — 차수를 떼고 본청약(서초 하이엔드)과 연결돼야 한다
+      HOUSE_MANAGE_NO: '2026910003', PBLANC_NO: '2026910003', HOUSE_NM: '[예시] 서초 하이엔드(2차)',
+      HOUSE_SECD_NM: '무순위/잔여세대', SUBSCRPT_AREA_CODE_NM: '서울', HSSPLY_ADRES: '서울특별시 서초구 반포동 1-1',
+      TOT_SUPLY_HSHLDCO: 2, RCRIT_PBLANC_DE: T(-1), GNRL_RCEPT_BGNDE: T(2), GNRL_RCEPT_ENDDE: T(2),
+      PBLANC_URL: 'https://www.applyhome.co.kr/r?3',
+    },
   ];
   const remndrMdl = {
     2026910001: [{ HOUSE_TY: '084.9800A', SUPLY_HSHLDCO: 3, LTTOT_TOP_AMOUNT: '98000' }],
@@ -108,6 +123,7 @@ export function makeFixtures(today) {
       { HOUSE_TY: '059.9900A', SUPLY_HSHLDCO: 2, LTTOT_TOP_AMOUNT: '81000' },
       { HOUSE_TY: '084.9900A', SUPLY_HSHLDCO: 3, LTTOT_TOP_AMOUNT: '110000' },
     ],
+    2026910003: [{ HOUSE_TY: '084.9900A', SUPLY_HSHLDCO: 2, LTTOT_TOP_AMOUNT: '205000' }],
   };
   const opt = [
     {
