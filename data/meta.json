@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "runAt": "2026-09-24T13:31:50.700Z",
+  "runAt": "2026-09-24T14:14:56.757Z",
   "today": "2026-09-24",
-  "prevRunAt": "2026-09-24T12:34:58.551Z",
+  "prevRunAt": "2026-09-24T13:31:50.700Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
   "lastSuccessAt": "2026-09-24T13:31:50.700Z",
   "lastSuccessToday": "2026-09-24",
@@ -89,7 +89,7 @@
     },
     "lh": {
       "label": "LH 공고",
-      "status": "not-enabled",
+      "status": "error",
       "operation": "lhLeaseNoticeInfo1",
       "expected": 0,
       "fetched": 0,
@@ -100,7 +100,7 @@
       "missing": 0,
       "windowStart": "2026-08-10",
       "lastOkToday": null,
-      "error": "LH 분양임대공고문 API 활용신청이 안 된 키입니다(선택 소스 — 청약홈 수집에는 영향 없음)"
+      "error": "네트워크 실패: UND_ERR_CONNECT_TIMEOUT"
     }
   },
   "price": {
@@ -133,7 +133,7 @@
     "activePass": 7
   },
   "market": {
-    "status": "ok",
+    "status": "stale",
     "asOf": "2026-09-24",
     "from": "202603",
     "to": "202608",
@@ -880,11 +880,15 @@
       }
     },
     "missing": [],
-    "failed": []
+    "failed": [],
+    "staleSince": "2026-09-24",
+    "note": "시군구 2곳 연속 실패(네트워크 실패: UND_ERR_CONNECT_TIMEOUT) — 전면 장애로 판단"
   },
-  "status": "ok",
+  "status": "degraded",
   "validation": {
-    "checkedAt": "2026-09-24T13:35:51.455Z",
-    "warnings": []
+    "checkedAt": "2026-09-24T14:17:53.046Z",
+    "warnings": [
+      "LH 공고 수집 실패(error): 네트워크 실패: UND_ERR_CONNECT_TIMEOUT — 이 소스의 이번 주 신규 공고가 빠졌을 수 있음. 다음 실행이 2026-08-10 이후를 다시 훑습니다."
+    ]
   }
 }
