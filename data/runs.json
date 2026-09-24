@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "at": "2026-09-24T11:41:09.240Z",
+    "status": "ok",
+    "event": "workflow_dispatch",
+    "run": "https://github.com/baekinyeop92-create/cheongyak-alert/actions/runs/35994426063",
+    "new": 105,
+    "counts": {
+      "visible": 105,
+      "pass": 93,
+      "active": 9
+    },
+    "sources": {
+      "apt": "ok",
+      "remndr": "ok",
+      "opt": "ok",
+      "urbty": "ok",
+      "lh": "not-enabled"
+    }
+  }
+]
