@@ -18,9 +18,10 @@ const safeUrl = (u) => {
 
 const CAPS = [130000, 120000, 110000, 100000, 90000, 80000, 70000, 60000, 50000];
 const KINDS = ['apt', 'remndr', 'opt', 'urbty', 'lh'];
+const DOWNS = [10, 15, 20];   // 계약금 비율 '가정'(%) — 실제 비율은 API 에 없어 공고문으로만 확인 가능
 let today = kstToday();
 let loadedAt = 0;
-const state = { region: '', sigungu: '', kinds: new Set(KINDS), cap: DEFAULT_CAP, minArea: 0, sort: 'urgent', closed: false, q: '', st: '' };
+const state = { region: '', sigungu: '', kinds: new Set(KINDS), cap: DEFAULT_CAP, minArea: 0, sort: 'urgent', closed: false, q: '', st: '', down: 10 };
 let DATA = null;
 
 // ---------- URL 상태 (북마크·공유용) ----------
@@ -34,6 +35,7 @@ function readHash() {
     if (p.has('cap') && CAPS.includes(Number(p.get('cap')))) state.cap = Number(p.get('cap'));
     if (p.has('a')) state.minArea = [0, 40, 59, 84].includes(Number(p.get('a'))) ? Number(p.get('a')) : 0;
     if (p.has('s')) state.sort = ['urgent', 'new', 'price'].includes(p.get('s')) ? p.get('s') : 'urgent';
+    if (p.has('d')) state.down = DOWNS.includes(Number(p.get('d'))) ? Number(p.get('d')) : 10;
     if (p.has('c')) state.closed = p.get('c') === '1';
     if (p.has('q')) state.q = p.get('q');
     if (p.has('st')) state.st = p.get('st');
@@ -48,6 +50,7 @@ function writeHash() {
   if (state.cap !== DEFAULT_CAP) p.set('cap', state.cap);
   if (state.minArea) p.set('a', state.minArea);
   if (state.sort !== 'urgent') p.set('s', state.sort);
+  if (state.down !== 10) p.set('d', state.down);
   if (state.closed) p.set('c', '1');
   if (state.q) p.set('q', state.q);
   if (state.st) p.set('st', state.st);
@@ -155,6 +158,9 @@ function card(x) {
   const meta = [where(n), n.kind && n.kind !== SOURCE_LABEL[n.source] ? n.kind : null, ...(n.flags ?? []), n.units ? `${n.units.toLocaleString('ko-KR')}세대` : null, n.moveIn ? `입주 ${n.moveIn.replace('-', '.')}` : null].filter(Boolean);
   const sched = (n.schedule ?? []).filter((p) => !p.hidden);
   if (n.winnerDate) sched.push({ label: '당첨 발표', start: n.winnerDate, end: n.winnerDate });
+  // '최소 현금'은 가장 싼 상한 이하 주택형의 최고 분양가 × 계약금 비율 가정 — 실제 비율은 공고문 확인
+  const underPrices = pool.map((t) => t.price).filter((p) => p > 0);
+  const minCash = underPrices.length ? Math.round(Math.min(...underPrices) * state.down / 100) : null;
   const typeRows = (n.types ?? []).map((t) => {
     const inArea = !state.minArea || t.area == null || t.area >= state.minArea;
     let v = ['v-unknown', '미확인'];
@@ -162,7 +168,7 @@ function card(x) {
     else if (t.price > 0 && t.price <= state.cap) v = ['v-pass', '상한 이하'];
     else if (t.price > 0 && withinBorder(t.price, state.cap)) v = ['v-border', '경계'];
     else if (t.price > 0) v = ['v-over', '초과'];
-    return `<tr><td>${esc(t.type ?? '—')}</td><td class="num">${areaText(t.area)}</td><td class="num">${t.units ?? '—'}</td><td class="num">${eokExact(t.price)}</td><td class="${v[0]}">${v[1]}</td></tr>`;
+    return `<tr><td>${esc(t.type ?? '—')}</td><td class="num">${areaText(t.area)}</td><td class="num">${t.units ?? '—'}</td><td class="num">${eokExact(t.price)}</td><td class="num">${t.price > 0 ? eokExact(Math.round(t.price * state.down / 100)) : '—'}</td><td class="${v[0]}">${v[1]}</td></tr>`;
   }).join('');
   return `<article class="card ${st.key === 'closed' ? 'is-closed' : ''}">
     <div class="badges">
@@ -177,6 +183,7 @@ function card(x) {
       <div class="price"><span>${eok(state.cap)} 이하 분양가</span><strong>${priceRange(pool.map((t) => t.price))}</strong></div>
       <div><span>해당 주택형</span><strong>${pool.length}/${(n.types ?? []).length} · ${areaRange(pool.map((t) => t.area)) || '—'}</strong></div>
       <div><span>청약 접수</span><strong>${span(n.start, n.end) || '—'}</strong></div>
+      <div class="cash"><span>최소 현금 · 계약금 ${state.down}% 가정</span><strong>${minCash ? `약 ${eok(minCash)}` : '—'}</strong></div>
     </div>
     ${sched.length ? `<ul class="sched">${sched.map((p) => `<li class="${(p.end ?? p.start) < today ? 'past' : ''}"><span>${esc(p.label)}</span>${span(p.start, p.end)}</li>`).join('')}</ul>` : ''}
     <div class="actions">
@@ -186,7 +193,7 @@ function card(x) {
       ${home ? `<a class="btn" href="${esc(home)}" target="_blank" rel="noopener">분양 홈페이지</a>` : ''}
     </div>
     ${typeRows ? `<details class="types"><summary>주택형 ${(n.types ?? []).length}개 · 분양가 표</summary><div class="tbl-wrap"><table>
-      <thead><tr><th>주택형</th><th class="num">전용</th><th class="num">공급 세대</th><th class="num">최고 분양가</th><th>판정</th></tr></thead>
+      <thead><tr><th>주택형</th><th class="num">전용</th><th class="num">공급 세대</th><th class="num">최고 분양가</th><th class="num">계약금 ${state.down}%</th><th>판정</th></tr></thead>
       <tbody>${typeRows}</tbody></table></div></details>` : ''}
   </article>`;
 }
@@ -299,6 +306,7 @@ function audit() {
     </div>
     <div class="panel fine">
       <p><b>판정 기준</b> 청약홈 주택형별 최고 공급금액(LTTOT_TOP_AMOUNT·오피스텔 SUPLY_AMOUNT)이 상한 이하인 주택형이 1개라도 있으면 목록에 올립니다. 최고가 기준이라 그 주택형은 모든 세대가 상한 이하입니다. 상한 초과 10% 이내는 저층 등 일부 세대가 상한 이하일 수 있어 ‘경계’로, 분양가를 모르는 공고는 ‘가격 미확인’으로 따로 보여줍니다 — 조용히 빼지 않습니다.</p>
+      <p><b>돈 준비(참고)</b> 카드의 ‘최소 현금’은 가장 싼 상한 이하 주택형의 최고 분양가 × 선택한 계약금 비율(기본 10%)로 계산한 <b>가정치</b>입니다. 실제 계약금·중도금·잔금 비율과 발코니 확장비·유상 옵션·취득세는 공고마다 달라 청약홈 API가 제공하지 않습니다 — 통상 계약금 10~20% · 중도금 60% · 잔금 20~30% 구조가 많지만, 반드시 모집공고문에서 확인하세요.</p>
       <p><b>수집 범위</b> 청약홈 APT·무순위/잔여세대·임의공급·오피스텔/도시형생활주택(민간임대·생활숙박시설 제외) + LH 분양주택·신혼희망타운 공고. 받은 건수가 API 총건수와 다르면 그 주는 실패로 기록하고 다음 실행이 빠진 기간을 다시 훑습니다. 한 번 올라온 공고는 API에서 사라져도 지우지 않습니다.</p>
       <p><b>한계</b> SH·GH가 자체 청약시스템에만 올리는 공고는 공개 API가 없어 자동 수집 대상이 아닙니다. 무순위는 접수가 하루인 경우가 많아 주 1회 갱신으로는 접수 전에 못 볼 수 있습니다. 최종 기준은 항상 입주자모집공고 원문입니다.</p>
       <div class="links">
@@ -385,6 +393,7 @@ function initControls() {
     $('#cap').value = String(state.cap);
     $('#area').value = String(state.minArea);
     $('#sort').value = state.sort;
+    $('#down').value = String(state.down);
     $('#closed').checked = state.closed;
     $('#q').value = state.q;
   };
@@ -415,6 +424,7 @@ function initControls() {
   $('#cap').onchange = (e) => { state.cap = Number(e.target.value); render(); };
   $('#area').onchange = (e) => { state.minArea = Number(e.target.value); render(); };
   $('#sort').onchange = (e) => { state.sort = e.target.value; render(); };
+  $('#down').onchange = (e) => { state.down = Number(e.target.value); render(); };
   $('#closed').onchange = (e) => {
     state.closed = e.target.checked;
     if (!state.closed && state.st === 'closed') state.st = '';
