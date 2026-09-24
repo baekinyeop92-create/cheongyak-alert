@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "runAt": "2026-09-24T12:34:58.551Z",
+  "runAt": "2026-09-24T13:31:50.700Z",
   "today": "2026-09-24",
-  "prevRunAt": "2026-09-24T12:17:34.716Z",
+  "prevRunAt": "2026-09-24T12:34:58.551Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-09-24T12:34:58.551Z",
+  "lastSuccessAt": "2026-09-24T13:31:50.700Z",
   "lastSuccessToday": "2026-09-24",
   "sources": {
     "apt": {
@@ -884,7 +884,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-09-24T12:39:45.580Z",
+    "checkedAt": "2026-09-24T13:35:51.455Z",
     "warnings": []
   }
 }
