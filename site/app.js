@@ -21,6 +21,7 @@ const KINDS = ['apt', 'remndr', 'opt', 'urbty', 'lh'];
 const DOWNS = [10, 15, 20];   // 계약금 비율 '가정'(%) — 실제 비율은 API 에 없어 공고문으로만 확인 가능
 let today = kstToday();
 let loadedAt = 0;
+let syncControls = () => {};   // initControls 가 채운다 — 빈 상태의 '필터 초기화'가 쓴다
 const state = { region: '', sigungu: '', kinds: new Set(KINDS), cap: DEFAULT_CAP, minArea: 0, sort: 'urgent', closed: false, q: '', st: '', down: 10 };
 let DATA = null;
 
@@ -431,9 +432,25 @@ function render() {
   if (!DATA.meta.runAt) {
     $('#main').innerHTML = '<div class="empty"><b>첫 수집 전입니다</b><p>저장소 Actions 탭 → weekly-update → Run workflow 를 한 번 실행하면 목록이 채워집니다.</p></div>';
   } else if (!main.length) {
-    const hint = state.st || state.q || state.sigungu || state.minArea || state.cap !== DEFAULT_CAP || state.kinds.size !== KINDS.length
-      ? '필터를 넓혀 보세요.' : '이번 주에는 조건에 맞는 진행 중 공고가 없습니다. 아래 ‘경계’·‘가격 미확인’ 칸도 확인하세요.';
-    $('#main').innerHTML = `<div class="sec-h"><h2>${eok(state.cap)} 이하</h2><span>0건</span></div><div class="empty"><b>조건에 맞는 공고가 없습니다</b><p>${hint}</p></div>`;
+    const active = [
+      state.region || state.sigungu ? (state.sigungu ? state.sigungu.split('|')[1] : state.region) : null,
+      state.kinds.size !== KINDS.length ? [...state.kinds].map((k) => SOURCE_LABEL[k]).join('·') : null,
+      state.cap !== DEFAULT_CAP ? `${eok(state.cap)} 이하` : null,
+      state.minArea ? `전용 ${state.minArea}㎡ 이상` : null,
+      state.q ? `“${state.q}”` : null,
+      state.st ? '상태 필터' : null,
+    ].filter(Boolean);
+    const hint = active.length
+      ? `현재 조건: ${esc(active.join(' · '))}`
+      : '이번 주에는 조건에 맞는 진행 중 공고가 없습니다. 아래 ‘경계’·‘가격 미확인’ 칸도 확인하세요.';
+    $('#main').innerHTML = `<div class="sec-h"><h2>${eok(state.cap)} 이하</h2><span>0건</span></div>
+      <div class="empty"><b>조건에 맞는 공고가 없어요</b><p>${hint}</p>
+      ${active.length ? '<button type="button" class="btn" id="resetFilters">필터 초기화</button>' : ''}</div>`;
+    $('#resetFilters')?.addEventListener('click', () => {
+      Object.assign(state, { region: '', sigungu: '', kinds: new Set(KINDS), cap: DEFAULT_CAP, minArea: 0, sort: 'urgent', closed: false, q: '', st: '', down: 10 });
+      syncControls();
+      render();
+    });
   } else {
     $('#main').innerHTML = `<div class="sec-h"><h2>${eok(state.cap)} 이하</h2><span>${main.length}건${state.minArea ? ` · 전용 ${state.minArea}㎡ 이상` : ''}</span></div><div class="list">${main.map(card).join('')}</div>`;
   }
@@ -514,6 +531,7 @@ function initControls() {
     clearTimeout(t);
     t = setTimeout(() => { state.q = e.target.value.trim(); render(); }, 150);
   };
+  syncControls = sync;
   sync();
 }
 
@@ -529,9 +547,12 @@ async function load() {
   try {
     await fetchData();
   } catch (e) {
-    $('#main').innerHTML = `<div class="empty"><b>데이터를 불러오지 못했습니다</b><p>${esc(e.message)} — 잠시 뒤 새로고침하세요.</p></div>`;
+    $('#main').removeAttribute('aria-busy');
+    $('#main').innerHTML = `<div class="empty"><b>데이터를 불러오지 못했습니다</b><p>${esc(e.message)} — 네트워크를 확인한 뒤 다시 시도하세요.</p><button type="button" class="btn" id="retryLoad">다시 시도</button></div>`;
+    $('#retryLoad')?.addEventListener('click', () => location.reload());
     return;
   }
+  $('#main').removeAttribute('aria-busy');
   initControls();
   render();
 }
