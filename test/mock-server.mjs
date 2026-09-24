@@ -142,7 +142,36 @@ export function makeFixtures(today) {
       { PAN_ID: '0000061002', PAN_NM: '서울대방 A1블록 공공분양주택 입주자모집공고', UPP_AIS_TP_NM: '분양주택', AIS_TP_CD_NM: '공공분양', CNP_CD_NM: '서울특별시', PAN_SS: '공고중', PAN_NT_ST_DT: T(-3).replaceAll('-', '.'), CLSG_DT: T(12).replaceAll('-', '.'), DTL_URL: 'https://apply.lh.or.kr/x?61002' },
     ],
   };
-  return { apt, aptMdl, remndr, remndrMdl, opt, optMdl, urbty, urbtyMdl, lh };
+
+  // 국토부 실거래(RTMS). 실측 응답 형식(dealAmount 쉼표, cdealType 'O'=해제) 그대로.
+  // market.mjs 가 TODAY 직전 6개 '완결 월'을 물으므로 가장 최근 완결 월에만 거래를 둔다.
+  const [ty, tm] = today.split('-').map(Number);
+  const lastD = new Date(Date.UTC(ty, tm - 2, 1));
+  const lastYm = `${lastD.getUTCFullYear()}${String(lastD.getUTCMonth() + 1).padStart(2, '0')}`;
+  const tr = (aptNm, dealAmount, excluUseAr, extra = {}) => ({
+    aptNm, dealAmount, excluUseAr, dealYear: String(lastD.getUTCFullYear()), dealMonth: String(lastD.getUTCMonth() + 1),
+    dealDay: '15', cdealType: ' ', landLeaseholdGbn: 'N', umdNm: '예시동', buildYear: '2015', floor: '10', ...extra,
+  });
+  const trades = {
+    // 강서구: 59급 5건 + 84급 6건 (+ 해제 1·토지임대부 1은 제외 대상)
+    11500: { [lastYm]: [
+      tr('예시래미안', '95,000', '59.98'), tr('예시자이', '96,500', '59.92'), tr('예시힐스', '93,800', '59.95'),
+      tr('예시푸르지오', '97,200', '59.99'), tr('예시아이파크', '94,600', '59.90'),
+      tr('예시래미안', '132,000', '84.98'), tr('예시자이', '135,500', '84.92'), tr('예시힐스', '128,000', '84.95'),
+      tr('예시센트럴', '138,000', '84.99'), tr('예시더샵', '130,500', '84.90'), tr('예시포레', '133,700', '84.93'),
+      tr('예시해제건', '999,000', '84.99', { cdealType: 'O', cdealDay: '26.09.10' }),
+      tr('예시토지임대', '45,000', '84.99', { landLeaseholdGbn: 'Y' }),
+    ] },
+    // 광명시: 84급 5건, 59급 4건(밴드 표본 부족 → 화면은 '전체 면적'으로 폴백)
+    41210: { [lastYm]: [
+      tr('광명예시1', '118,000', '84.97'), tr('광명예시2', '121,000', '84.99'), tr('광명예시3', '115,500', '84.90'),
+      tr('광명예시4', '119,800', '84.95'), tr('광명예시5', '117,200', '84.93'),
+      tr('광명예시6', '82,000', '59.97'), tr('광명예시7', '84,500', '59.90'), tr('광명예시8', '80,700', '59.95'), tr('광명예시9', '83,100', '59.92'),
+    ] },
+    // 평택시: 3건뿐 → 표본 부족으로 표시하지 않는 경로
+    41220: { [lastYm]: [tr('평택예시1', '38,000', '74.98'), tr('평택예시2', '39,500', '74.90'), tr('평택예시3', '36,800', '74.95')] },
+  };
+  return { apt, aptMdl, remndr, remndrMdl, opt, optMdl, urbty, urbtyMdl, lh, trades };
 }
 
 /**
@@ -151,6 +180,8 @@ export function makeFixtures(today) {
  *   state.fail          — Set(op) : 해당 오퍼레이션 HTTP 500
  *   state.shortPage     — Set(op) : 마지막 페이지에서 1건 누락(총건수 불일치)
  *   state.lhAuthError   — LH 가 미등록 키 XML 을 준다
+ *   state.rtmsFail      — 실거래(RTMS) 가 HTTP 500
+ *   state.rtmsAuthError — 실거래가 미등록 키 XML 을 준다
  */
 export function startMockServer(state) {
   const calls = [];
@@ -174,6 +205,19 @@ export function startMockServer(state) {
       const page = Number(u.searchParams.get('PAGE'));
       const rows = all.slice((page - 1) * size, page * size).map((r, i) => ({ ...r, ALL_CNT: String(all.length), RNUM: String((page - 1) * size + i + 1) }));
       return send(200, [{ dsSch: [{ PG_SZ: String(size) }] }, { dsList: rows, resHeader: [{ SS_CODE: 'Y', RS_DTTM: '20260928060000' }] }]);
+    }
+
+    if (u.pathname === '/1613000/RTMSDataSvcAptTrade/getRTMSDataSvcAptTrade') {
+      if (state.rtmsAuthError) {
+        return send(200, '<OpenAPI_ServiceResponse><cmmMsgHeader><returnAuthMsg>SERVICE_KEY_IS_NOT_REGISTERED_ERROR</returnAuthMsg></cmmMsgHeader></OpenAPI_ServiceResponse>', 'text/xml');
+      }
+      if (state.rtmsFail) return send(500, 'server error', 'text/plain');
+      const all = fx.trades?.[u.searchParams.get('LAWD_CD')]?.[u.searchParams.get('DEAL_YMD')] ?? [];
+      const rows = Number(u.searchParams.get('numOfRows') || 10);
+      const page = Number(u.searchParams.get('pageNo') || 1);
+      const slice = all.slice((page - 1) * rows, page * rows);
+      const items = slice.map((r) => `<item>${Object.entries(r).map(([k, v]) => `<${k}>${v}</${k}>`).join('')}</item>`).join('');
+      return send(200, `<?xml version="1.0" encoding="utf-8"?><response><header><resultCode>000</resultCode><resultMsg>OK</resultMsg></header><body><items>${items}</items><numOfRows>${rows}</numOfRows><pageNo>${page}</pageNo><totalCount>${all.length}</totalCount></body></response>`, 'text/xml');
     }
 
     const m = u.pathname.match(/^\/api\/ApplyhomeInfoDetailSvc\/v1\/(\w+)$/);

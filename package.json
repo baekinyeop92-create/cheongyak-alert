@@ -10,9 +10,10 @@
   "scripts": {
     "test": "node --test test/unit.test.mjs test/pipeline.test.mjs",
     "fetch": "node scripts/fetch.mjs",
+    "market": "node scripts/market.mjs",
     "validate": "node scripts/validate.mjs",
     "build": "node scripts/build.mjs",
-    "update": "node scripts/fetch.mjs && node scripts/validate.mjs && node scripts/build.mjs",
+    "update": "node scripts/fetch.mjs && node scripts/market.mjs && node scripts/validate.mjs && node scripts/build.mjs",
     "demo": "node scripts/demo.mjs",
     "serve": "python3 -m http.server 8080 -d _site",
     "live-check": "node --env-file=.env.local scripts/live-check.mjs"

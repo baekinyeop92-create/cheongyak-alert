@@ -11,7 +11,7 @@ import { evaluate } from '../site/core.js';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const TODAY = '2026-09-28';
-const state = { fx: makeFixtures(TODAY), fail: new Set(), shortPage: new Set(), lhAuthError: false };
+const state = { fx: makeFixtures(TODAY), fail: new Set(), shortPage: new Set(), lhAuthError: false, rtmsFail: false, rtmsAuthError: false };
 let mock;
 
 before(async () => {
@@ -24,6 +24,8 @@ function reset() {
   state.fail = new Set();
   state.shortPage = new Set();
   state.lhAuthError = false;
+  state.rtmsFail = false;
+  state.rtmsAuthError = false;
 }
 const pass1 = async (dir) => {
   await run('fetch.mjs', dir, { RUN_AT: '2026-09-27T21:00:00.000Z' });
@@ -48,6 +50,7 @@ function run(script, dir, env = {}, args = []) {
         APPLYHOME_API_KEY: 'test-key/with+special=',
         APPLYHOME_API_BASE: `http://127.0.0.1:${mock.port}/api`,
         LH_API_BASE: `http://127.0.0.1:${mock.port}/B552555`,
+        RTMS_API_BASE: `http://127.0.0.1:${mock.port}/1613000`,
         DATA_DIR: path.join(dir, 'data'),
         OUT_DIR: path.join(dir, '_site'),
         DIGEST_DIR: path.join(dir, '_out'),
@@ -304,6 +307,68 @@ test('LH 가 되다가 인증 오류로 바뀌면 경고', async () => {
   assert.equal(v.output.status, 'degraded');
   assert.equal((await load(dir, 'meta.json')).sources.lh.status, 'auth');
   await rm(dir, { recursive: true, force: true });
+});
+
+test('실거래 시세: 시군구·밴드별 중위 ㎡당가 — 해제 제외, 검증 상태에 영향 없음', async () => {
+  reset();
+  const dir = await sandbox();
+  await run('fetch.mjs', dir, { RUN_AT: '2026-09-27T21:00:00.000Z' });
+  const m = await run('market.mjs', dir);
+  assert.equal(m.code, 0, m.stderr);
+  const v = await run('validate.mjs', dir);
+  assert.equal(v.code, 0, v.stderr);
+  assert.equal(v.output.status, 'ok', '시세는 참고 데이터 — 검증 상태를 바꾸지 않는다');
+
+  const mk = (await load(dir, 'meta.json')).market;
+  assert.equal(mk.status, 'ok');
+  const gs = mk.areas['서울|강서구'];
+  assert.equal(gs.n, 11, '해제 1건·토지임대부 1건 제외 후 11건');
+  assert.equal(gs.bands.s.n, 5);
+  assert.equal(gs.bands.m.n, 6);
+  assert.ok(gs.bands.m.m2 > 1500 && gs.bands.m.m2 < 1650, `84급 중위 ㎡당가 ${gs.bands.m.m2}`);
+  const gm = mk.areas['경기|광명시'];
+  assert.equal(gm.bands.s.n, 4, '표본 부족 밴드도 수치는 보관(화면이 5건 미만을 숨긴다)');
+  assert.equal(gm.bands.all.n, 9);
+  assert.equal(mk.areas['경기|평택시'].n, 3);
+  assert.ok(mk.areas['경기|화성시'], '거래 없는 시군구도 0건으로 기록');
+
+  const b = await run('build.mjs', dir);
+  assert.equal(b.code, 0, b.stderr);
+  const site = JSON.parse(await readFile(path.join(dir, '_site', 'data.json'), 'utf8'));
+  assert.equal(site.meta.market.areas['서울|강서구'].bands.m.n, 6, 'data.json 에 실림');
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('실거래 API 실패·미신청 — 주간 갱신은 계속, 지난 시세 유지', async () => {
+  reset();
+  const dir = await sandbox();
+  await run('fetch.mjs', dir, { RUN_AT: '2026-09-27T21:00:00.000Z' });
+  await run('market.mjs', dir);
+  await run('validate.mjs', dir);
+
+  // 다음 주: RTMS 500 → 지난 시세를 stale 로 유지, 검증은 여전히 ok
+  state.rtmsFail = true;
+  await run('fetch.mjs', dir, { RUN_AT: '2026-10-04T21:00:00.000Z' });
+  const m2 = await run('market.mjs', dir);
+  assert.equal(m2.code, 0, '실패해도 exit 0');
+  const v = await run('validate.mjs', dir);
+  assert.equal(v.output.status, 'ok', v.stdout + v.stderr);
+  const mk = (await load(dir, 'meta.json')).market;
+  assert.equal(mk.status, 'stale');
+  assert.equal(mk.areas['서울|강서구'].bands.m.n, 6, '지난 주 시세 그대로');
+  await rm(dir, { recursive: true, force: true });
+
+  // 처음부터 활용신청이 안 된 키 → not-enabled, 나머지는 정상
+  state.rtmsFail = false;
+  state.rtmsAuthError = true;
+  const dir2 = await sandbox();
+  await run('fetch.mjs', dir2, { RUN_AT: '2026-09-27T21:00:00.000Z' });
+  const m3 = await run('market.mjs', dir2);
+  assert.equal(m3.code, 0);
+  const v2 = await run('validate.mjs', dir2);
+  assert.equal(v2.output.status, 'ok');
+  assert.equal((await load(dir2, 'meta.json')).market.status, 'not-enabled');
+  await rm(dir2, { recursive: true, force: true });
 });
 
 test('요약은 마지막 전달 이후 신규만 — 배포·알림 실패한 주의 신규는 다음 주로 넘어간다', async () => {

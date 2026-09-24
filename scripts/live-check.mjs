@@ -32,6 +32,7 @@ const run = (script) => new Promise((resolve) => {
 console.log('── 실제 API 수집 ──');
 const f = await run('fetch.mjs');
 if (f !== 0) process.exit(f);
+await run('market.mjs');   // 참고 데이터 — 실패해도 통과 여부에 영향 없음
 const v = await run('validate.mjs');
 if (v === 0) await run('build.mjs');
 

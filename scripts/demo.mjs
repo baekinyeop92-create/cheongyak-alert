@@ -19,6 +19,7 @@ const env = (extra) => ({
   APPLYHOME_API_KEY: 'demo',
   APPLYHOME_API_BASE: `http://127.0.0.1:${mock.port}/api`,
   LH_API_BASE: `http://127.0.0.1:${mock.port}/B552555`,
+  RTMS_API_BASE: `http://127.0.0.1:${mock.port}/1613000`,
   DATA_DIR: path.join(DEMO, 'data'),
   OUT_DIR: path.join(DEMO, 'site'),
   DIGEST_DIR: path.join(DEMO, 'out'),
@@ -53,6 +54,7 @@ await run('mark-delivered.mjs', {}, [prevRun]);
 state.fx = full;
 const thisRun = new Date(Date.parse(`${today}T06:00:00+09:00`)).toISOString();
 await run('fetch.mjs', { TODAY: today, RUN_AT: thisRun });
+await run('market.mjs', { TODAY: today });
 await run('validate.mjs', { TODAY: today });
 await run('record-run.mjs', {}, ['ok']);
 await run('build.mjs');

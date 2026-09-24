@@ -104,6 +104,25 @@ const mapUrl = (addr) => `https://map.naver.com/p/search/${encodeURIComponent(ma
 
 const where = (n) => [n.region, n.sigungu].filter(Boolean).join(' ');
 
+// ---------- 주변 실거래 시세 (meta.market — 참고용 추정) ----------
+
+const BAND_LABEL = { s: '60㎡ 미만', m: '60~85㎡', l: '85㎡ 초과', all: '전체 면적' };
+const MIN_SAMPLE = 5;   // 표본이 이보다 적은 밴드는 쓰지 않는다 — 억지 추정 금지
+
+/** 공고의 시군구 × 전용면적에 맞는 중위 ㎡당가. 같은 면적대 표본이 부족하면 전체 면적으로 폴백. */
+function marketOf(n, area) {
+  const M = DATA?.meta?.market;
+  if (!M || !Number.isFinite(area)) return null;
+  const a = M.areas?.[`${n.region}|${n.sigungu}`];
+  if (!a) return null;
+  const key = area < 60 ? 's' : area <= 85 ? 'm' : 'l';
+  for (const k of [key, 'all']) {
+    const b = a.bands?.[k];
+    if (b && b.n >= MIN_SAMPLE) return { m2: b.m2, n: b.n, label: BAND_LABEL[k] };
+  }
+  return null;
+}
+
 // ---------- 필터 ----------
 
 function inScope(x) {
@@ -161,6 +180,17 @@ function card(x) {
   // '최소 현금'은 가장 싼 상한 이하 주택형의 최고 분양가 × 계약금 비율 가정 — 실제 비율은 공고문 확인
   const underPrices = pool.map((t) => t.price).filter((p) => p > 0);
   const minCash = underPrices.length ? Math.round(Math.min(...underPrices) * state.down / 100) : null;
+  // 시세차익(추정): 가장 싼 상한 이하 주택형 vs 같은 시군구·면적대 최근 실거래 중위 ㎡당가
+  let mkline = '';
+  const cheap = pool.filter((t) => t.price > 0).sort((a, b) => a.price - b.price)[0];
+  const mk = cheap ? marketOf(n, cheap.area) : null;
+  if (mk) {
+    const est = Math.round(mk.m2 * cheap.area);
+    const diff = est - cheap.price;
+    const M = DATA.meta.market;
+    mkline = `<p class="mkline">주변 실거래 대비 <b class="${diff >= 0 ? 'mk-cheap' : 'mk-exp'}">약 ${eok(Math.abs(diff))} ${diff >= 0 ? '저렴' : '비쌈'}</b>
+      <span>· ${esc(n.sigungu)} 최근 ${M.monthsN ?? 6}개월 ${mk.label} ${mk.n}건 중위 ㎡당 ${mk.m2.toLocaleString('ko-KR')}만 기준${M.status === 'stale' ? ' · 지난 주 시세' : ''} · 추정치</span></p>`;
+  }
   const typeRows = (n.types ?? []).map((t) => {
     const inArea = !state.minArea || t.area == null || t.area >= state.minArea;
     let v = ['v-unknown', '미확인'];
@@ -168,7 +198,10 @@ function card(x) {
     else if (t.price > 0 && t.price <= state.cap) v = ['v-pass', '상한 이하'];
     else if (t.price > 0 && withinBorder(t.price, state.cap)) v = ['v-border', '경계'];
     else if (t.price > 0) v = ['v-over', '초과'];
-    return `<tr><td>${esc(t.type ?? '—')}</td><td class="num">${areaText(t.area)}</td><td class="num">${t.units ?? '—'}</td><td class="num">${eokExact(t.price)}</td><td class="num">${t.price > 0 ? eokExact(Math.round(t.price * state.down / 100)) : '—'}</td><td class="${v[0]}">${v[1]}</td></tr>`;
+    const tm = t.price > 0 ? marketOf(n, t.area) : null;
+    const dv = tm ? Math.round(tm.m2 * t.area) - t.price : null;
+    const dvCell = dv == null ? '—' : `<span class="${dv >= 0 ? 'mk-cheap' : 'mk-exp'}">${dv >= 0 ? '+' : '-'}${eok(Math.abs(dv))}</span>`;
+    return `<tr><td>${esc(t.type ?? '—')}</td><td class="num">${areaText(t.area)}</td><td class="num">${t.units ?? '—'}</td><td class="num">${eokExact(t.price)}</td><td class="num">${t.price > 0 ? eokExact(Math.round(t.price * state.down / 100)) : '—'}</td><td class="num">${dvCell}</td><td class="${v[0]}">${v[1]}</td></tr>`;
   }).join('');
   return `<article class="card ${st.key === 'closed' ? 'is-closed' : ''}">
     <div class="badges">
@@ -185,6 +218,7 @@ function card(x) {
       <div><span>청약 접수</span><strong>${span(n.start, n.end) || '—'}</strong></div>
       <div class="cash"><span>최소 현금 · 계약금 ${state.down}% 가정</span><strong>${minCash ? `약 ${eok(minCash)}` : '—'}</strong></div>
     </div>
+    ${mkline}
     ${sched.length ? `<ul class="sched">${sched.map((p) => `<li class="${(p.end ?? p.start) < today ? 'past' : ''}"><span>${esc(p.label)}</span>${span(p.start, p.end)}</li>`).join('')}</ul>` : ''}
     <div class="actions">
       ${url ? `<a class="btn primary" href="${esc(url)}" target="_blank" rel="noopener">공고 보기</a>` : ''}
@@ -193,7 +227,7 @@ function card(x) {
       ${home ? `<a class="btn" href="${esc(home)}" target="_blank" rel="noopener">분양 홈페이지</a>` : ''}
     </div>
     ${typeRows ? `<details class="types"><summary>주택형 ${(n.types ?? []).length}개 · 분양가 표</summary><div class="tbl-wrap"><table>
-      <thead><tr><th>주택형</th><th class="num">전용</th><th class="num">공급 세대</th><th class="num">최고 분양가</th><th class="num">계약금 ${state.down}%</th><th>판정</th></tr></thead>
+      <thead><tr><th>주택형</th><th class="num">전용</th><th class="num">공급 세대</th><th class="num">최고 분양가</th><th class="num">계약금 ${state.down}%</th><th class="num">실거래 대비</th><th>판정</th></tr></thead>
       <tbody>${typeRows}</tbody></table></div></details>` : ''}
   </article>`;
 }
@@ -301,12 +335,20 @@ function audit() {
         <thead><tr><th>소스</th><th>상태</th><th class="num">받은 건수 / 총건수</th><th class="num">서울·경기</th><th class="num">기간 내</th><th>비고</th></tr></thead>
         <tbody>${src || '<tr><td colspan="6">아직 수집 기록이 없습니다.</td></tr>'}</tbody>
       </table></div>
-      <p class="fine" style="margin-top:10px">마지막 갱신 ${kst(m.runAt)} · 다음 예정 ${nextRun(m.runAt)} · 수집 기간 ${esc(m.windowStart ?? '—')} 이후 마감분 · 주택형 조회 ${m.price?.calls ?? 0}건${m.price?.errors ? ` <span class="s-bad">(실패 ${m.price.errors})</span>` : ''}</p>
+      <p class="fine" style="margin-top:10px">마지막 갱신 ${kst(m.runAt)} · 다음 예정 ${nextRun(m.runAt)} · 수집 기간 ${esc(m.windowStart ?? '—')} 이후 마감분 · 주택형 조회 ${m.price?.calls ?? 0}건${m.price?.errors ? ` <span class="s-bad">(실패 ${m.price.errors})</span>` : ''}${(() => {
+        const mk = m.market;
+        if (!mk) return '';
+        const cnt = Object.keys(mk.areas ?? {}).length;
+        if (mk.status === 'ok' || mk.status === 'partial') return ` · 주변 실거래 ${cnt}개 시군구${mk.status === 'partial' ? ' <span class="s-warn">(일부 실패)</span>' : ''}`;
+        if (mk.status === 'stale') return ` · 주변 실거래 ${cnt}개 시군구 <span class="s-warn">(이번 주 조회 실패 — 지난 값)</span>`;
+        return ` · <span class="s-idle">주변 실거래 미연결</span>`;
+      })()}</p>
       ${runs ? `<div class="runs">${runs}</div>` : ''}
     </div>
     <div class="panel fine">
       <p><b>판정 기준</b> 청약홈 주택형별 최고 공급금액(LTTOT_TOP_AMOUNT·오피스텔 SUPLY_AMOUNT)이 상한 이하인 주택형이 1개라도 있으면 목록에 올립니다. 최고가 기준이라 그 주택형은 모든 세대가 상한 이하입니다. 상한 초과 10% 이내는 저층 등 일부 세대가 상한 이하일 수 있어 ‘경계’로, 분양가를 모르는 공고는 ‘가격 미확인’으로 따로 보여줍니다 — 조용히 빼지 않습니다.</p>
       <p><b>돈 준비(참고)</b> 카드의 ‘최소 현금’은 가장 싼 상한 이하 주택형의 최고 분양가 × 선택한 계약금 비율(기본 10%)로 계산한 <b>가정치</b>입니다. 실제 계약금·중도금·잔금 비율과 발코니 확장비·유상 옵션·취득세는 공고마다 달라 청약홈 API가 제공하지 않습니다 — 통상 계약금 10~20% · 중도금 60% · 잔금 20~30% 구조가 많지만, 반드시 모집공고문에서 확인하세요.</p>
+      <p><b>시세차익(참고)</b> ‘주변 실거래 대비’는 국토교통부 실거래가 공개 데이터에서 같은 시군구·최근 6개월·비슷한 면적대(60㎡ 미만 / 60~85 / 85 초과) 아파트 매매의 <b>중위 ㎡당가</b>로 추정한 값입니다. 해제 신고된 거래와 토지임대부는 제외하며, 표본이 5건 미만이면 표시하지 않습니다. 신축 프리미엄·법정동(동네)·연식·층·브랜드 차이는 반영되지 않으므로 투자 판단이 아닌 참고 지표로만 쓰세요.</p>
       <p><b>수집 범위</b> 청약홈 APT·무순위/잔여세대·임의공급·오피스텔/도시형생활주택(민간임대·생활숙박시설 제외) + LH 분양주택·신혼희망타운 공고. 받은 건수가 API 총건수와 다르면 그 주는 실패로 기록하고 다음 실행이 빠진 기간을 다시 훑습니다. 한 번 올라온 공고는 API에서 사라져도 지우지 않습니다.</p>
       <p><b>한계</b> SH·GH가 자체 청약시스템에만 올리는 공고는 공개 API가 없어 자동 수집 대상이 아닙니다. 무순위는 접수가 하루인 경우가 많아 주 1회 갱신으로는 접수 전에 못 볼 수 있습니다. 최종 기준은 항상 입주자모집공고 원문입니다.</p>
       <div class="links">

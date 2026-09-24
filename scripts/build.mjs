@@ -55,6 +55,7 @@ async function main() {
       windowStart: meta.windowStart ?? null, lastSuccessAt: meta.lastSuccessAt ?? null,
       sources: meta.sources ?? {}, price: meta.price ?? {}, counts: meta.counts ?? {},
       warnings: meta.validation?.warnings ?? [], newIds: meta.newIds ?? [],
+      market: meta.market ?? null,
     },
     runs: runs.slice(-12),
     notices: notices

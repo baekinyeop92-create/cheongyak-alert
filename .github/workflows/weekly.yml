@@ -58,6 +58,12 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         run: node scripts/fetch.mjs
 
+      # 참고 데이터 — 실패해도 주간 갱신은 계속된다(스크립트도 항상 exit 0)
+      - name: 주변 실거래 시세 (참고)
+        if: steps.gate.outputs.run == 'true'
+        continue-on-error: true
+        run: node scripts/market.mjs
+
       - name: 무결성 검사 → 통과 시 승격
         id: validate
         if: steps.gate.outputs.run == 'true'

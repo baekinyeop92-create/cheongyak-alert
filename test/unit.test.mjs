@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as L from '../scripts/lib.mjs';
 import { evaluate, statusOf, eok, eokExact, areaRange, countBuckets, kstToday } from '../site/core.js';
+import { median, bandOf, areaStats, usableTrades, parseTradeXml, recentMonths } from '../scripts/market.mjs';
 
 test('날짜: 소스마다 다른 표기를 ISO 로 맞춘다', () => {
   assert.equal(L.toIso('20260813'), '2026-08-13');     // 임의공급
@@ -97,4 +98,40 @@ test('칸 합계 = 표시 건수', () => {
 
 test('인증키 가리기', () => {
   assert.equal(L.redact('https://a/b?serviceKey=abc%2F123&page=1'), 'https://a/b?serviceKey=***&page=1');
+});
+
+test('실거래: XML 파싱·해제 제외·밴드 중위 ㎡당가', () => {
+  const xml = '<response><header><resultCode>000</resultCode></header><body><items>'
+    + '<item><aptNm>예시&amp;타운</aptNm><dealAmount>66,800</dealAmount><excluUseAr>45.77</excluUseAr><cdealType> </cdealType><landLeaseholdGbn>N</landLeaseholdGbn></item>'
+    + '<item><aptNm>해제건</aptNm><dealAmount>39,000</dealAmount><excluUseAr>84.03</excluUseAr><cdealType>O</cdealType><landLeaseholdGbn>N</landLeaseholdGbn></item>'
+    + '</items><totalCount>177</totalCount></body></response>';
+  const p = parseTradeXml(xml);
+  assert.equal(p.totalCount, 177);
+  assert.equal(p.items.length, 2);
+  assert.equal(p.items[0].aptNm, '예시&타운', 'XML 엔티티 복원');
+  const usable = usableTrades(p.items);
+  assert.equal(usable.length, 1, '해제(cdealType O) 거래 제외');
+  assert.equal(usable[0].amount, 66800, '쉼표 금액');
+
+  assert.equal(bandOf(59.99), 's');
+  assert.equal(bandOf(60), 'm');
+  assert.equal(bandOf(85), 'm');
+  assert.equal(bandOf(85.01), 'l');
+  assert.equal(median([3, 1, 2]), 2);
+  assert.equal(median([1, 2, 3, 4]), 2.5);
+  assert.equal(median([]), null);
+
+  const stats = areaStats([
+    { amount: 60000, area: 60 }, { amount: 90000, area: 60 }, { amount: 75000, area: 60 },
+    { amount: 47100, area: 45 },
+  ]);
+  assert.equal(stats.bands.m.n, 3);
+  assert.equal(stats.bands.m.m2, 1250, '중위 = 75000/60');
+  assert.equal(stats.bands.s.n, 1);
+  assert.equal(stats.bands.all.n, 4);
+
+  const months = recentMonths('2026-09-24');
+  assert.equal(months.length, 6);
+  assert.equal(months[0], '202603');
+  assert.equal(months.at(-1), '202608', '진행 중인 달은 넣지 않는다');
 });
