@@ -309,6 +309,26 @@ test('LH 가 되다가 인증 오류로 바뀌면 경고', async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
+test('주택형 세대 구성: 일반·특공 분리와 특공 유형(신혼부부 등) 수집', async () => {
+  reset();
+  const dir = await sandbox();
+  const v = await pass1(dir);
+  assert.equal(v.output.status, 'ok', v.stderr);
+  const { notices } = await load(dir, 'store.json');
+  const apt = notices['apt:2026000901:2026000901'].types;
+  assert.equal(apt[0].general, 80);
+  assert.equal(apt[0].special, 60);
+  assert.deepEqual(apt[0].sp, { newly: 20, first: 12, multi: 10, newborn: 7, old: 3, org: 8 }, '0건(청년)은 넣지 않는다');
+  assert.equal(apt[3].special, 0);
+  assert.equal(apt[3].sp, undefined, '특공 0 이면 유형 없음');
+  const rem = notices['remndr:2026910002:2026910002'].types[0];
+  assert.equal(rem.general, 2, '무순위도 일반 세대수 분리');
+  assert.equal(rem.special, null, '무순위 특공 필드가 없으면 null — 0 으로 지어내지 않는다');
+  const opt = notices['opt:2026920001:2026920001'].types[0];
+  assert.equal(opt.units, 12);
+  await rm(dir, { recursive: true, force: true });
+});
+
 test('실거래 시세: 시군구·밴드별 중위 ㎡당가 — 해제 제외, 검증 상태에 영향 없음', async () => {
   reset();
   const dir = await sandbox();

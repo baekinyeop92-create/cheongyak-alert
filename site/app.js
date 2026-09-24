@@ -104,6 +104,34 @@ const mapUrl = (addr) => `https://map.naver.com/p/search/${encodeURIComponent(ma
 
 const where = (n) => [n.region, n.sigungu].filter(Boolean).join(' ');
 
+// ---------- 공급 대상 (주택형 API 의 일반·특별공급 세대수 — 자격 '조건'은 공고문에만) ----------
+
+const SP_LABEL = {
+  newly: '신혼부부', first: '생애최초', multi: '다자녀', young: '청년', newborn: '신생아',
+  old: '노부모', org: '기관추천', transfer: '이전기관', etc: '기타 특공',
+};
+
+function qualChips(n) {
+  const ts = n.types ?? [];
+  let general = null;
+  let special = null;
+  const sp = {};
+  for (const t of ts) {
+    if (t.general != null) general = (general ?? 0) + t.general;
+    if (t.special != null) special = (special ?? 0) + t.special;
+    for (const [k, v] of Object.entries(t.sp ?? {})) sp[k] = (sp[k] ?? 0) + v;
+  }
+  if (general == null && special == null) return '';   // 세대 구성을 안 주는 소스(LH 등)는 표시하지 않는다
+  const chips = [];
+  chips.push(general > 0
+    ? `<span class="q-c">일반 ${general.toLocaleString('ko-KR')}</span>`
+    : '<span class="q-c q-none">일반공급 없음</span>');
+  const keys = Object.keys(SP_LABEL).filter((k) => sp[k] > 0);
+  if (keys.length) chips.push(...keys.map((k) => `<span class="q-c">${SP_LABEL[k]} ${sp[k].toLocaleString('ko-KR')}</span>`));
+  else if (special > 0) chips.push(`<span class="q-c">특별공급 ${special.toLocaleString('ko-KR')}</span>`);
+  return `<p class="qual"><span class="q-t">공급 대상</span>${chips.join('')}<span class="q-note">· 자격 요건은 공고문</span></p>`;
+}
+
 // ---------- 주변 실거래 시세 (meta.market — 참고용 추정) ----------
 
 const BAND_LABEL = { s: '60㎡ 미만', m: '60~85㎡', l: '85㎡ 초과', all: '전체 면적' };
@@ -201,7 +229,8 @@ function card(x) {
     const tm = t.price > 0 ? marketOf(n, t.area) : null;
     const dv = tm ? Math.round(tm.m2 * t.area) - t.price : null;
     const dvCell = dv == null ? '—' : `<span class="${dv >= 0 ? 'mk-cheap' : 'mk-exp'}">${dv >= 0 ? '+' : '-'}${eok(Math.abs(dv))}</span>`;
-    return `<tr><td>${esc(t.type ?? '—')}</td><td class="num">${areaText(t.area)}</td><td class="num">${t.units ?? '—'}</td><td class="num">${eokExact(t.price)}</td><td class="num">${t.price > 0 ? eokExact(Math.round(t.price * state.down / 100)) : '—'}</td><td class="num">${dvCell}</td><td class="${v[0]}">${v[1]}</td></tr>`;
+    const unitCell = t.units == null ? '—' : t.special > 0 ? `${t.units} <span class="u-split">(${t.general ?? 0}+${t.special})</span>` : String(t.units);
+    return `<tr><td>${esc(t.type ?? '—')}</td><td class="num">${areaText(t.area)}</td><td class="num">${unitCell}</td><td class="num">${eokExact(t.price)}</td><td class="num">${t.price > 0 ? eokExact(Math.round(t.price * state.down / 100)) : '—'}</td><td class="num">${dvCell}</td><td class="${v[0]}">${v[1]}</td></tr>`;
   }).join('');
   return `<article class="card ${st.key === 'closed' ? 'is-closed' : ''}">
     <div class="badges">
@@ -212,6 +241,7 @@ function card(x) {
     </div>
     <h3 class="name">${esc(n.name)}</h3>
     <p class="where">${esc(meta.join(' · '))}</p>
+    ${qualChips(n)}
     <div class="key">
       <div class="price"><span>${eok(state.cap)} 이하 분양가</span><strong>${priceRange(pool.map((t) => t.price))}</strong></div>
       <div><span>해당 주택형</span><strong>${pool.length}/${(n.types ?? []).length} · ${areaRange(pool.map((t) => t.area)) || '—'}</strong></div>
@@ -349,6 +379,7 @@ function audit() {
       <p><b>판정 기준</b> 청약홈 주택형별 최고 공급금액(LTTOT_TOP_AMOUNT·오피스텔 SUPLY_AMOUNT)이 상한 이하인 주택형이 1개라도 있으면 목록에 올립니다. 최고가 기준이라 그 주택형은 모든 세대가 상한 이하입니다. 상한 초과 10% 이내는 저층 등 일부 세대가 상한 이하일 수 있어 ‘경계’로, 분양가를 모르는 공고는 ‘가격 미확인’으로 따로 보여줍니다 — 조용히 빼지 않습니다.</p>
       <p><b>돈 준비(참고)</b> 카드의 ‘최소 현금’은 가장 싼 상한 이하 주택형의 최고 분양가 × 선택한 계약금 비율(기본 10%)로 계산한 <b>가정치</b>입니다. 실제 계약금·중도금·잔금 비율과 발코니 확장비·유상 옵션·취득세는 공고마다 달라 청약홈 API가 제공하지 않습니다 — 통상 계약금 10~20% · 중도금 60% · 잔금 20~30% 구조가 많지만, 반드시 모집공고문에서 확인하세요.</p>
       <p><b>시세차익(참고)</b> ‘주변 실거래 대비’는 국토교통부 실거래가 공개 데이터에서 같은 시군구·최근 6개월·비슷한 면적대(60㎡ 미만 / 60~85 / 85 초과) 아파트 매매의 <b>중위 ㎡당가</b>로 추정한 값입니다. 해제 신고된 거래와 토지임대부는 제외하며, 표본이 5건 미만이면 표시하지 않습니다. 신축 프리미엄·법정동(동네)·연식·층·브랜드 차이는 반영되지 않으므로 투자 판단이 아닌 참고 지표로만 쓰세요.</p>
+      <p><b>공급 대상(참고)</b> 카드의 ‘공급 대상’ 칩과 분양가 표의 세대수 분해(일반+특공)는 주택형 API의 일반·특별공급 세대수를 합산한 것입니다(아파트는 신혼부부·생애최초·다자녀 등 유형별 제공). 소득·자산·무주택·거주지역 같은 <b>세부 자격 요건과 무순위·임의공급의 신청 자격, 단지 ‘전체’ 세대수(무순위의 본청약 규모)는 API가 제공하지 않습니다</b> — 모집공고문에서 확인하세요.</p>
       <p><b>수집 범위</b> 청약홈 APT·무순위/잔여세대·임의공급·오피스텔/도시형생활주택(민간임대·생활숙박시설 제외) + LH 분양주택·신혼희망타운 공고. 받은 건수가 API 총건수와 다르면 그 주는 실패로 기록하고 다음 실행이 빠진 기간을 다시 훑습니다. 한 번 올라온 공고는 API에서 사라져도 지우지 않습니다.</p>
       <p><b>한계</b> SH·GH가 자체 청약시스템에만 올리는 공고는 공개 API가 없어 자동 수집 대상이 아닙니다. 무순위는 접수가 하루인 경우가 많아 주 1회 갱신으로는 접수 전에 못 볼 수 있습니다. 최종 기준은 항상 입주자모집공고 원문입니다.</p>
       <div class="links">

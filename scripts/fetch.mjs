@@ -190,6 +190,13 @@ function normalizeApply(row, src) {
   };
 }
 
+// 특별공급 유형별 세대수(APT 주택형 API). 자격 '조건' 자체는 API 에 없다 — 유형별 물량만 온다.
+const SP_FIELDS = {
+  newly: 'NWWDS_HSHLDCO', first: 'LFE_FRST_HSHLDCO', multi: 'MNYCH_HSHLDCO',
+  young: 'YGMN_HSHLDCO', newborn: 'NWBB_HSHLDCO', old: 'OLD_PARNTS_SUPORT_HSHLDCO',
+  org: 'INSTT_RECOMEND_HSHLDCO', transfer: 'TRANSR_INSTT_ENFSN_HSHLDCO', etc: 'ETC_HSHLDCO',
+};
+
 function parseType(r) {
   const label = L.str(r.HOUSE_TY) ?? L.str(r.TP) ?? L.str(r.HOUSE_TY_NM) ?? L.str(r.MODEL_NO);
   const area = L.num(r.EXCLUSE_AR) ?? L.num(r.EXCLU_AR) ?? L.areaFromType(label);
@@ -198,7 +205,14 @@ function parseType(r) {
   const special = L.int(r.SPSPLY_HSHLDCO);
   const units = general == null && special == null ? null : (general ?? 0) + (special ?? 0);
   if (!label && area == null && price == null) return null;
-  return { type: label, area, supplyArea: L.num(r.SUPLY_AR), units, price };
+  const sp = {};
+  for (const [k, f] of Object.entries(SP_FIELDS)) {
+    const v = L.int(r[f]);
+    if (v > 0) sp[k] = v;
+  }
+  const t = { type: label, area, supplyArea: L.num(r.SUPLY_AR), units, general, special, price };
+  if (Object.keys(sp).length) t.sp = sp;
+  return t;
 }
 
 async function fetchTypes(src, n, ctx) {
