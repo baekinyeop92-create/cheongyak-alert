@@ -1,0 +1,9 @@
+node_modules/
+_site/
+_out/
+_demo/
+data/next/
+.DS_Store
+_live/
+.env
+.env.*

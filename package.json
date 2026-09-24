@@ -1,0 +1,20 @@
+{
+  "name": "cheongyak-alert",
+  "version": "2.0.0",
+  "private": true,
+  "description": "서울·경기 청약 공고 중 주택형 최고 분양가 13억 이하만 모아 매주 갱신하는 정적 웹앱 (GitHub Actions + Pages)",
+  "type": "module",
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "test": "node --test test/unit.test.mjs test/pipeline.test.mjs",
+    "fetch": "node scripts/fetch.mjs",
+    "validate": "node scripts/validate.mjs",
+    "build": "node scripts/build.mjs",
+    "update": "node scripts/fetch.mjs && node scripts/validate.mjs && node scripts/build.mjs",
+    "demo": "node scripts/demo.mjs",
+    "serve": "python3 -m http.server 8080 -d _site",
+    "live-check": "node --env-file=.env.local scripts/live-check.mjs"
+  }
+}
