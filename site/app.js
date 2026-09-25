@@ -1,8 +1,9 @@
 // 청약 알림 — 화면. 판정·상태 계산은 core.js(수집·검증과 같은 코드)를 그대로 쓴다.
 import {
-  evaluate, statusOf, kstToday, eok, eokExact, priceRange, areaText, areaRange, span,
+  evaluate, statusOf, kstToday, eok, eokExact, priceRange, areaText, areaRange, span, md,
   countBuckets, withinBorder, DEFAULT_CAP, SOURCE_LABEL,
 } from './core.js?v=__BUILD__';
+import { AS_OF, baseQual, selectionRule, rankRows, eligibility, loadProfiles, saveProfiles } from './qual.js?v=__BUILD__';
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -22,6 +23,7 @@ const DOWNS = [10, 15, 20];   // 계약금 비율 '가정'(%) — 실제 비율�
 let today = kstToday();
 let loadedAt = 0;
 let syncControls = () => {};   // initControls 가 채운다 — 빈 상태의 '필터 초기화'가 쓴다
+let profiles = loadProfiles(); // 거주지 프로필 — 이 기기(localStorage)에만 저장
 const state = { region: '', sigungu: '', kinds: new Set(KINDS), cap: DEFAULT_CAP, minArea: 0, sort: 'urgent', closed: false, q: '', st: '', down: 10 };
 let DATA = null;
 
@@ -131,6 +133,43 @@ function qualChips(n) {
   if (keys.length) chips.push(...keys.map((k) => `<span class="q-c">${SP_LABEL[k]} ${sp[k].toLocaleString('ko-KR')}</span>`));
   else if (special > 0) chips.push(`<span class="q-c">특별공급 ${special.toLocaleString('ko-KR')}</span>`);
   return `<p class="qual"><span class="q-t">공급 대상</span>${chips.join('')}<span class="q-note">· 자격 요건은 공고문</span></p>`;
+}
+
+// ---------- 청약 자격 (qual.js — 거주지 프로필 기반 추정) ----------
+
+const profLabel = (p, i) => p.label || `프로필 ${i + 1}`;
+
+/** 카드의 '신청 가능성' 줄 — 설정된 프로필별 판정, 결과가 같으면 하나로 합친다. 마감 공고에는 표시하지 않는다. */
+function eliLine(n, st) {
+  if (st?.key === 'closed') return '';
+  const res = profiles
+    .map((p, i) => ({ label: profLabel(p, i), e: p.region ? eligibility(n, p) : null }))
+    .filter((x) => x.e);
+  if (!res.length) return '';
+  const groups = [];
+  for (const r of res) {
+    const g = groups.find((x) => x.e.text === r.e.text && x.e.grade === r.e.grade);
+    if (g) g.labels.push(r.label);
+    else groups.push({ labels: [r.label], e: r.e });
+  }
+  return `<p class="eli"><span class="q-t">신청 가능성</span>${groups.map((g) =>
+    `<span class="q-c e-${g.e.grade}"><b>${esc(g.labels.join('·'))}</b> ${esc(g.e.text)}</span>`).join('')}<span class="q-note">· 추정 — 공고문 기준</span></p>`;
+}
+
+/** 카드의 '청약 자격·선정 기준' 펼침 블록 */
+function qualBlock(n) {
+  const rows = rankRows(n);
+  const base = baseQual(n);
+  const sel = selectionRule(n);
+  return `<details class="types"><summary>청약 자격·선정 기준</summary><div class="qb">
+    ${rows.length ? `<div class="tbl-wrap"><table>
+      <thead><tr><th>단계</th><th>대상 지역</th><th class="num">접수 시작</th></tr></thead>
+      <tbody>${rows.map((r) => `<tr><td>${esc(r.rank)}</td><td>${esc(r.area)}</td><td class="num">${md(r.date)}</td></tr>`).join('')}</tbody>
+    </table></div>` : ''}
+    <p class="qb-h">기본 자격</p><ul>${base.map((b) => `<li>${esc(b)}</li>`).join('')}</ul>
+    ${sel.length ? `<p class="qb-h">선정 기준</p><ul>${sel.map((b) => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}
+    <p class="qb-note">일반 제도 기준 ${AS_OF} · 소득·자산·거주기간 등 확정 요건은 모집공고문이 우선합니다.</p>
+  </div></details>`;
 }
 
 // ---------- 주변 실거래 시세 (meta.market — 참고용 추정) ----------
@@ -254,6 +293,7 @@ function card(x) {
       <div class="cash"><span>최소 현금 · 계약금 ${state.down}% 가정</span><strong>${minCash ? `약 ${eok(minCash)}` : '—'}</strong></div>
     </div>
     ${mkline}
+    ${eliLine(n, st)}
     ${sched.length ? `<ul class="sched">${sched.map((p) => `<li class="${(p.end ?? p.start) < today ? 'past' : ''}"><span>${esc(p.label)}</span>${span(p.start, p.end)}</li>`).join('')}</ul>` : ''}
     <div class="actions">
       ${url ? `<a class="btn primary" href="${esc(url)}" target="_blank" rel="noopener">공고 보기</a>` : ''}
@@ -265,6 +305,7 @@ function card(x) {
     ${typeRows ? `<details class="types"><summary>주택형 ${(n.types ?? []).length}개 · 분양가 표</summary><div class="tbl-wrap"><table>
       <thead><tr><th>주택형</th><th class="num">전용</th><th class="num">공급 세대</th><th class="num">최고 분양가</th><th class="num">계약금 ${state.down}%</th><th class="num">실거래 대비</th><th>판정</th></tr></thead>
       <tbody>${typeRows}</tbody></table></div></details>` : ''}
+    ${qualBlock(n)}
   </article>`;
 }
 
@@ -386,6 +427,7 @@ function audit() {
       <p><b>돈 준비(참고)</b> 카드의 ‘최소 현금’은 가장 싼 상한 이하 주택형의 최고 분양가 × 선택한 계약금 비율(기본 10%)로 계산한 <b>가정치</b>입니다. 실제 계약금·중도금·잔금 비율과 발코니 확장비·유상 옵션·취득세는 공고마다 달라 청약홈 API가 제공하지 않습니다 — 통상 계약금 10~20% · 중도금 60% · 잔금 20~30% 구조가 많지만, 반드시 모집공고문에서 확인하세요.</p>
       <p><b>시세차익(참고)</b> ‘주변 실거래 대비’는 국토교통부 실거래가 공개 데이터에서 같은 시군구·최근 6개월·비슷한 면적대(60㎡ 미만 / 60~85 / 85 초과) 아파트 매매의 <b>중위 ㎡당가</b>로 추정한 값입니다. 해제 신고된 거래와 토지임대부는 제외하며, 표본이 5건 미만이면 표시하지 않습니다. 신축 프리미엄·법정동(동네)·연식·층·브랜드 차이는 반영되지 않으므로 투자 판단이 아닌 참고 지표로만 쓰세요.</p>
       <p><b>공급 대상(참고)</b> 카드의 ‘공급 대상’ 칩과 분양가 표의 세대수 분해(일반+특공)는 주택형 API의 일반·특별공급 세대수를 합산한 것입니다(아파트는 신혼부부·생애최초·다자녀 등 유형별 제공). 소득·자산·무주택·거주지역 같은 <b>세부 자격 요건은 API가 제공하지 않습니다</b> — 모집공고문에서 확인하세요.</p>
+      <p><b>청약 자격(참고)</b> 카드의 ‘신청 가능성’은 거주지 프로필(이 기기에만 저장, 서버 전송 없음)과 공고의 순위별 지역 접수일·규제 플래그로 추정한 값입니다. ‘청약 자격·선정 기준’ 펼침의 요건·비율은 일반 제도 기준(${AS_OF})이며, 무순위 거주요건·특별공급 소득 기준처럼 공고마다 다른 항목은 표시하지 않습니다 — <b>확정 요건은 항상 모집공고문</b>입니다.</p>
       <p><b>단지 전체 세대수(참고)</b> 무순위·임의공급 카드의 ‘단지 전체’는 청약홈에 남아 있는 <b>같은 이름·같은 지역의 본청약 공고(2019년 이후)</b>의 공급규모를 연결한 값입니다. 이름이 다르거나 본청약이 청약홈 밖(2019년 이전 등)이면 표시하지 않으며, ‘본청약 공고’ 버튼으로 원공고를 직접 확인할 수 있습니다. 임대분 등이 빠진 분양 기준 규모라 실제 단지 총세대수와 다를 수 있습니다.</p>
       <p><b>수집 범위</b> 청약홈 APT·무순위/잔여세대·임의공급·오피스텔/도시형생활주택(민간임대·생활숙박시설 제외) + LH 분양주택·신혼희망타운 공고. 받은 건수가 API 총건수와 다르면 그 주는 실패로 기록하고 다음 실행이 빠진 기간을 다시 훑습니다. 한 번 올라온 공고는 API에서 사라져도 지우지 않습니다.</p>
       <p><b>한계</b> SH·GH가 자체 청약시스템에만 올리는 공고는 공개 API가 없어 자동 수집 대상이 아닙니다. 무순위는 접수가 하루인 경우가 많아 주 1회 갱신으로는 접수 전에 못 볼 수 있습니다. 최종 기준은 항상 입주자모집공고 원문입니다.</p>
@@ -535,6 +577,45 @@ function initControls() {
   sync();
 }
 
+// ---------- 거주지 프로필 편집기 ----------
+
+function renderProfiles() {
+  const wrap = $('#profGrid');
+  if (!wrap) return;
+  wrap.innerHTML = profiles.map((p, i) => `
+    <div class="prof" data-i="${i}">
+      <input type="text" class="p-label" placeholder="이름표 (예: ${i === 0 ? '나' : '함께 보는 사람'})" value="${esc(p.label)}" maxlength="10" aria-label="프로필 ${i + 1} 이름표">
+      <select class="p-region" aria-label="프로필 ${i + 1} 거주 시·도">
+        <option value="">거주지 미설정</option><option value="서울">서울</option><option value="경기">경기</option>
+      </select>
+      <input type="text" class="p-sigungu" placeholder="시·군 (예: 광명시)" value="${esc(p.sigungu)}" aria-label="프로필 ${i + 1} 시·군" ${p.region === '경기' ? '' : 'hidden'}>
+      <label class="check"><input type="checkbox" class="p-y2" ${p.years2 ? 'checked' : ''}> 그 지역 2년 이상 거주</label>
+    </div>`).join('');
+  for (const row of $$('#profGrid .prof')) {
+    const i = Number(row.dataset.i);
+    row.querySelector('.p-region').value = profiles[i].region;
+    const commit = (patch, rerenderEditor) => {
+      profiles[i] = { ...profiles[i], ...patch };
+      saveProfiles(profiles);
+      if (rerenderEditor) renderProfiles();
+      else profSummary();
+      render();
+    };
+    row.querySelector('.p-label').onchange = (e) => commit({ label: e.target.value.trim() });
+    row.querySelector('.p-region').onchange = (e) => commit({ region: e.target.value, ...(e.target.value !== '경기' ? { sigungu: '' } : {}) }, true);
+    row.querySelector('.p-sigungu').onchange = (e) => commit({ sigungu: e.target.value.trim() });
+    row.querySelector('.p-y2').onchange = (e) => commit({ years2: e.target.checked });
+  }
+  profSummary();
+}
+
+function profSummary() {
+  const el = $('#profSummary');
+  if (!el) return;
+  const set = profiles.map((p, i) => (p.region ? `${profLabel(p, i)}(${p.region}${p.sigungu ? ` ${p.sigungu}` : ''})` : null)).filter(Boolean);
+  el.textContent = set.length ? set.join(' · ') : '미설정 — 설정하면 카드에 신청 가능성이 표시됩니다';
+}
+
 async function fetchData() {
   const res = await fetch('data.json', { cache: 'no-store' });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -554,6 +635,7 @@ async function load() {
   }
   $('#main').removeAttribute('aria-busy');
   initControls();
+  renderProfiles();
   render();
 }
 

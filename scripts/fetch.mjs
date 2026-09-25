@@ -201,6 +201,18 @@ function normalizeApply(row, src) {
   if (row.SPECLT_RDN_EARTH_AT === 'Y') flags.push('투기과열지구');
   if (row.MDAT_TRGET_AREA_SECD === 'Y') flags.push('조정대상지역');
   if (row.PUBLIC_HOUSE_EARTH_AT === 'Y') flags.push('공공택지');
+  if (row.LRSCL_BLDLND_AT === 'Y') flags.push('대규모 택지');
+  // 순위별 거주지역 구분 접수일(APT 전용) — '기타지역 접수가 있는가'가 타지역 거주자 신청 가능의 데이터 근거
+  let ranks = null;
+  if (src.key === 'apt') {
+    const rk = (a, b, c) => {
+      const r = { local: L.toIso(row[a]), gg: L.toIso(row[b]), etc: L.toIso(row[c]) };
+      return r.local || r.gg || r.etc ? r : null;
+    };
+    const r1 = rk('GNRL_RNK1_CRSPAREA_RCPTDE', 'GNRL_RNK1_ETC_GG_RCPTDE', 'GNRL_RNK1_ETC_AREA_RCPTDE');
+    const r2 = rk('GNRL_RNK2_CRSPAREA_RCPTDE', 'GNRL_RNK2_ETC_GG_RCPTDE', 'GNRL_RNK2_ETC_AREA_RCPTDE');
+    if (r1 || r2) ranks = { ...(r1 ? { r1 } : {}), ...(r2 ? { r2 } : {}) };
+  }
   let url = L.str(row.PBLANC_URL);
   if (!/^https?:\/\//.test(url ?? '')) {
     url = src.key === 'apt' && houseManageNo && pblancNo
@@ -226,6 +238,7 @@ function normalizeApply(row, src) {
     start: starts[0] ?? null,
     end: ends.at(-1) ?? null,
     winnerDate: L.toIso(row.PRZWNER_PRESNATN_DE),
+    ranks,
     contract: phase(row, '계약', 'CNTRCT_CNCLS_BGNDE', 'CNTRCT_CNCLS_ENDDE'),
     moveIn: L.toYm(row.MVN_PREARNGE_YM),
     builder: L.str(row.CNSTRCT_ENTRPS_NM),

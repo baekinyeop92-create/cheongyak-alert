@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import * as L from '../scripts/lib.mjs';
 import { evaluate, statusOf, eok, eokExact, areaRange, countBuckets, kstToday } from '../site/core.js';
 import { median, bandOf, areaStats, usableTrades, parseTradeXml, recentMonths } from '../scripts/market.mjs';
+import { eligibility, baseQual, selectionRule, rankRows } from '../site/qual.js';
 
 test('날짜: 소스마다 다른 표기를 ISO 로 맞춘다', () => {
   assert.equal(L.toIso('20260813'), '2026-08-13');     // 임의공급
@@ -134,4 +135,51 @@ test('실거래: XML 파싱·해제 제외·밴드 중위 ㎡당가', () => {
   assert.equal(months.length, 6);
   assert.equal(months[0], '202603');
   assert.equal(months.at(-1), '202608', '진행 중인 달은 넣지 않는다');
+});
+
+test('청약 자격: 거주지 프로필 판정 — 데이터가 있는 것만 단정, 나머지는 확인 안내', () => {
+  const me = { region: '서울', sigungu: '', years2: true };
+  const gf = { region: '서울', sigungu: '', years2: false };
+  const gm = { region: '경기', sigungu: '광명시', years2: true };
+  const suwon = { region: '경기', sigungu: '수원시', years2: false };
+
+  const seoulApt = { source: 'apt', region: '서울', flags: ['투기과열지구'], ranks: { r1: { local: '2026-09-08', gg: null, etc: '2026-09-09' } } };
+  assert.equal(eligibility(seoulApt, me).grade, 'ok');
+  assert.match(eligibility(seoulApt, me).text, /1순위 해당지역 9\/8/, '서울 거주 → 서울 공고 해당지역');
+  assert.equal(eligibility(seoulApt, gf).grade, 'warn', '2년 요건 미확인 해당지역은 초록으로 단정하지 않는다');
+  assert.match(eligibility(seoulApt, gf).text, /2년 거주 요건 확인/, '투기과열 + 2년 미체크 → 확인 문구');
+  assert.match(eligibility(seoulApt, gm).text, /기타지역.*9\/9/, '경기 거주 → 서울 공고 기타지역');
+
+  const gmApt = { source: 'apt', region: '경기', sigungu: '광명시', flags: ['조정대상지역'], ranks: { r1: { local: '2026-09-30', gg: null, etc: '2026-10-01' } } };
+  assert.match(eligibility(gmApt, gm).text, /1순위 해당지역/, '광명 거주 → 광명 공고 해당지역');
+  assert.match(eligibility(gmApt, suwon).text, /기타지역/, '수원 거주 → 광명 공고(기타경기 없음)는 기타지역');
+  assert.match(eligibility(gmApt, me).text, /기타지역.*10\/1/, '서울 거주 → 경기 공고 기타지역');
+
+  const bigLand = { source: 'apt', region: '경기', sigungu: '화성시', flags: ['대규모 택지'], ranks: { r1: { local: '2026-10-05', gg: '2026-10-05', etc: '2026-10-05' } } };
+  assert.match(eligibility(bigLand, suwon).text, /기타경기/, '대규모 택지 3단: 경기 타 시군은 기타경기');
+
+  const noRanks = { source: 'apt', region: '서울', flags: [], ranks: null };
+  assert.equal(eligibility(noRanks, me).grade, 'info', '접수일 데이터 없으면 단정하지 않는다');
+  assert.equal(eligibility(seoulApt, { region: '' }), null, '프로필 미설정 → 표시 없음');
+
+  // 검증자 지적 반영 케이스들
+  assert.match(eligibility(gmApt, { region: '경기', sigungu: '광명' }).text, /1순위 해당지역/, "'광명' 표기도 '광명시'와 동일 판정");
+  assert.equal(eligibility(gmApt, { region: '경기', sigungu: '' }).grade, 'info', '경기 거주 + 시·군 미입력은 판정 유보');
+  const r2only = { source: 'apt', region: '서울', flags: [], ranks: { r2: { local: '2026-09-10', gg: null, etc: '2026-09-11' } } };
+  assert.match(eligibility(r2only, me).text, /^2순위 해당지역/, '2순위 날짜에 1순위 라벨을 붙이지 않는다');
+  const specOnly = { source: 'apt', region: '서울', flags: [], ranks: { r1: { local: '2026-09-08', gg: null, etc: null } }, types: [{ general: 0, special: 2, price: 80000 }] };
+  assert.match(eligibility(specOnly, me).text, /특별공급만/, '일반 0세대 공고에 순위 안내를 하지 않는다');
+
+  assert.match(eligibility({ source: 'remndr', region: '경기' }, me).text, /무주택.*공고문/, '무순위는 무주택 + 공고문 안내');
+  assert.equal(eligibility({ source: 'opt', region: '경기' }, me).grade, 'ok', '임의공급은 누구나');
+
+  assert.match(baseQual({ source: 'apt', detailKind: '민영', flags: ['투기과열지구'] })[0], /2년.*세대주/, '규제 민영 1순위');
+  assert.match(baseQual({ source: 'apt', detailKind: '민영', flags: [] })[0], /1년/, '비규제 민영 1순위');
+  assert.match(baseQual({ source: 'remndr' })[0], /무주택세대구성원/);
+  assert.match(selectionRule({ source: 'apt', detailKind: '민영', flags: ['투기과열지구'] })[0], /70:30/, '투기과열 60~85 가점 70');
+  assert.match(selectionRule({ source: 'apt', detailKind: '국민', flags: [] })[0], /순차제/);
+
+  const rows = rankRows(seoulApt);
+  assert.equal(rows.length, 2, 'local + etc');
+  assert.equal(rows[0].area, '해당지역(서울)');
 });

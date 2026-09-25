@@ -45,6 +45,10 @@ export function makeFixtures(today) {
       HOUSE_MANAGE_NO: '2026000904', PBLANC_NO: '2026000904', HOUSE_NM: '[예시] 동탄 파크',
       HOUSE_SECD_NM: 'APT', HOUSE_DTL_SECD_NM: '민영', SUBSCRPT_AREA_CODE_NM: '경기',
       HSSPLY_ADRES: '경기도 화성시 오산동 100', TOT_SUPLY_HSHLDCO: 300, RCRIT_PBLANC_DE: T(-1),
+      LRSCL_BLDLND_AT: 'Y',   // 대규모 택지 — 해당/기타경기/기타지역 3단 접수
+      GNRL_RNK1_CRSPAREA_RCPTDE: T(9), GNRL_RNK1_CRSPAREA_ENDDE: T(9),
+      GNRL_RNK1_ETC_GG_RCPTDE: T(9), GNRL_RNK1_ETC_GG_ENDDE: T(9),
+      GNRL_RNK1_ETC_AREA_RCPTDE: T(9), GNRL_RNK1_ETC_AREA_ENDDE: T(9),
       RCEPT_BGNDE: T(9), RCEPT_ENDDE: T(11), PBLANC_URL: 'https://www.applyhome.co.kr/x?4',
     },
     {

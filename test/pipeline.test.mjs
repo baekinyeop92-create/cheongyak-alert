@@ -325,6 +325,22 @@ test('무순위에 본청약 단지 세대수 연결 — 이름·지역 일치�
   await rm(dir, { recursive: true, force: true });
 });
 
+test('순위별 지역 접수일(ranks)·대규모 택지 플래그 수집 — APT 전용', async () => {
+  reset();
+  const dir = await sandbox();
+  await pass1(dir);
+  const { notices } = await load(dir, 'store.json');
+  const seoul = notices['apt:2026000901:2026000901'];
+  assert.equal(seoul.ranks.r1.local, seoul.schedule.find((p) => p.label === '1순위').start, '해당지역 접수일');
+  assert.ok(seoul.ranks.r1.etc, '서울 공고: 기타지역 접수일 존재');
+  assert.equal(seoul.ranks.r1.gg, null, '서울 공고: 기타경기 없음');
+  const dongtan = notices['apt:2026000904:2026000904'];
+  assert.ok(dongtan.ranks.r1.local && dongtan.ranks.r1.gg && dongtan.ranks.r1.etc, '대규모 택지: 3단 접수');
+  assert.ok(dongtan.flags.includes('대규모 택지'));
+  assert.equal(notices['remndr:2026910002:2026910002'].ranks, null, '무순위에는 지역 구분 접수일이 없다');
+  await rm(dir, { recursive: true, force: true });
+});
+
 test('주택형 세대 구성: 일반·특공 분리와 특공 유형(신혼부부 등) 수집', async () => {
   reset();
   const dir = await sandbox();
