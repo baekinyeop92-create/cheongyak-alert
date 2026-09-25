@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "runAt": "2026-09-24T14:14:56.757Z",
-  "today": "2026-09-24",
-  "prevRunAt": "2026-09-24T13:31:50.700Z",
+  "runAt": "2026-09-25T00:57:40.026Z",
+  "today": "2026-09-25",
+  "prevRunAt": "2026-09-24T14:14:56.757Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-09-24T13:31:50.700Z",
-  "lastSuccessToday": "2026-09-24",
+  "lastSuccessAt": "2026-09-25T00:57:40.026Z",
+  "lastSuccessToday": "2026-09-25",
   "sources": {
     "apt": {
       "label": "아파트",
@@ -18,8 +18,8 @@
       "excluded": 0,
       "inWindow": 26,
       "missing": 0,
-      "windowStart": "2026-08-10",
-      "lastOkToday": "2026-09-24",
+      "windowStart": "2026-08-11",
+      "lastOkToday": "2026-09-25",
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -38,8 +38,8 @@
       "excluded": 0,
       "inWindow": 32,
       "missing": 0,
-      "windowStart": "2026-08-10",
-      "lastOkToday": "2026-09-24",
+      "windowStart": "2026-08-11",
+      "lastOkToday": "2026-09-25",
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -58,8 +58,8 @@
       "excluded": 0,
       "inWindow": 33,
       "missing": 0,
-      "windowStart": "2026-08-10",
-      "lastOkToday": "2026-09-24",
+      "windowStart": "2026-08-11",
+      "lastOkToday": "2026-09-25",
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -78,8 +78,8 @@
       "excluded": 30,
       "inWindow": 14,
       "missing": 0,
-      "windowStart": "2026-08-10",
-      "lastOkToday": "2026-09-24",
+      "windowStart": "2026-08-11",
+      "lastOkToday": "2026-09-25",
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -89,7 +89,7 @@
     },
     "lh": {
       "label": "LH 공고",
-      "status": "error",
+      "status": "not-enabled",
       "operation": "lhLeaseNoticeInfo1",
       "expected": 0,
       "fetched": 0,
@@ -98,13 +98,13 @@
       "excluded": 0,
       "inWindow": 0,
       "missing": 0,
-      "windowStart": "2026-08-10",
+      "windowStart": "2026-08-11",
       "lastOkToday": null,
-      "error": "네트워크 실패: UND_ERR_CONNECT_TIMEOUT"
+      "error": "LH 분양임대공고문 API 활용신청이 안 된 키입니다(선택 소스 — 청약홈 수집에는 영향 없음)"
     }
   },
   "price": {
-    "calls": 31,
+    "calls": 27,
     "empty": 0,
     "errors": 0
   },
@@ -120,7 +120,7 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-08-10",
+  "windowStart": "2026-08-11",
   "counts": {
     "stored": 105,
     "dup": 0,
@@ -133,8 +133,8 @@
     "activePass": 7
   },
   "market": {
-    "status": "stale",
-    "asOf": "2026-09-24",
+    "status": "ok",
+    "asOf": "2026-09-25",
     "from": "202603",
     "to": "202608",
     "monthsN": 6,
@@ -287,14 +287,14 @@
         }
       },
       "서울|서대문구": {
-        "n": 1430,
+        "n": 1429,
         "bands": {
           "s": {
             "n": 541,
             "m2": 1631
           },
           "m": {
-            "n": 702,
+            "n": 701,
             "m2": 1318
           },
           "l": {
@@ -302,7 +302,7 @@
             "m2": 1028
           },
           "all": {
-            "n": 1430,
+            "n": 1429,
             "m2": 1335
           }
         }
@@ -455,10 +455,10 @@
         }
       },
       "경기|수원시": {
-        "n": 9883,
+        "n": 9884,
         "bands": {
           "s": {
-            "n": 4435,
+            "n": 4436,
             "m2": 825
           },
           "m": {
@@ -470,7 +470,7 @@
             "m2": 692
           },
           "all": {
-            "n": 9883,
+            "n": 9884,
             "m2": 779
           }
         }
@@ -647,27 +647,6 @@
           }
         }
       },
-      "경기|양평군": {
-        "n": 324,
-        "bands": {
-          "s": {
-            "n": 88,
-            "m2": 425
-          },
-          "m": {
-            "n": 207,
-            "m2": 518
-          },
-          "l": {
-            "n": 29,
-            "m2": 309
-          },
-          "all": {
-            "n": 324,
-            "m2": 468
-          }
-        }
-      },
       "서울|동작구": {
         "n": 1338,
         "bands": {
@@ -732,7 +711,7 @@
         }
       },
       "서울|송파구": {
-        "n": 2242,
+        "n": 2241,
         "bands": {
           "s": {
             "n": 778,
@@ -743,11 +722,11 @@
             "m2": 2830
           },
           "l": {
-            "n": 488,
+            "n": 487,
             "m2": 2156
           },
           "all": {
-            "n": 2242,
+            "n": 2241,
             "m2": 2557
           }
         }
@@ -858,14 +837,14 @@
         }
       },
       "경기|고양시": {
-        "n": 5692,
+        "n": 5691,
         "bands": {
           "s": {
             "n": 1842,
             "m2": 588
           },
           "m": {
-            "n": 2914,
+            "n": 2913,
             "m2": 708
           },
           "l": {
@@ -873,22 +852,18 @@
             "m2": 510
           },
           "all": {
-            "n": 5692,
+            "n": 5691,
             "m2": 609
           }
         }
       }
     },
     "missing": [],
-    "failed": [],
-    "staleSince": "2026-09-24",
-    "note": "시군구 2곳 연속 실패(네트워크 실패: UND_ERR_CONNECT_TIMEOUT) — 전면 장애로 판단"
+    "failed": []
   },
-  "status": "degraded",
+  "status": "ok",
   "validation": {
-    "checkedAt": "2026-09-24T14:17:53.046Z",
-    "warnings": [
-      "LH 공고 수집 실패(error): 네트워크 실패: UND_ERR_CONNECT_TIMEOUT — 이 소스의 이번 주 신규 공고가 빠졌을 수 있음. 다음 실행이 2026-08-10 이후를 다시 훑습니다."
-    ]
+    "checkedAt": "2026-09-25T01:08:31.254Z",
+    "warnings": []
   }
 }
