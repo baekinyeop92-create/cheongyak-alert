@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "runAt": "2026-10-04T21:33:24.759Z",
-  "today": "2026-10-05",
-  "prevRunAt": "2026-09-27T21:12:10.377Z",
+  "runAt": "2026-10-11T21:12:36.946Z",
+  "today": "2026-10-12",
+  "prevRunAt": "2026-10-04T21:33:24.759Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
   "lastSuccessAt": "2026-10-04T21:33:24.759Z",
   "lastSuccessToday": "2026-10-05",
@@ -11,15 +11,15 @@
       "label": "아파트",
       "status": "ok",
       "operation": "getAPTLttotPblancDetail",
-      "expected": 2891,
-      "fetched": 2891,
+      "expected": 2900,
+      "fetched": 2900,
       "pages": 6,
       "inRegion": 1113,
       "excluded": 0,
       "inWindow": 29,
       "missing": 0,
-      "windowStart": "2026-08-21",
-      "lastOkToday": "2026-10-05",
+      "windowStart": "2026-08-28",
+      "lastOkToday": "2026-10-12",
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -31,15 +31,15 @@
       "label": "무순위·잔여",
       "status": "ok",
       "operation": "getRemndrLttotPblancDetail",
-      "expected": 1705,
-      "fetched": 1705,
+      "expected": 1709,
+      "fetched": 1709,
       "pages": 4,
-      "inRegion": 945,
+      "inRegion": 946,
       "excluded": 0,
-      "inWindow": 36,
+      "inWindow": 37,
       "missing": 0,
-      "windowStart": "2026-08-21",
-      "lastOkToday": "2026-10-05",
+      "windowStart": "2026-08-28",
+      "lastOkToday": "2026-10-12",
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -51,15 +51,15 @@
       "label": "임의공급",
       "status": "ok",
       "operation": "getOPTLttotPblancDetail",
-      "expected": 668,
-      "fetched": 668,
+      "expected": 674,
+      "fetched": 674,
       "pages": 2,
-      "inRegion": 472,
+      "inRegion": 476,
       "excluded": 0,
-      "inWindow": 36,
+      "inWindow": 40,
       "missing": 0,
-      "windowStart": "2026-08-21",
-      "lastOkToday": "2026-10-05",
+      "windowStart": "2026-08-28",
+      "lastOkToday": "2026-10-12",
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -71,15 +71,15 @@
       "label": "오피스텔·도시형",
       "status": "ok",
       "operation": "getUrbtyOfctlLttotPblancDetail",
-      "expected": 622,
-      "fetched": 622,
+      "expected": 625,
+      "fetched": 625,
       "pages": 2,
-      "inRegion": 422,
+      "inRegion": 425,
       "excluded": 30,
-      "inWindow": 15,
+      "inWindow": 18,
       "missing": 0,
-      "windowStart": "2026-08-21",
-      "lastOkToday": "2026-10-05",
+      "windowStart": "2026-08-28",
+      "lastOkToday": "2026-10-12",
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -89,7 +89,7 @@
     },
     "lh": {
       "label": "LH 공고",
-      "status": "not-enabled",
+      "status": "error",
       "operation": "lhLeaseNoticeInfo1",
       "expected": 0,
       "fetched": 0,
@@ -98,29 +98,26 @@
       "excluded": 0,
       "inWindow": 0,
       "missing": 0,
-      "windowStart": "2026-08-21",
+      "windowStart": "2026-08-28",
       "lastOkToday": null,
-      "error": "LH 분양임대공고문 API 활용신청이 안 된 키입니다(선택 소스 — 청약홈 수집에는 영향 없음)"
+      "error": "네트워크 실패: UND_ERR_CONNECT_TIMEOUT"
     }
   },
   "price": {
-    "calls": 20,
+    "calls": 19,
     "empty": 0,
     "errors": 0
   },
   "warnings": [],
   "newIds": [
-    "apt:2026000468:2026000468",
-    "apt:2026000463:2026000463",
-    "apt:2026000386:2026000386",
-    "remndr:2026930038:2026930038",
-    "remndr:2026910253:2026910253",
-    "remndr:2026910250:2026910250",
-    "remndr:2026910251:2026910251",
-    "opt:2026940215:2026940215",
-    "opt:2026940213:2026940213",
-    "opt:2026940211:2026940211",
-    "urbty:2026950085:2026950085"
+    "remndr:2026910256:2026910256",
+    "opt:2026940223:2026940223",
+    "opt:2026940220:2026940220",
+    "opt:2026940219:2026940219",
+    "opt:2026940214:2026940214",
+    "urbty:2026950077:2026950077",
+    "urbty:2026950086:2026950086",
+    "urbty:2026950087:2026950087"
   ],
   "opCache": {
     "apt": "getAPTLttotPblancDetail",
@@ -132,20 +129,20 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-08-21",
+  "windowStart": "2026-08-28",
   "counts": {
-    "stored": 116,
+    "stored": 124,
     "dup": 0,
-    "visible": 116,
-    "active": 11,
-    "pass": 102,
+    "visible": 124,
+    "active": 10,
+    "pass": 109,
     "border": 1,
     "unknown": 0,
-    "over": 13,
-    "activePass": 9
+    "over": 14,
+    "activePass": 8
   },
   "market": {
-    "status": "ok",
+    "status": "stale",
     "asOf": "2026-10-05",
     "from": "202604",
     "to": "202609",
@@ -873,11 +870,15 @@
     "missing": [
       "경기|화성특례시"
     ],
-    "failed": []
+    "failed": [],
+    "staleSince": "2026-10-12",
+    "note": "시군구 2곳 연속 실패(네트워크 실패: UND_ERR_CONNECT_TIMEOUT) — 전면 장애로 판단"
   },
-  "status": "ok",
+  "status": "degraded",
   "validation": {
-    "checkedAt": "2026-10-04T21:35:45.097Z",
-    "warnings": []
+    "checkedAt": "2026-10-11T21:15:12.298Z",
+    "warnings": [
+      "LH 공고 수집 실패(error): 네트워크 실패: UND_ERR_CONNECT_TIMEOUT — 이 소스의 이번 주 신규 공고가 빠졌을 수 있음. 다음 실행이 2026-08-28 이후를 다시 훑습니다."
+    ]
   }
 }
