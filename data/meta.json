@@ -1,41 +1,53 @@
 {
   "version": 2,
-  "runAt": "2026-10-20T15:12:42.756Z",
+  "runAt": "2026-10-20T16:01:13.666Z",
   "today": "2026-10-21",
-  "prevRunAt": "2026-10-18T21:19:03.598Z",
+  "prevRunAt": "2026-10-20T15:12:42.756Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-10-18T21:19:03.598Z",
-  "lastSuccessToday": "2026-10-19",
+  "lastSuccessAt": "2026-10-20T16:01:13.666Z",
+  "lastSuccessToday": "2026-10-21",
   "sources": {
     "apt": {
       "label": "아파트",
       "status": "ok",
       "operation": "getAPTLttotPblancDetail",
-      "expected": 0,
-      "fetched": 0,
-      "pages": 1,
-      "inRegion": 0,
+      "expected": 2908,
+      "fetched": 2908,
+      "pages": 6,
+      "inRegion": 1116,
       "excluded": 0,
-      "inWindow": 0,
-      "missing": 20,
+      "inWindow": 32,
+      "missing": 0,
       "windowStart": "2026-09-06",
       "lastOkToday": "2026-10-21",
-      "error": null
+      "lastGoodExpected": 2908,
+      "error": null,
+      "fill": {
+        "HOUSE_NM": 1,
+        "PBLANC_NO": 1,
+        "region": 1
+      }
     },
     "remndr": {
       "label": "무순위·잔여",
       "status": "ok",
       "operation": "getRemndrLttotPblancDetail",
-      "expected": 0,
-      "fetched": 0,
-      "pages": 1,
-      "inRegion": 0,
+      "expected": 1718,
+      "fetched": 1718,
+      "pages": 4,
+      "inRegion": 950,
       "excluded": 0,
-      "inWindow": 0,
-      "missing": 26,
+      "inWindow": 41,
+      "missing": 0,
       "windowStart": "2026-09-06",
       "lastOkToday": "2026-10-21",
-      "error": null
+      "lastGoodExpected": 1718,
+      "error": null,
+      "fill": {
+        "HOUSE_NM": 1,
+        "PBLANC_NO": 1,
+        "region": 1
+      }
     },
     "opt": {
       "label": "임의공급",
@@ -50,6 +62,7 @@
       "missing": 0,
       "windowStart": "2026-09-06",
       "lastOkToday": "2026-10-21",
+      "lastGoodExpected": 683,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -61,16 +74,22 @@
       "label": "오피스텔·도시형",
       "status": "ok",
       "operation": "getUrbtyOfctlLttotPblancDetail",
-      "expected": 0,
-      "fetched": 0,
-      "pages": 1,
-      "inRegion": 0,
-      "excluded": 0,
-      "inWindow": 0,
-      "missing": 12,
+      "expected": 628,
+      "fetched": 628,
+      "pages": 2,
+      "inRegion": 428,
+      "excluded": 31,
+      "inWindow": 20,
+      "missing": 0,
       "windowStart": "2026-09-06",
       "lastOkToday": "2026-10-21",
-      "error": null
+      "lastGoodExpected": 628,
+      "error": null,
+      "fill": {
+        "HOUSE_NM": 1,
+        "PBLANC_NO": 1,
+        "region": 1
+      }
     },
     "lh": {
       "label": "LH 공고",
@@ -89,13 +108,13 @@
     }
   },
   "price": {
-    "calls": 8,
+    "calls": 22,
     "empty": 0,
     "errors": 0
   },
   "warnings": [],
   "newIds": [
-    "opt:2026940156:2026940156"
+    "apt:2026000373:2026000373"
   ],
   "opCache": {
     "apt": "getAPTLttotPblancDetail",
@@ -109,15 +128,15 @@
   },
   "windowStart": "2026-09-06",
   "counts": {
-    "stored": 140,
+    "stored": 141,
     "dup": 0,
-    "visible": 140,
-    "active": 4,
-    "pass": 121,
+    "visible": 141,
+    "active": 5,
+    "pass": 122,
     "border": 1,
     "unknown": 0,
     "over": 18,
-    "activePass": 2
+    "activePass": 3
   },
   "market": {
     "status": "ok",
@@ -165,6 +184,27 @@
           "all": {
             "n": 4289,
             "m2": 732
+          }
+        }
+      },
+      "서울|강동구": {
+        "n": 1769,
+        "bands": {
+          "s": {
+            "n": 700,
+            "m2": 2261
+          },
+          "m": {
+            "n": 845,
+            "m2": 1784
+          },
+          "l": {
+            "n": 224,
+            "m2": 1517
+          },
+          "all": {
+            "n": 1769,
+            "m2": 1902
           }
         }
       },
@@ -808,13 +848,9 @@
     ],
     "failed": []
   },
-  "status": "degraded",
+  "status": "ok",
   "validation": {
-    "checkedAt": "2026-10-20T15:17:23.954Z",
-    "warnings": [
-      "아파트: API 총건수 2907 → 0 급감 — 응답 이상 여부 확인",
-      "무순위·잔여: API 총건수 1718 → 0 급감 — 응답 이상 여부 확인",
-      "오피스텔·도시형: API 총건수 627 → 0 급감 — 응답 이상 여부 확인"
-    ]
+    "checkedAt": "2026-10-20T16:04:03.389Z",
+    "warnings": []
   }
 }
