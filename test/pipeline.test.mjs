@@ -195,6 +195,25 @@ test('청약홈 전면 실패 → 검증 차단, 기존 데이터 그대로', as
   await rm(dir, { recursive: true, force: true });
 });
 
+test('총건수가 0 으로 돌아오면(일시 장애) 그 소스만 실패 — 기존 공고에 사라짐 표시를 달지 않는다', async () => {
+  reset();
+  const dir = await sandbox();
+  await pass1(dir);
+  state.fx.apt = [];   // 목록이 통째로 빈 채 응답(총건수 0)
+  const f = await run('fetch.mjs', dir, { RUN_AT: '2026-10-04T21:00:00.000Z' });
+  assert.equal(f.code, 0, f.stderr);
+  assert.match(f.stderr, /API 총건수 0/);
+  const v = await run('validate.mjs', dir);
+  assert.equal(v.code, 0, v.stderr);
+  assert.equal(v.output.status, 'degraded', '경고로 드러난다');
+  const meta = await load(dir, 'meta.json');
+  assert.equal(meta.sources.apt.status, 'error');
+  assert.equal(meta.sources.remndr.status, 'ok', '다른 소스는 정상 수집');
+  const apts = Object.values((await load(dir, 'store.json')).notices).filter((n) => n.source === 'apt');
+  assert.ok(apts.length > 0 && apts.every((n) => !n.missingSince), '기존 아파트 공고에 사라짐 표시 없음');
+  await rm(dir, { recursive: true, force: true });
+});
+
 test('다음 결과에서 공고가 빠지면 검증이 막는다', async () => {
   reset();
   const dir = await sandbox();

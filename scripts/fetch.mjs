@@ -367,6 +367,15 @@ async function runApplySource(src, ctx) {
   }
   Object.assign(st, { operation: res.op, expected: res.expected, fetched: res.rows.length, pages: res.pages });
 
+  // 누적 목록(2019~)이라 정상이라면 총건수가 0 이 될 수 없다 — 0/0 을 '정상'으로 받으면
+  // 기간 내 공고가 전부 'API에서 사라짐'으로 표시된다. 일시 장애로 보고 이 소스만 건너뛴다(기존 공고 그대로).
+  if (res.expected === 0 && (prev?.expected ?? 0) > 0) {
+    st.status = 'error';
+    st.error = `API 총건수 0 (직전 ${prev.expected}) — 일시 장애로 보고 이번 수집은 건너뜀`;
+    console.error(`  ✗ ${src.label}: ${st.error}`);
+    return;
+  }
+
   // 필드명이 바뀌면 에러 없이 0건이 된다. 채움률로 잡는다.
   if (res.rows.length >= 20) {
     const fill = {
