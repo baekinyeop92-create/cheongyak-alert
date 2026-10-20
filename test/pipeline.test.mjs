@@ -211,6 +211,19 @@ test('총건수가 0 으로 돌아오면(일시 장애) 그 소스만 실패 —
   assert.equal(meta.sources.remndr.status, 'ok', '다른 소스는 정상 수집');
   const apts = Object.values((await load(dir, 'store.json')).notices).filter((n) => n.source === 'apt');
   assert.ok(apts.length > 0 && apts.every((n) => !n.missingSince), '기존 아파트 공고에 사라짐 표시 없음');
+
+  // 장애가 다음 실행(12시 재시도 등)까지 이어져도 — 장애 주의 0 이 비교 기준이 되면 안 된다
+  const f2 = await run('fetch.mjs', dir, { RUN_AT: '2026-10-05T03:00:00.000Z' });
+  assert.match(f2.stderr, /API 총건수 0 \(마지막 정상 \d+\)/, '연속 장애도 잡는다');
+  await run('validate.mjs', dir);
+  const apts2 = Object.values((await load(dir, 'store.json')).notices).filter((n) => n.source === 'apt');
+  assert.ok(apts2.every((n) => !n.missingSince), '연속 장애 후에도 사라짐 표시 없음');
+
+  // 복구되면 정상 수집으로 돌아온다
+  state.fx = makeFixtures(TODAY);
+  await run('fetch.mjs', dir, { RUN_AT: '2026-10-11T21:00:00.000Z' });
+  const v3 = await run('validate.mjs', dir);
+  assert.equal((await load(dir, 'meta.json')).sources.apt.status, 'ok', v3.stderr);
   await rm(dir, { recursive: true, force: true });
 });
 

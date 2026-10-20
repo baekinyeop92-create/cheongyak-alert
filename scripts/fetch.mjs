@@ -348,10 +348,12 @@ function markMissing(store, sourceKey, returned, windowStart) {
 async function runApplySource(src, ctx) {
   const prev = ctx.prevMeta.sources?.[src.key];
   const windowStart = sourceWindow(prev);
+  // 마지막 '정상' 총건수 — 장애 주에 0 이 기록돼도 이어 가야 연속 장애(06시→12시 재시도)에서도 0 응답을 잡는다
+  const lastGood = prev?.lastGoodExpected ?? prev?.expected ?? 0;
   const st = {
     label: src.label, status: 'ok', operation: null, expected: 0, fetched: 0, pages: 0,
     inRegion: 0, excluded: 0, inWindow: 0, missing: 0, windowStart,
-    lastOkToday: prev?.lastOkToday ?? null, error: null,
+    lastOkToday: prev?.lastOkToday ?? null, lastGoodExpected: lastGood, error: null,
   };
   ctx.meta.sources[src.key] = st;
   console.log(`▶ ${src.label} (기간 ${windowStart} ~)`);
@@ -369,9 +371,9 @@ async function runApplySource(src, ctx) {
 
   // 누적 목록(2019~)이라 정상이라면 총건수가 0 이 될 수 없다 — 0/0 을 '정상'으로 받으면
   // 기간 내 공고가 전부 'API에서 사라짐'으로 표시된다. 일시 장애로 보고 이 소스만 건너뛴다(기존 공고 그대로).
-  if (res.expected === 0 && (prev?.expected ?? 0) > 0) {
+  if (res.expected === 0 && lastGood > 0) {
     st.status = 'error';
-    st.error = `API 총건수 0 (직전 ${prev.expected}) — 일시 장애로 보고 이번 수집은 건너뜀`;
+    st.error = `API 총건수 0 (마지막 정상 ${lastGood}) — 일시 장애로 보고 이번 수집은 건너뜀`;
     console.error(`  ✗ ${src.label}: ${st.error}`);
     return;
   }
@@ -456,6 +458,7 @@ async function runApplySource(src, ctx) {
   }
   st.missing = markMissing(ctx.store, src.key, returned, windowStart);
   st.lastOkToday = TODAY;
+  st.lastGoodExpected = st.expected;
   console.log(`  ✓ ${st.fetched}/${st.expected}건 (${st.pages}p) → 서울·경기 ${st.inRegion} → 기간 내 ${st.inWindow}${st.missing ? ` · API에서 사라짐 ${st.missing}` : ''}`);
 }
 
