@@ -1,9 +1,10 @@
 // 청약 알림 — 화면. 판정·상태 계산은 core.js(수집·검증과 같은 코드)를 그대로 쓴다.
 import {
   evaluate, statusOf, kstToday, eok, eokExact, priceRange, areaText, areaRange, span, md,
-  countBuckets, withinBorder, DEFAULT_CAP, SOURCE_LABEL,
+  countBuckets, withinBorder, priceSummary, DEFAULT_CAP, SOURCE_LABEL,
 } from './core.js?v=__BUILD__';
 import { AS_OF, baseQual, selectionRule, rankRows, eligibility, loadProfiles, saveProfiles } from './qual.js?v=__BUILD__';
+import { noticeUrl, noticeShareText, shareOrCopy } from './share.js?v=__BUILD__';
 
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -24,8 +25,12 @@ let today = kstToday();
 let loadedAt = 0;
 let syncControls = () => {};   // initControls 가 채운다 — 빈 상태의 '필터 초기화'가 쓴다
 let profiles = loadProfiles(); // 거주지 프로필 — 이 기기(localStorage)에만 저장
-const state = { region: '', sigungu: '', kinds: new Set(KINDS), cap: DEFAULT_CAP, minArea: 0, sort: 'urgent', closed: false, q: '', st: '', down: 10 };
+let sharedId = '';             // 공유 링크(#n=)로 들어온 공고 id — 첫 화면에서 그 카드로 이동
+const defaults = () => ({ region: '', sigungu: '', kinds: new Set(KINDS), cap: DEFAULT_CAP, minArea: 0, sort: 'urgent', closed: false, q: '', st: '', down: 10 });
+const state = defaults();
 let DATA = null;
+
+const SHARE_ICON = '<svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 15V3"/><path d="m7.5 7.5 4.5-4.5 4.5 4.5"/><path d="M8 10H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-2"/></svg>';
 
 // ---------- URL 상태 (북마크·공유용) ----------
 
@@ -42,10 +47,12 @@ function readHash() {
     if (p.has('c')) state.closed = p.get('c') === '1';
     if (p.has('q')) state.q = p.get('q');
     if (p.has('st')) state.st = p.get('st');
+    if (p.has('n')) sharedId = p.get('n');
   } catch { /* 잘못된 주소는 기본값 */ }
 }
 
-function writeHash() {
+/** 지금 필터 상태를 해시 문자열로 — 주소창 갱신과 '공유하기'(현재 화면 그대로)가 같이 쓴다 */
+function stateHash() {
   const p = new URLSearchParams();
   if (state.region) p.set('r', state.region);
   if (state.sigungu) p.set('g', state.sigungu);
@@ -57,7 +64,11 @@ function writeHash() {
   if (state.closed) p.set('c', '1');
   if (state.q) p.set('q', state.q);
   if (state.st) p.set('st', state.st);
-  const h = p.toString();
+  return p.toString();
+}
+
+function writeHash() {
+  const h = stateHash();
   try {
     history.replaceState(null, '', h ? `#${h}` : location.pathname + location.search);
   } catch { /* 미리보기 등 */ }
@@ -276,7 +287,7 @@ function card(x) {
     const unitCell = t.units == null ? '—' : t.special > 0 ? `${t.units} <span class="u-split">(${t.general ?? 0}+${t.special})</span>` : String(t.units);
     return `<tr><td>${esc(t.type ?? '—')}</td><td class="num">${areaText(t.area)}</td><td class="num">${unitCell}</td><td class="num">${eokExact(t.price)}</td><td class="num">${t.price > 0 ? eokExact(Math.round(t.price * state.down / 100)) : '—'}</td><td class="num">${dvCell}</td><td class="${v[0]}">${v[1]}</td></tr>`;
   }).join('');
-  return `<article class="card ${st.key === 'closed' ? 'is-closed' : ''}">
+  return `<article class="card ${st.key === 'closed' ? 'is-closed' : ''}" data-id="${esc(n.id)}">
     <div class="badges">
       <span class="badge st-${st.key}">${esc(st.label)}</span>
       ${isNew(n) ? '<span class="badge new">NEW</span>' : ''}
@@ -301,6 +312,7 @@ function card(x) {
       ${lhs.map((u, i) => `<a class="btn" href="${esc(u)}" target="_blank" rel="noopener">LH 공고${lhs.length > 1 ? ` ${i + 1}` : ''}</a>`).join('')}
       ${n.address ? `<a class="btn" href="${esc(mapUrl(n.address))}" target="_blank" rel="noopener" title="${esc(n.address)}">지도</a>` : ''}
       ${home ? `<a class="btn" href="${esc(home)}" target="_blank" rel="noopener">분양 홈페이지</a>` : ''}
+      <button type="button" class="btn share" data-share="${esc(n.id)}" aria-label="${esc(n.name)} 공유하기">${SHARE_ICON}공유</button>
     </div>
     ${typeRows ? `<details class="types"><summary>주택형 ${(n.types ?? []).length}개 · 분양가 표</summary><div class="tbl-wrap"><table>
       <thead><tr><th>주택형</th><th class="num">전용</th><th class="num">공급 세대</th><th class="num">최고 분양가</th><th class="num">계약금 ${state.down}%</th><th class="num">실거래 대비</th><th>판정</th></tr></thead>
@@ -317,7 +329,7 @@ function row(x, kind) {
   if (kind === 'unknown') price = ev.reason === 'lh' ? 'LH 공고문 확인' : ev.reason === 'partial-price' ? '일부 주택형 미정' : '주택형 정보 없음';
   if (kind === 'over' && ev.reason === 'area') price = `전용 ${state.minArea}㎡ 미만만`;
   const meta = [where(n), SOURCE_LABEL[n.source], n.kind !== SOURCE_LABEL[n.source] ? n.kind : null, n.units ? `${n.units}세대` : null].filter(Boolean).join(' · ');
-  return `<div class="r">
+  return `<div class="r" data-id="${esc(n.id)}">
     <div class="t">${url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(n.name)}</a>` : esc(n.name)}</div>
     <div class="p">${esc(price)}</div>
     <div class="m">${esc(meta)}</div>
@@ -489,7 +501,7 @@ function render() {
       <div class="empty"><b>조건에 맞는 공고가 없어요</b><p>${hint}</p>
       ${active.length ? '<button type="button" class="btn" id="resetFilters">필터 초기화</button>' : ''}</div>`;
     $('#resetFilters')?.addEventListener('click', () => {
-      Object.assign(state, { region: '', sigungu: '', kinds: new Set(KINDS), cap: DEFAULT_CAP, minArea: 0, sort: 'urgent', closed: false, q: '', st: '', down: 10 });
+      Object.assign(state, defaults());
       syncControls();
       render();
     });
@@ -616,6 +628,77 @@ function profSummary() {
   el.textContent = set.length ? set.join(' · ') : '미설정 — 설정하면 카드에 신청 가능성이 표시됩니다';
 }
 
+// ---------- 공유 ----------
+
+let toastTimer = 0;
+function toast(msg) {
+  const el = $('#toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+const baseUrl = () => `${location.origin}${location.pathname}`;
+
+/** 공고 카드의 '공유' — 공고 요약 + 그 공고로 바로 가는 링크. 가격은 화면과 같은 상한·면적 기준. */
+async function shareNotice(id) {
+  const n = DATA?.notices.find((x) => x.id === id);
+  if (!n) return;
+  const p = priceSummary(n, { cap: state.cap, minArea: state.minArea });
+  const when = n.start ? `접수 ${span(n.start, n.end)}` : n.end ? `마감 ${md(n.end)}` : null;
+  const text = noticeShareText(n, { sourceLabel: SOURCE_LABEL[n.source], range: p.range, area: p.area, when });
+  const r = await shareOrCopy({ title: `${n.name} — 청약 알림`, text, url: noticeUrl(baseUrl(), n.id) });
+  if (r === 'copied') toast('공고 정보와 링크를 복사했어요 — 메신저에 붙여넣으세요');
+}
+
+/** 헤더의 '공유하기' — 지금 보고 있는 필터 그대로의 사이트 링크 */
+async function shareSite() {
+  const h = stateHash();
+  const r = await shareOrCopy({
+    title: '청약 알림',
+    text: `서울·경기 청약 공고 중 분양가 ${eok(state.cap)} 이하만 모아 매주 갱신해요.`,
+    url: `${baseUrl()}${h ? `#${h}` : ''}`,
+  });
+  if (r === 'copied') toast('링크를 복사했어요 — 메신저에 붙여넣으세요');
+}
+
+const findShared = (id) => $$('[data-id]').find((el) => el.dataset.id === id) ?? null;
+
+/**
+ * 공유 링크로 들어오면 그 공고로 스크롤하고 잠깐 강조한다.
+ * 그사이 마감됐거나 보조 칸(경계·미확인)에 있어도 찾아서 보여준다 — 받은 사람이 빈 화면을 보지 않게.
+ */
+function focusShared(id) {
+  const n = DATA.notices.find((x) => x.id === id);
+  let el = n ? findShared(id) : null;
+  if (n && !el && !state.closed) {
+    state.closed = true;
+    syncControls();
+    render();
+    el = findShared(id);
+  }
+  if (n && !el) {
+    Object.assign(state, defaults(), { closed: true, q: n.name });
+    syncControls();
+    render();
+    el = findShared(id);
+  }
+  if (!el) {
+    toast('공유된 공고를 찾지 못했어요');
+    return;
+  }
+  el.closest('details')?.setAttribute('open', '');
+  el.setAttribute('tabindex', '-1');
+  el.classList.add('is-shared');
+  // 즉시 이동 — 부드러운 스크롤은 로딩 직후 레이아웃 변동·포커스 이동에 끊길 수 있다
+  el.scrollIntoView({ block: 'center', behavior: 'auto' });
+  el.focus({ preventScroll: true });
+  setTimeout(() => el.classList.remove('is-shared'), 3200);
+  toast('공유받은 공고예요');
+}
+
 async function fetchData() {
   const res = await fetch('data.json', { cache: 'no-store' });
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -637,7 +720,25 @@ async function load() {
   initControls();
   renderProfiles();
   render();
+  if (sharedId) focusShared(sharedId);
 }
+
+$('#main').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-share]');
+  if (b) shareNotice(b.dataset.share);
+});
+$('#shareSite')?.addEventListener('click', shareSite);
+
+// 이미 열려 있는 탭에서 공유 링크를 눌러 해시만 바뀐 경우
+window.addEventListener('hashchange', () => {
+  const id = new URLSearchParams(location.hash.slice(1)).get('n');
+  if (!id || !DATA) return;
+  Object.assign(state, defaults());
+  readHash();
+  syncControls();
+  render();
+  focusShared(id);
+});
 
 // 앱을 오래 열어 둔 뒤 돌아오면 날짜·데이터를 새로 맞춘다
 document.addEventListener('visibilitychange', async () => {

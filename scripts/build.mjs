@@ -66,10 +66,11 @@ async function main() {
   await writeFile(path.join(OUT, 'feed.xml'), feed(pub.notices, { ...meta, today: meta.today ?? L.kstToday() }, site));
 
   // 캐시 무효화: 데이터가 바뀌면 app.js·core.js 주소가 바뀌어 브라우저가 옛 코드를 쓰지 않는다
+  // __SITE_URL__: 메신저 미리보기(og:image)는 절대 주소여야 해서 배포 주소를 채운다(로컬은 빈 값 → 상대 경로)
   const build = createHash('sha1').update(`${meta.runAt}|${Date.now()}`).digest('hex').slice(0, 8);
   for (const f of ['index.html', 'app.js']) {
     const p = path.join(OUT, f);
-    await writeFile(p, (await readFile(p, 'utf8')).replaceAll('__BUILD__', build));
+    await writeFile(p, (await readFile(p, 'utf8')).replaceAll('__BUILD__', build).replaceAll('__SITE_URL__', site));
   }
   console.log(`✓ 빌드 ${path.relative(L.ROOT, OUT) || OUT}: 공고 ${pub.notices.length}건 · build ${build}${site ? ` · ${site}` : ''}`);
 }

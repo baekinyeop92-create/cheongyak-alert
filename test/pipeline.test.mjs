@@ -120,6 +120,8 @@ test('정상 수집: 범위·칸 분류·폴백·페이지네이션', async () =
   assert.equal(site.notices.length, c.visible, '사이트에는 중복 제외 전부');
   const html = await readFile(path.join(dir, '_site', 'index.html'), 'utf8');
   assert.ok(!html.includes('__BUILD__'), '캐시 버전 치환');
+  assert.ok(!html.includes('__SITE_URL__'), '배포 주소 치환');
+  assert.ok(html.includes('property="og:image" content="https://tester.github.io/cheongyak-alert/icon-512.png"'), '메신저 미리보기 이미지는 절대 주소');
   const feed = await readFile(path.join(dir, '_site', 'feed.xml'), 'utf8');
   assert.ok(feed.includes('강서 리버뷰') && !feed.includes('서초 하이엔드'), 'RSS 는 상한 이하·경계·미확인만');
 

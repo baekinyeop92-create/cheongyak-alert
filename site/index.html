@@ -5,6 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>청약 알림 · 서울·경기 13억 이하</title>
 <meta name="description" content="청약홈·LH 공고 중 서울·경기에서 분양가 13억 이하 주택형이 있는 공고만 매주 모아 보여줍니다.">
+<!-- 메신저 링크 미리보기 — __SITE_URL__ 은 build.mjs 가 배포 주소로 바꾼다(미리보기 이미지는 절대 주소여야 한다) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="청약 알림">
+<meta property="og:title" content="청약 알림 · 서울·경기 13억 이하">
+<meta property="og:description" content="청약홈·LH 공고 중 서울·경기에서 분양가 13억 이하 주택형이 있는 공고만 매주 모아 보여줍니다.">
+<meta property="og:url" content="__SITE_URL__">
+<meta property="og:image" content="__SITE_URL__icon-512.png">
+<meta property="og:image:width" content="512">
+<meta property="og:image:height" content="512">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary">
 <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0d0d10" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -82,6 +93,7 @@
     font-size: 14px; font-weight: 600; min-height: 44px; padding: 8px 16px; border-radius: 999px;
     background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow);
   }
+  .top-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--idle); flex: none; }
   .h-ok .dot { background: var(--ok); } .h-warn .dot { background: var(--warn); } .h-bad .dot { background: var(--danger); }
   .h-bad { color: var(--danger); border-color: color-mix(in srgb, var(--danger) 40%, var(--line)); }
@@ -140,11 +152,13 @@
 
   /* 거주지 프로필 편집기 */
   details.profiles { border-top: 1px solid var(--line); margin-top: 2px; }
+  details.profiles { min-width: 0; }
   details.profiles > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--ink-2); list-style: none; }
+  details.profiles .p-title { flex: none; }
   details.profiles > summary::-webkit-details-marker { display: none; }
   details.profiles > summary::before { content: '▸ '; color: var(--muted); }
   details.profiles[open] > summary::before { content: '▾ '; }
-  #profSummary { color: var(--muted); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #profSummary { color: var(--muted); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
   .prof { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px; }
   .prof input[type=text] { height: 44px; border: 1px solid var(--control-line); border-radius: var(--r-sm); padding: 0 12px; font-size: 14px; background: Canvas; color: CanvasText; width: 150px; }
   .prof select { height: 44px; }
@@ -178,6 +192,10 @@
   .card:first-child { border-top: 0; }
   @media (min-width: 640px) { .card { padding: 24px; } }
   .card.is-closed { opacity: .72; }
+  /* 공유 링크로 들어온 공고 — 잠깐 강조 후 원래대로 */
+  .card, .r { transition: background-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease); }
+  .card.is-shared, .r.is-shared { background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent); }
+  .card:focus, .r:focus { outline: none; }
   .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
   .badge { font-size: 12px; line-height: 18px; font-weight: 600; padding: 3px 8px; border-radius: var(--r-badge); background: var(--idle-soft); color: var(--ink-2); white-space: nowrap; }
   .st-open { background: var(--ok-soft); color: var(--ok); }
@@ -222,6 +240,19 @@
     border: 1px solid var(--line-2); text-decoration: none; font-size: 15px; font-weight: 600; background: var(--surface); color: var(--ink); cursor: pointer;
   }
   .btn:hover { border-color: var(--control-line); background: var(--surface-2); }
+  .btn .ico { flex: none; margin-right: 6px; }
+  .actions .share { margin-left: auto; }
+
+  /* 토스트 — 복사 완료 등 짧은 안내. 화면을 가리지 않도록 잠깐만 */
+  .toast {
+    position: fixed; left: 50%; bottom: max(24px, calc(env(safe-area-inset-bottom) + 16px)); z-index: 30;
+    transform: translate(-50%, 8px); opacity: 0; pointer-events: none;
+    width: max-content; max-width: calc(100vw - 40px); padding: 12px 16px; border-radius: var(--r-sm);
+    background: var(--ink); color: var(--bg); font-size: 14px; line-height: 20px; font-weight: 600; text-align: center;
+    box-shadow: 0 16px 48px rgb(0 0 0 / 12%);
+    transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease);
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
   .btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
   .btn.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 
@@ -297,7 +328,10 @@
       <h1>청약 알림</h1>
       <p class="sub">서울·경기 · 주택형 최고 분양가 <b id="capText">13억</b> 이하 · 매주 월요일 오전 갱신</p>
     </div>
-    <a class="health" id="health" href="#audit"><span class="dot"></span><span>불러오는 중</span></a>
+    <div class="top-actions">
+      <a class="health" id="health" href="#audit"><span class="dot"></span><span>불러오는 중</span></a>
+      <button type="button" class="btn" id="shareSite"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 15V3"/><path d="m7.5 7.5 4.5-4.5 4.5 4.5"/><path d="M8 10H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-2"/></svg>공유하기</button>
+    </div>
   </header>
 
   <div id="banners"></div>
@@ -330,7 +364,7 @@
       <span class="count" id="count" aria-live="polite"></span>
     </div>
     <details class="profiles">
-      <summary>거주지 프로필 <span id="profSummary"></span></summary>
+      <summary><span class="p-title">거주지 프로필</span> <span id="profSummary"></span></summary>
       <div id="profGrid"></div>
       <p class="prof-note">이 기기에만 저장됩니다(서버·저장소 전송 없음). ‘해당지역’은 서울=시 전체, 경기=해당 시·군 기준의 추정입니다.</p>
     </details>
@@ -344,6 +378,7 @@
   <section id="extra" aria-label="판정 보류·초과 공고"></section>
   <footer id="audit"></footer>
 </div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 <noscript><p style="text-align:center">이 페이지는 JavaScript 가 필요합니다.</p></noscript>
 <script type="module" src="app.js?v=__BUILD__"></script>
 </body>

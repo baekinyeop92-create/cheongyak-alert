@@ -4,6 +4,7 @@ import * as L from '../scripts/lib.mjs';
 import { evaluate, statusOf, eok, eokExact, areaRange, countBuckets, kstToday } from '../site/core.js';
 import { median, bandOf, areaStats, usableTrades, parseTradeXml, recentMonths } from '../scripts/market.mjs';
 import { eligibility, baseQual, selectionRule, rankRows } from '../site/qual.js';
+import { noticeUrl, noticeShareText, shareOrCopy } from '../site/share.js';
 
 test('날짜: 소스마다 다른 표기를 ISO 로 맞춘다', () => {
   assert.equal(L.toIso('20260813'), '2026-08-13');     // 임의공급
@@ -182,4 +183,41 @@ test('청약 자격: 거주지 프로필 판정 — 데이터가 있는 것만 �
   const rows = rankRows(seoulApt);
   assert.equal(rows.length, 2, 'local + etc');
   assert.equal(rows[0].area, '해당지역(서울)');
+});
+
+test('공유: 문구·링크 조립 — 공고 정보만, 없는 값은 빼고', () => {
+  const n = { id: 'apt:2026000453:2026000453', name: '광명 시티프라디움 에듀하임', region: '경기', sigungu: '광명시', units: 426 };
+  assert.equal(
+    noticeShareText(n, { sourceLabel: '아파트', range: '8.77억 ~ 11.98억', area: '59~84㎡', when: '접수 9/29~10/2' }),
+    '[청약 알림] 광명 시티프라디움 에듀하임\n경기 광명시 · 아파트 · 426세대\n분양가 8.77억 ~ 11.98억 (59~84㎡) · 접수 9/29~10/2',
+  );
+  assert.equal(noticeShareText({ name: 'X', region: '서울' }, {}), '[청약 알림] X\n서울', 'undefined·null 을 문구에 쓰지 않는다');
+  assert.equal(noticeShareText({ name: 'X', units: 1450 }, { range: '—', when: '마감 10/5' }), '[청약 알림] X\n1,450세대\n마감 10/5', '가격을 모르면 분양가 줄을 빼고 일정만');
+
+  const url = noticeUrl('https://a.github.io/cheongyak-alert/', n.id);
+  assert.equal(url, 'https://a.github.io/cheongyak-alert/#n=apt%3A2026000453%3A2026000453');
+  assert.equal(new URLSearchParams(new URL(url).hash.slice(1)).get('n'), n.id, '받는 쪽 readHash 가 원래 id 로 복원');
+});
+
+test('공유: 공유 시트 → 복사 → 직접 복사 창 순서로 폴백, 닫으면 아무것도 안 함', async () => {
+  const data = { title: 't', text: 'body', url: 'https://x/' };
+  let shared = null;
+  assert.equal(await shareOrCopy(data, { nav: { share: async (d) => { shared = d; } } }), 'shared');
+  assert.deepEqual(shared, data, '공유 시트에 제목·문구·링크를 그대로');
+
+  let copied = null;
+  const clipboard = { writeText: async (s) => { copied = s; } };
+  const err = (name) => Object.assign(new Error(name), { name });
+  assert.equal(await shareOrCopy(data, { nav: { share: async () => { throw err('AbortError'); }, clipboard } }), 'cancelled');
+  assert.equal(copied, null, '사용자가 시트를 닫으면 복사하지 않는다');
+
+  assert.equal(await shareOrCopy(data, { nav: { clipboard } }), 'copied', '공유 시트 미지원 → 복사');
+  assert.equal(copied, 'body\nhttps://x/', '복사본에는 문구 다음 줄에 링크');
+  copied = null;
+  assert.equal(await shareOrCopy(data, { nav: { share: async () => { throw err('NotAllowedError'); }, clipboard } }), 'copied', '공유 거부 → 복사');
+  assert.equal(await shareOrCopy(data, { nav: { share: async () => { throw new Error('호출되면 안 됨'); }, canShare: () => false, clipboard } }), 'copied', 'canShare 가 거절하면 시트를 열지 않는다');
+
+  let asked = null;
+  assert.equal(await shareOrCopy(data, { nav: {}, doc: null, ask: (_, v) => { asked = v; } }), 'manual', '복사도 안 되면 직접 복사 창');
+  assert.equal(asked, 'body\nhttps://x/');
 });
