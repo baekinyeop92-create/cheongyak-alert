@@ -66,6 +66,9 @@ async function main() {
       continue;
     }
     if (['ok', 'disabled', 'not-enabled'].includes(s.status)) continue;
+    // LH(선택 소스) 서버는 GitHub 러너에서 간헐적으로 접속이 끊긴다. 하루 이틀 실패는 다음 성공 때 빠진 기간을 다시 훑으므로
+    // 경고하지 않고(점검표에는 '실패'로 보임), 사흘째 이어지거나 인증 오류면 경고한다.
+    if (k === 'lh' && s.status === 'error' && s.lastOkToday && s.lastOkToday >= L.addDays(meta.today, -2)) continue;
     warns.push(`${s.label} 수집 실패(${s.status}): ${s.error} — 이 소스의 이번 실행 신규 공고가 빠졌을 수 있음. 다음 실행이 ${s.windowStart} 이후를 다시 훑습니다.`);
   }
   for (const k of CORE) {

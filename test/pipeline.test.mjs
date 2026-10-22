@@ -345,15 +345,35 @@ test('LH 가 한 번도 연결된 적 없으면 접속 실패도 미연결 — �
   await rm(dir, { recursive: true, force: true });
 });
 
-test('LH 가 연결됐다가 접속 실패하면 경고', async () => {
+test('LH 하루 이틀 접속 실패는 조용히(점검표엔 실패), 사흘째 이어지면 경고', async () => {
   reset();
   const dir = await sandbox();
-  await pass1(dir);
+  await pass1(dir);   // LH 연결됨 (lastOkToday = 2026-09-28)
   state.lhFail = true;
-  await run('fetch.mjs', dir, { RUN_AT: '2026-10-04T21:00:00.000Z' });
-  const v = await run('validate.mjs', dir);
-  assert.equal(v.output.status, 'degraded');
-  assert.equal((await load(dir, 'meta.json')).sources.lh.status, 'error');
+  await run('fetch.mjs', dir, { TODAY: '2026-09-29', RUN_AT: '2026-09-28T21:00:00.000Z' });
+  const v1 = await run('validate.mjs', dir, { TODAY: '2026-09-29' });
+  assert.equal(v1.output.status, 'ok', '하루 실패는 경고 메일 없음');
+  assert.equal((await load(dir, 'meta.json')).sources.lh.status, 'error', '점검표에는 실패로 보인다');
+  await run('fetch.mjs', dir, { TODAY: '2026-10-01', RUN_AT: '2026-09-30T21:00:00.000Z' });
+  const v2 = await run('validate.mjs', dir, { TODAY: '2026-10-01' });
+  assert.equal(v2.output.status, 'degraded', '사흘째 실패는 경고');
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('LH: 실제 서버의 기간 파라미터(PAN_ST_DT~PAN_ED_DT)로 조회하고 임대는 제외', async () => {
+  reset();
+  state.lhQueries = [];
+  const dir = await sandbox();
+  await pass1(dir);
+  const q = state.lhQueries[0];
+  assert.match(q.PAN_ST_DT, /^\d{8}$/, '공고게시 시작일 YYYYMMDD');
+  assert.match(q.PAN_ED_DT, /^\d{8}$/);
+  assert.ok(q.PAN_ST_DT < '20260801' && q.PAN_ED_DT >= '20260928', `기간이 기본값(최근 2개월)보다 넓다: ${q.PAN_ST_DT}~${q.PAN_ED_DT}`);
+  assert.ok(q.PAN_NT_ST_DT && q.CLSG_DT, '명세상 이름도 함께 보낸다');
+  const { notices } = await load(dir, 'store.json');
+  assert.ok(!notices['lh:0000061009'], '행복주택(신혼희망) 임대는 제외');
+  assert.equal((await load(dir, 'meta.json')).sources.lh.excluded, 1, '제외 건수는 점검표에 남는다');
+  assert.ok(notices['lh:0000061002'], '공공분양은 그대로');
   await rm(dir, { recursive: true, force: true });
 });
 

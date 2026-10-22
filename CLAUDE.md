@@ -31,4 +31,7 @@ npm run live-check   # 실제 API 점검(.env.local 의 키 사용, 저장소 da
 - 금액: 만원. 임의공급은 쉼표 포함 → lib.manwon
 - 오피스텔 주택형: `TP`·`EXCLUSE_AR`·`SUPLY_AMOUNT`
 - 임의공급 오퍼레이션 대소문자(getOPT…/getOpt…) 구현마다 다름 → 후보 순회, 성공한 이름은 meta.opCache
-- LH: `apis.data.go.kr/B552555/lhLeaseNoticeInfo1/lhLeaseNoticeInfo1`, PG_SZ·PAGE·UPP_AIS_TP_CD(05·39)·CNP_CD(11·41)·PAN_NT_ST_DT·CLSG_DT, 응답은 중첩 배열 → PAN_ID 가진 객체를 재귀로 수집
+- LH: `apis.data.go.kr/B552555/lhLeaseNoticeInfo1/lhLeaseNoticeInfo1`, PG_SZ·PAGE·UPP_AIS_TP_CD(05·39)·CNP_CD(11·41), 응답은 중첩 배열 → PAN_ID 가진 객체를 재귀로 수집
+  - 기간: 실제 서버는 공고게시일 `PAN_ST_DT~PAN_ED_DT`(YYYYMMDD)만 받는다. 명세의 `PAN_NT_ST_DT·CLSG_DT` 만 보내면 무시되고 최근 2개월 기본값 → 둘 다 보낸다(응답 dsSch 로 확인 가능)
+  - 39(신혼희망타운)에 '행복주택(신혼희망)'(AIS_TP_CD 42, 임대)이 섞여 온다 → 제외. LH 공고엔 분양가가 없어 '가격 미확인' 칸(공급정보 API 15056765 는 별도 활용신청 필요)
+  - LH 서버는 GitHub 러너에서 간헐적 접속 실패 → 마지막 성공 2일 안의 실패는 경고하지 않음(validate)

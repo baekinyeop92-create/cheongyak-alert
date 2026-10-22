@@ -83,6 +83,8 @@ function annotateComplex(store, origins) {
 
 const LH_REGION = { 11: '서울', 41: '경기' };
 const LH_TYPES = { '05': '분양주택', 39: '신혼희망타운' };
+// 신혼희망타운(39)에는 '행복주택(신혼희망)' 같은 임대 공고도 섞여 온다 — 분양이 아니므로 제외(건수는 점검표에 남긴다)
+const LH_RENTAL = /임대|행복주택/;
 
 // ---------- 청약홈 ----------
 
@@ -491,6 +493,7 @@ function lhFailed(json) {
 }
 
 const dot = (iso) => iso.replaceAll('-', '.');
+const compact = (iso) => iso.replaceAll('-', '');
 
 async function runLh(ctx) {
   const prev = ctx.prevMeta.sources?.lh;
@@ -515,9 +518,13 @@ async function runLh(ctx) {
         let expected = null;
         const got = new Map();
         for (;;) {
+          const from = L.addDays(windowStart, -120);
           const params = {
             PG_SZ: LH_PAGE, PAGE: page, UPP_AIS_TP_CD: code, CNP_CD: cnp,
-            PAN_NT_ST_DT: dot(L.addDays(windowStart, -120)), CLSG_DT: dot(L.addDays(TODAY, 730)),
+            // 실제 서버는 공고게시일 범위를 PAN_ST_DT~PAN_ED_DT(YYYYMMDD)로 받는다. 명세의 PAN_NT_ST_DT·CLSG_DT 만 보내면
+            // 무시되고 기본값(최근 2개월)이 적용되므로 둘 다 보낸다.
+            PAN_ST_DT: compact(from), PAN_ED_DT: compact(L.addDays(TODAY, 30)),
+            PAN_NT_ST_DT: dot(from), CLSG_DT: dot(L.addDays(TODAY, 730)),
           };
           const url = `${LH_BASE}/lhLeaseNoticeInfo1/lhLeaseNoticeInfo1?${L.qs(params, 'serviceKey', LH_KEY)}`;
           const json = await L.withRetry(`LH ${region}/${code} p${page}`, () => L.getJson(url));
@@ -539,6 +546,10 @@ async function runLh(ctx) {
         st.fetched += got.size;
         for (const r of got.values()) {
           st.inRegion += 1;
+          if (LH_RENTAL.test(`${L.str(r.AIS_TP_CD_NM) ?? ''} ${L.str(r.UPP_AIS_TP_NM) ?? ''}`)) {
+            st.excluded += 1;
+            continue;
+          }
           const end = L.toIso(r.CLSG_DT);
           const noticeDate = L.toIso(r.PAN_NT_ST_DT);
           const n = {

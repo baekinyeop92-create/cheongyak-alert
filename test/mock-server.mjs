@@ -159,6 +159,8 @@ export function makeFixtures(today) {
   };
   const lh = {
     '41-39': [
+      // 신혼희망타운 분류에 섞여 오는 임대(행복주택) — 수집에서 제외돼야 한다
+      { PAN_ID: '0000061009', PAN_NM: '[예시] 하남 신혼희망타운 행복주택 예비입주자 모집', UPP_AIS_TP_NM: '신혼희망타운', AIS_TP_CD_NM: '행복주택(신혼희망)', CNP_CD_NM: '경기도', PAN_SS: '접수중', PAN_NT_ST_DT: T(-2).replaceAll('-', '.'), CLSG_DT: T(9).replaceAll('-', '.'), DTL_URL: 'https://apply.lh.or.kr/x?61009' },
       { PAN_ID: '0000061001', PAN_NM: '시흥거모 A-5블록 신혼희망타운(공공분양) 입주자모집공고', UPP_AIS_TP_NM: '분양주택', AIS_TP_CD_NM: '신혼희망타운', CNP_CD_NM: '경기도', PAN_SS: '접수마감', PAN_NT_ST_DT: T(-35).replaceAll('-', '.'), CLSG_DT: T(-20).replaceAll('-', '.'), DTL_URL: 'https://apply.lh.or.kr/x?61001' },
     ],
     '11-05': [
@@ -224,6 +226,7 @@ export function startMockServer(state) {
       if (state.lhAuthError) {
         return send(200, '<OpenAPI_ServiceResponse><cmmMsgHeader><returnAuthMsg>SERVICE_KEY_IS_NOT_REGISTERED_ERROR</returnAuthMsg></cmmMsgHeader></OpenAPI_ServiceResponse>', 'text/xml');
       }
+      (state.lhQueries ??= []).push(Object.fromEntries(u.searchParams));
       const key = `${u.searchParams.get('CNP_CD')}-${u.searchParams.get('UPP_AIS_TP_CD')}`;
       const all = fx.lh[key] ?? [];
       const size = Number(u.searchParams.get('PG_SZ'));
