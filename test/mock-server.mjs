@@ -203,6 +203,7 @@ export function makeFixtures(today) {
  *   state.fail          — Set(op) : 해당 오퍼레이션 HTTP 500
  *   state.shortPage     — Set(op) : 마지막 페이지에서 1건 누락(총건수 불일치)
  *   state.lhAuthError   — LH 가 미등록 키 XML 을 준다
+ *   state.lhFail        — LH 가 HTTP 500(접속 장애)
  *   state.rtmsFail      — 실거래(RTMS) 가 HTTP 500
  *   state.rtmsAuthError — 실거래가 미등록 키 XML 을 준다
  */
@@ -219,6 +220,7 @@ export function startMockServer(state) {
     if (!u.searchParams.get('serviceKey')) return send(401, { code: -4, msg: '등록되지 않은 인증키 입니다.' });
 
     if (u.pathname.startsWith('/B552555/lhLeaseNoticeInfo1/')) {
+      if (state.lhFail) return send(500, 'server error', 'text/plain');
       if (state.lhAuthError) {
         return send(200, '<OpenAPI_ServiceResponse><cmmMsgHeader><returnAuthMsg>SERVICE_KEY_IS_NOT_REGISTERED_ERROR</returnAuthMsg></cmmMsgHeader></OpenAPI_ServiceResponse>', 'text/xml');
       }

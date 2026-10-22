@@ -11,7 +11,7 @@ import { evaluate } from '../site/core.js';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const TODAY = '2026-09-28';
-const state = { fx: makeFixtures(TODAY), fail: new Set(), shortPage: new Set(), lhAuthError: false, rtmsFail: false, rtmsAuthError: false };
+const state = { fx: makeFixtures(TODAY), fail: new Set(), shortPage: new Set(), lhAuthError: false, lhFail: false, rtmsFail: false, rtmsAuthError: false };
 let mock;
 
 before(async () => {
@@ -24,6 +24,7 @@ function reset() {
   state.fail = new Set();
   state.shortPage = new Set();
   state.lhAuthError = false;
+  state.lhFail = false;
   state.rtmsFail = false;
   state.rtmsAuthError = false;
 }
@@ -266,15 +267,15 @@ test('재시도 슬롯: 06시 실행이 수집·배포·알림까지 끝났을 �
   const dir = await sandbox();
   const runAt = new Date().toISOString();
   await writeFile(path.join(dir, 'data', 'meta.json'), JSON.stringify({ status: 'ok', runAt }));
-  const undelivered = await run('should-run.mjs', dir, { EVENT_NAME: 'schedule', EVENT_SCHEDULE: '0 3 * * 1' });
+  const undelivered = await run('should-run.mjs', dir, { EVENT_NAME: 'schedule', EVENT_SCHEDULE: '0 3 * * *' });
   assert.equal(undelivered.output.run, 'true', '배포·알림 전이면 재시도');
   await run('mark-delivered.mjs', dir, {}, [runAt]);
-  const skip = await run('should-run.mjs', dir, { EVENT_NAME: 'schedule', EVENT_SCHEDULE: '0 3 * * 1' });
+  const skip = await run('should-run.mjs', dir, { EVENT_NAME: 'schedule', EVENT_SCHEDULE: '0 3 * * *' });
   assert.equal(skip.output.run, 'false');
-  const main = await run('should-run.mjs', dir, { EVENT_NAME: 'schedule', EVENT_SCHEDULE: '0 21 * * 0' });
+  const main = await run('should-run.mjs', dir, { EVENT_NAME: 'schedule', EVENT_SCHEDULE: '0 21 * * *' });
   assert.equal(main.output.run, 'true');
   await writeFile(path.join(dir, 'data', 'meta.json'), JSON.stringify({ status: 'degraded', runAt: new Date().toISOString() }));
-  const retry = await run('should-run.mjs', dir, { EVENT_NAME: 'schedule', EVENT_SCHEDULE: '0 3 * * 1' });
+  const retry = await run('should-run.mjs', dir, { EVENT_NAME: 'schedule', EVENT_SCHEDULE: '0 3 * * *' });
   assert.equal(retry.output.run, 'true');
   await rm(dir, { recursive: true, force: true });
 });
@@ -328,6 +329,31 @@ test('시·도를 못 읽은 공고는 경고로 드러난다', async () => {
   const v = await pass1(dir);
   assert.equal(v.output.status, 'degraded');
   assert.match((await load(dir, 'meta.json')).validation.warnings.join(' '), /시·도를 읽지 못한 공고 1건/);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('LH 가 한 번도 연결된 적 없으면 접속 실패도 미연결 — 매일 실행에서 헛경고 없음', async () => {
+  reset();
+  state.lhFail = true;
+  const dir = await sandbox();
+  await run('fetch.mjs', dir, { RUN_AT: '2026-09-27T21:00:00.000Z' });
+  const v = await run('validate.mjs', dir);
+  assert.equal(v.output.status, 'ok', v.stdout + v.stderr);
+  const lh = (await load(dir, 'meta.json')).sources.lh;
+  assert.equal(lh.status, 'not-enabled');
+  assert.match(lh.error, /미연결 — 활용신청하면/);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('LH 가 연결됐다가 접속 실패하면 경고', async () => {
+  reset();
+  const dir = await sandbox();
+  await pass1(dir);
+  state.lhFail = true;
+  await run('fetch.mjs', dir, { RUN_AT: '2026-10-04T21:00:00.000Z' });
+  const v = await run('validate.mjs', dir);
+  assert.equal(v.output.status, 'degraded');
+  assert.equal((await load(dir, 'meta.json')).sources.lh.status, 'error');
   await rm(dir, { recursive: true, force: true });
 });
 
@@ -425,19 +451,38 @@ test('실거래 시세: 시군구·밴드별 중위 ㎡당가 — 해제 제외,
   await rm(dir, { recursive: true, force: true });
 });
 
-test('실거래 API 실패·미신청 — 주간 갱신은 계속, 지난 시세 유지', async () => {
+test('실거래 시세: 최근 계산은 재사용 — 매일 실행에서 API 장애여도 새 조회 없이 유지', async () => {
+  reset();
+  const dir = await sandbox();
+  await run('fetch.mjs', dir, { RUN_AT: '2026-09-27T21:00:00.000Z' });
+  await run('market.mjs', dir);
+  await run('validate.mjs', dir);
+  state.rtmsFail = true;   // 다음 날 실행 — 실거래 API 가 죽어 있어도
+  await run('fetch.mjs', dir, { RUN_AT: '2026-09-28T21:00:00.000Z' });
+  const m = await run('market.mjs', dir);
+  assert.match(m.stdout, /곳 재사용\(2026-09-28 계산\)/);
+  await run('validate.mjs', dir);
+  const mk = (await load(dir, 'meta.json')).market;
+  assert.equal(mk.status, 'ok', '조회할 새 시군구가 없으면 장애와 무관');
+  assert.equal(mk.asOf, '2026-09-28', '계산일은 처음 계산한 날 — 재사용이 기한을 늘리지 않는다');
+  assert.equal(mk.areas['서울|강서구'].bands.m.n, 6);
+  await rm(dir, { recursive: true, force: true });
+});
+
+test('실거래 API 실패·미신청 — 정기 갱신은 계속, 지난 시세 유지', async () => {
   reset();
   const dir = await sandbox();
   await run('fetch.mjs', dir, { RUN_AT: '2026-09-27T21:00:00.000Z' });
   await run('market.mjs', dir);
   await run('validate.mjs', dir);
 
-  // 다음 주: RTMS 500 → 지난 시세를 stale 로 유지, 검증은 여전히 ok
+  // 재사용 기한(6일)이 지난 뒤: RTMS 500 → 지난 시세를 stale 로 유지, 검증은 여전히 ok
   state.rtmsFail = true;
-  await run('fetch.mjs', dir, { RUN_AT: '2026-10-04T21:00:00.000Z' });
-  const m2 = await run('market.mjs', dir);
+  const later = { TODAY: '2026-10-05' };
+  await run('fetch.mjs', dir, { ...later, RUN_AT: '2026-10-04T21:00:00.000Z' });
+  const m2 = await run('market.mjs', dir, later);
   assert.equal(m2.code, 0, '실패해도 exit 0');
-  const v = await run('validate.mjs', dir);
+  const v = await run('validate.mjs', dir, later);
   assert.equal(v.output.status, 'ok', v.stdout + v.stderr);
   const mk = (await load(dir, 'meta.json')).market;
   assert.equal(mk.status, 'stale');

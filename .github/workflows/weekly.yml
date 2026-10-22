@@ -1,12 +1,13 @@
 name: weekly-update
 
-# 매주 월요일 06:00 KST: 수집 → 검증 → 데이터 커밋 → 사이트 배포 → 신규 공고 이슈 알림 → 전달 표시.
+# 매일 06:00 KST: 수집 → 검증 → 데이터 커밋 → 사이트 배포 → 신규 공고 이슈 알림 → 전달 표시.
+# 청약홈 API 는 자정~01시에 하루치를 갱신하고(그 사이엔 0건 응답), 무순위·임의공급은 공고 2~5일 안에 마감되므로 매일 돈다.
 # 12:00 KST 는 재시도 슬롯 — 06시 실행이 수집·배포·알림까지 정상 완료됐으면 건너뛴다.
 # 주소는 https://<계정>.github.io/<저장소>/ 로 고정 — 이 워크플로는 Pages 설정·도메인을 바꾸지 않는다.
 on:
   schedule:
-    - cron: "0 21 * * 0"   # 월 06:00 KST (= 일 21:00 UTC)
-    - cron: "0 3 * * 1"    # 월 12:00 KST 재시도 슬롯
+    - cron: "0 21 * * *"   # 매일 06:00 KST (= 전날 21:00 UTC)
+    - cron: "0 3 * * *"    # 매일 12:00 KST 재시도 슬롯 (scripts/should-run.mjs 의 RETRY_CRON 과 같아야 한다)
   workflow_dispatch:
 
 permissions:
@@ -58,7 +59,7 @@ jobs:
         if: steps.gate.outputs.run == 'true'
         run: node scripts/fetch.mjs
 
-      # 참고 데이터 — 실패해도 주간 갱신은 계속된다(스크립트도 항상 exit 0)
+      # 참고 데이터 — 실패해도 갱신은 계속된다(스크립트도 항상 exit 0)
       - name: 주변 실거래 시세 (참고)
         if: steps.gate.outputs.run == 'true'
         continue-on-error: true
@@ -78,10 +79,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/store.json data/meta.json data/runs.json
-          git commit -m "data: 주간 갱신 $(date +%F) [${{ steps.validate.outputs.status }}]" || echo "변경 없음"
+          git commit -m "data: 갱신 $(date +%F) [${{ steps.validate.outputs.status }}]" || echo "변경 없음"
           bash scripts/push.sh
 
-      - name: 사이트 빌드 + 주간 요약
+      - name: 사이트 빌드 + 신규 요약
         id: notify
         if: steps.commit.outcome == 'success'
         run: |
@@ -115,7 +116,7 @@ jobs:
           git fetch origin "${GITHUB_REF_NAME}" && git reset --hard "origin/${GITHUB_REF_NAME}"
           node scripts/record-run.mjs failed
           git add data/runs.json
-          git commit -m "data: 주간 갱신 실패 기록 $(date +%F)" && bash scripts/push.sh || echo "실패 기록 push 도 실패"
+          git commit -m "data: 갱신 실패 기록 $(date +%F)" && bash scripts/push.sh || echo "실패 기록 push 도 실패"
 
   deploy:
     needs: update
@@ -157,9 +158,9 @@ jobs:
       - name: 신규 공고 이슈 (저장소 주인 @멘션 → 메일)
         if: needs.deploy.result == 'success' && needs.update.outputs.digest_count != '0'
         run: |
-          gh label create digest --color 1f4fd6 --description "주간 신규 공고" --force >/dev/null 2>&1 || true
-          # 5일 넘은 요약 이슈만 닫는다(같은 주 재시도로 이번 주 요약이 사라지지 않게)
-          cutoff=$(date -u -d '5 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          gh label create digest --color 1f4fd6 --description "신규 공고" --force >/dev/null 2>&1 || true
+          # 2일 넘은 요약 이슈만 닫는다(같은 날 재시도로 오늘 요약이 사라지지 않게)
+          cutoff=$(date -u -d '2 days ago' +%Y-%m-%dT%H:%M:%SZ)
           for n in $(gh issue list --label digest --state open --limit 100 --json number,createdAt -q ".[] | select(.createdAt < \"$cutoff\") | .number"); do
             gh issue close "$n" --reason completed >/dev/null || true
           done
@@ -181,8 +182,8 @@ jobs:
         run: |
           gh label create alert --color c0352b --description "수집 실패·경고" --force >/dev/null 2>&1 || true
           gh issue create --label alert \
-            --title "⚠ 청약 알림 주간 갱신 실패 $(TZ=Asia/Seoul date +%F)" \
-            --body "@${{ github.repository_owner }} 이번 주 갱신이 끝까지 가지 못했습니다(update: ${{ needs.update.result }} · deploy: ${{ needs.deploy.result }}). **저장된 데이터와 사이트는 직전 상태로 유지됩니다.** 알리지 못한 신규 공고는 다음 실행 요약에 넘어가고, 빠진 기간은 다음 수집이 다시 훑습니다.
+            --title "⚠ 청약 알림 갱신 실패 $(TZ=Asia/Seoul date +%F)" \
+            --body "@${{ github.repository_owner }} 이번 갱신이 끝까지 가지 못했습니다(update: ${{ needs.update.result }} · deploy: ${{ needs.deploy.result }}). **저장된 데이터와 사이트는 직전 상태로 유지됩니다.** 알리지 못한 신규 공고는 다음 실행 요약에 넘어가고, 빠진 기간은 다음 수집이 다시 훑습니다.
 
           - 실행 로그: ${RUN_URL}
           - 자주 있는 원인: 인증키 만료·미등록(Secrets 의 APPLYHOME_API_KEY), 공공데이터포털 점검, API 필드명 변경, Pages 설정(Source=GitHub Actions)

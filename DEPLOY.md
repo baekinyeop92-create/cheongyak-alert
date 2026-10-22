@@ -57,9 +57,9 @@ Actions 탭 → (처음이면 "I understand… enable" 클릭) → **weekly-upda
 
 | 증상 | 원인·조치 |
 |---|---|
-| 이슈 "⚠ 주간 갱신 실패" | 로그 링크 확인. 대부분 인증키 만료(1~2년)·미등록 → 키 재발급 후 Secret 교체 → Run workflow |
+| 이슈 "⚠ 갱신 실패" | 로그 링크 확인. 대부분 인증키 만료(1~2년)·미등록 → 키 재발급 후 Secret 교체 → Run workflow |
 | 점검표 "형식 이상" | 청약홈 필드명 변경 의심. 이 폴더를 Claude Code 로 열고 아래 프롬프트 사용 |
-| 사이트 상단 빨간 배너(8일 초과) | Actions 탭에서 weekly-update 가 꺼졌는지 확인 → Enable workflow |
+| 사이트 상단 빨간 배너(2일 초과) | Actions 탭에서 weekly-update 가 꺼졌는지 확인 → Enable workflow |
 | deploy 실패 "Get Pages site failed" | 3단계 Pages Source 를 GitHub Actions 로 |
 
 ## Claude Code 로 배포할 때 (권장)

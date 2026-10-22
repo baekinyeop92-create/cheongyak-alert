@@ -30,7 +30,7 @@ function feed(notices, meta, site) {
 <rss version="2.0"><channel>
 <title>청약 알림 — 서울·경기 분양가 13억 이하</title>
 <link>${esc(site || './')}</link>
-<description>청약홈·LH 공고 중 서울·경기, 주택형 최고 분양가 13억 이하(경계·가격 미확인 포함). 매주 갱신.</description>
+<description>청약홈·LH 공고 중 서울·경기, 주택형 최고 분양가 13억 이하(경계·가격 미확인 포함). 매일 갱신.</description>
 <lastBuildDate>${new Date(meta.runAt ?? Date.now()).toUTCString()}</lastBuildDate>
 ${items.join('\n')}
 </channel></rss>

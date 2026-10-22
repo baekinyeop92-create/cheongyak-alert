@@ -48,9 +48,9 @@ function complexKey(name) {
 
 /**
  * 무순위·임의공급 공고에 본청약의 공급규모(단지 세대수)를 연결한다.
- * 청약홈 APT·오피스텔 목록은 매주 전량(2019~) 내려받으므로 원공고가 그 안에 있다.
+ * 청약홈 APT·오피스텔 목록은 실행마다 전량(2019~) 내려받으므로 원공고가 그 안에 있다.
  * 이름(차수 포함)·지역이 정확히 같고, 원공고가 더 크고 더 과거일 때만 — 애매하면 붙이지 않는다.
- * 이번 주 목록을 못 받았으면(origins 비어 있음) 기존 값을 지우지 않고 그대로 둔다.
+ * 이번 실행에서 목록을 못 받았으면(origins 비어 있음) 기존 값을 지우지 않고 그대로 둔다.
  */
 function annotateComplex(store, origins) {
   if (!origins.length) return { linked: 0, total: 0 };
@@ -568,10 +568,11 @@ async function runLh(ctx) {
       }
     }
   } catch (e) {
-    // 한 번도 성공한 적 없으면 '미연결(선택)', 되다가 인증 오류면 키 만료 등으로 보고 경고
-    st.status = e.kind === 'auth' ? (prev?.lastOkToday ? 'auth' : 'not-enabled') : 'error';
+    // 한 번도 성공한 적 없으면(활용신청 전) 인증·접속 실패 모두 '미연결(선택)' — 매일 실행에서 헛경고를 만들지 않는다.
+    // 연결된 적이 있으면 인증 오류는 키 만료 등, 그 밖은 일시 장애로 보고 경고한다.
+    st.status = !prev?.lastOkToday ? 'not-enabled' : e.kind === 'auth' ? 'auth' : 'error';
     st.error = st.status === 'not-enabled'
-      ? 'LH 분양임대공고문 API 활용신청이 안 된 키입니다(선택 소스 — 청약홈 수집에는 영향 없음)'
+      ? `LH 분양임대공고문 API 미연결 — 활용신청하면 다음 실행부터 자동 연결(선택 소스, 청약홈 수집에는 영향 없음)${e.kind === 'auth' ? '' : ` · ${L.redact(e.message)}`}`
       : L.redact(e.message);
     console.error(`  ✗ LH: ${st.error}`);
     return;

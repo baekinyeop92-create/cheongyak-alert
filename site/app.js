@@ -84,7 +84,7 @@ const kst = (iso, withTime = true) => {
 };
 
 /**
- * 이번 주(최근 갱신 기준 6.5일 안)에 처음 잡힌 공고. 12시 재시도·수동 실행이 있어도 주 단위로 유지된다.
+ * 최근 7일(마지막 갱신 기준 6.5일 안)에 처음 잡힌 공고. 매일 갱신해도 일주일은 NEW 로 남는다.
  * 첫 수집 때 한꺼번에 잡힌 공고는 '신규'가 아니므로 NEW 를 달지 않는다.
  */
 function isNew(n) {
@@ -272,7 +272,7 @@ function card(x) {
     const diff = est - cheap.price;
     const M = DATA.meta.market;
     mkline = `<p class="mkline">주변 실거래 대비 <b class="${diff >= 0 ? 'mk-cheap' : 'mk-exp'}">약 ${eok(Math.abs(diff))} ${diff >= 0 ? '저렴' : '비쌈'}</b>
-      <span>· ${esc(n.sigungu)} 최근 ${M.monthsN ?? 6}개월 ${mk.label} ${mk.n}건 중위 ㎡당 ${mk.m2.toLocaleString('ko-KR')}만 기준${M.status === 'stale' ? ' · 지난 주 시세' : ''} · 추정치</span></p>`;
+      <span>· ${esc(n.sigungu)} 최근 ${M.monthsN ?? 6}개월 ${mk.label} ${mk.n}건 중위 ㎡당 ${mk.m2.toLocaleString('ko-KR')}만 기준${M.status === 'stale' ? ' · 지난 계산값' : ''} · 추정치</span></p>`;
   }
   const typeRows = (n.types ?? []).map((t) => {
     const inArea = !state.minArea || t.area == null || t.area >= state.minArea;
@@ -348,7 +348,7 @@ function banners() {
   const out = [];
   if (m.runAt) {
     const days = Math.floor((Date.now() - Date.parse(m.runAt)) / 86400000);
-    if (days > 8) {
+    if (days > 2) {
       out.push(`<div class="banner b-bad"><b>마지막 갱신이 ${days}일 전입니다.</b> 자동 수집이 멈췄을 수 있습니다. 저장소 Actions 탭에서 weekly-update 실행 기록을 확인하세요. 아래 목록은 ${kst(m.runAt)} 기준입니다.</div>`);
     }
   }
@@ -365,7 +365,7 @@ function health() {
   let text = '첫 수집 전';
   if (m.runAt) {
     const days = (Date.now() - Date.parse(m.runAt)) / 86400000;
-    if (days > 8) {
+    if (days > 2) {
       cls = 'h-bad';
       text = `${Math.floor(days)}일 전 갱신 · 확인 필요`;
     } else if (m.status === 'degraded') {
@@ -387,12 +387,11 @@ const SRC_STATUS = {
 
 function nextRun(runAt) {
   if (!runAt) return '—';
-  // 다음 월요일 06:00 KST
-  const kstNow = new Date(Date.parse(runAt) + 9 * 3600000);
-  const d = new Date(Date.UTC(kstNow.getUTCFullYear(), kstNow.getUTCMonth(), kstNow.getUTCDate()));
-  const add = ((1 - d.getUTCDay() + 7) % 7) || 7;
-  d.setUTCDate(d.getUTCDate() + add);
-  return `${d.getUTCMonth() + 1}/${d.getUTCDate()}(월) 06:00`;
+  // 마지막 실행 다음의 06:00 KST (매일). KST 시각을 UTC 필드에 얹어 계산한다.
+  const k = new Date(Date.parse(runAt) + 9 * 3600000);
+  const d = new Date(Date.UTC(k.getUTCFullYear(), k.getUTCMonth(), k.getUTCDate(), 6));
+  if (k >= d) d.setUTCDate(d.getUTCDate() + 1);
+  return `${d.getUTCMonth() + 1}/${d.getUTCDate()} 06:00`;
 }
 
 function audit() {
@@ -429,7 +428,7 @@ function audit() {
         if (!mk) return '';
         const cnt = Object.keys(mk.areas ?? {}).length;
         if (mk.status === 'ok' || mk.status === 'partial') return ` · 주변 실거래 ${cnt}개 시군구${mk.status === 'partial' ? ' <span class="s-warn">(일부 실패)</span>' : ''}`;
-        if (mk.status === 'stale') return ` · 주변 실거래 ${cnt}개 시군구 <span class="s-warn">(이번 주 조회 실패 — 지난 값)</span>`;
+        if (mk.status === 'stale') return ` · 주변 실거래 ${cnt}개 시군구 <span class="s-warn">(이번 조회 실패 — 지난 값)</span>`;
         return ` · <span class="s-idle">주변 실거래 미연결</span>`;
       })()}</p>
       ${runs ? `<div class="runs">${runs}</div>` : ''}
@@ -442,7 +441,7 @@ function audit() {
       <p><b>청약 자격(참고)</b> 카드의 ‘신청 가능성’은 거주지 프로필(이 기기에만 저장, 서버 전송 없음)과 공고의 순위별 지역 접수일·규제 플래그로 추정한 값입니다. ‘청약 자격·선정 기준’ 펼침의 요건·비율은 일반 제도 기준(${AS_OF})이며, 무순위 거주요건·특별공급 소득 기준처럼 공고마다 다른 항목은 표시하지 않습니다 — <b>확정 요건은 항상 모집공고문</b>입니다.</p>
       <p><b>단지 전체 세대수(참고)</b> 무순위·임의공급 카드의 ‘단지 전체’는 청약홈에 남아 있는 <b>같은 이름·같은 지역의 본청약 공고(2019년 이후)</b>의 공급규모를 연결한 값입니다. 이름이 다르거나 본청약이 청약홈 밖(2019년 이전 등)이면 표시하지 않으며, ‘본청약 공고’ 버튼으로 원공고를 직접 확인할 수 있습니다. 임대분 등이 빠진 분양 기준 규모라 실제 단지 총세대수와 다를 수 있습니다.</p>
       <p><b>수집 범위</b> 청약홈 APT·무순위/잔여세대·임의공급·오피스텔/도시형생활주택(민간임대·생활숙박시설 제외) + LH 분양주택·신혼희망타운 공고. 받은 건수가 API 총건수와 다르면 그 주는 실패로 기록하고 다음 실행이 빠진 기간을 다시 훑습니다. 한 번 올라온 공고는 API에서 사라져도 지우지 않습니다.</p>
-      <p><b>한계</b> SH·GH가 자체 청약시스템에만 올리는 공고는 공개 API가 없어 자동 수집 대상이 아닙니다. 무순위는 접수가 하루인 경우가 많아 주 1회 갱신으로는 접수 전에 못 볼 수 있습니다. 최종 기준은 항상 입주자모집공고 원문입니다.</p>
+      <p><b>한계</b> SH·GH가 자체 청약시스템에만 올리는 공고는 공개 API가 없어 자동 수집 대상이 아닙니다. 청약홈 API는 공고 다음 날 새벽에 반영되고 이 사이트는 매일 06시에 갱신하므로, 공고 당일·다음 날 마감되는 무순위·임의공급은 놓칠 수 있습니다(아래 청약홈 캘린더에서 함께 확인하세요). 공공지원 민간임대·민간임대는 분양이 아니라 제외합니다. 최종 기준은 항상 입주자모집공고 원문입니다.</p>
       <div class="links">
         <a href="https://www.applyhome.co.kr/ai/aib/selectSubscrptCalenderView.do" target="_blank" rel="noopener">청약홈 캘린더</a>
         <a href="https://apply.lh.or.kr/" target="_blank" rel="noopener">LH청약플러스</a>
@@ -468,7 +467,7 @@ function render() {
     ['open', '접수중', active.filter((x) => ['open', 'closing'].includes(x.st.key)).length, 'open'],
     ['closing', '마감 임박', active.filter((x) => x.st.key === 'closing').length, 'closing'],
     ['upcoming', '접수 예정', active.filter((x) => x.st.key === 'upcoming').length, 'upcoming'],
-    ['new', '이번 주 신규', pass.filter((x) => isNew(x.n) && (state.closed || x.st.key !== 'closed')).length, 'new'],
+    ['new', '7일 내 신규', pass.filter((x) => isNew(x.n) && (state.closed || x.st.key !== 'closed')).length, 'new'],
   ];
   if (state.closed) chips.push(['closed', '마감', pass.filter((x) => x.st.key === 'closed').length, '']);
   $('#stats').innerHTML = chips.map(([k, label, n, cls]) => `<button type="button" class="stat ${cls} ${state.st === k ? 'on' : ''}" data-st="${k}" ${k && !n ? 'disabled' : ''}><b>${n}</b><span>${label}</span></button>`).join('');
@@ -496,7 +495,7 @@ function render() {
     ].filter(Boolean);
     const hint = active.length
       ? `현재 조건: ${esc(active.join(' · '))}`
-      : '이번 주에는 조건에 맞는 진행 중 공고가 없습니다. 아래 ‘경계’·‘가격 미확인’ 칸도 확인하세요.';
+      : '지금은 조건에 맞는 진행 중 공고가 없습니다. 아래 ‘경계’·‘가격 미확인’ 칸도 확인하세요.';
     $('#main').innerHTML = `<div class="sec-h"><h2>${eok(state.cap)} 이하</h2><span>0건</span></div>
       <div class="empty"><b>조건에 맞는 공고가 없어요</b><p>${hint}</p>
       ${active.length ? '<button type="button" class="btn" id="resetFilters">필터 초기화</button>' : ''}</div>`;
@@ -658,7 +657,7 @@ async function shareSite() {
   const h = stateHash();
   const r = await shareOrCopy({
     title: '청약 알림',
-    text: `서울·경기 청약 공고 중 분양가 ${eok(state.cap)} 이하만 모아 매주 갱신해요.`,
+    text: `서울·경기 청약 공고 중 분양가 ${eok(state.cap)} 이하만 모아 매일 갱신해요.`,
     url: `${baseUrl()}${h ? `#${h}` : ''}`,
   });
   if (r === 'copied') toast('링크를 복사했어요 — 메신저에 붙여넣으세요');

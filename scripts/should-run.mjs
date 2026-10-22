@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-// 월 12:00 KST 예약 실행은 '재시도 슬롯'이다. 06:00 실행이 정상으로 끝났으면 건너뛴다.
-// 06:00 실행이 실패·지연됐으면 이 슬롯이 같은 주 안에 다시 수집한다.
+// 매일 12:00 KST 예약 실행은 '재시도 슬롯'이다. 06:00 실행이 정상으로 끝났으면 건너뛴다.
+// 06:00 실행이 실패·지연됐으면 이 슬롯이 같은 날 다시 수집한다.
 import path from 'node:path';
 import * as L from './lib.mjs';
 
-const RETRY_CRON = '0 3 * * 1';
+const RETRY_CRON = '0 3 * * *';   // weekly.yml 의 두 번째 cron 과 같아야 한다
 
 const meta = await L.readJson(path.join(L.DATA_DIR, 'meta.json'), {});
 const delivery = await L.readJson(path.join(L.DATA_DIR, 'delivery.json'), {});

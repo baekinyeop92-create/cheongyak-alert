@@ -91,10 +91,17 @@ export function knownSido(areaName, address) {
   return SIDO.test(str(areaName) ?? '') || SIDO.test((str(address) ?? '').slice(0, 8));
 }
 
-/** "경기도 성남시 수정구 …" → "성남시", "서울특별시 강서구 …" → "강서구" */
+/**
+ * "경기도 성남시 수정구 …" → "성남시", "서울특별시 강서구 …" → "강서구".
+ * "화성특례시"처럼 특례시 표기는 "화성시"로 맞춘다 — 같은 시가 두 이름으로 갈리면 시·군·구 필터·시세·거주지 판정에서 빠진다.
+ */
 export function sigunguOf(address) {
-  const t = (str(address) || '').split(' ');
-  return t.length >= 2 && /.+[시군구]$/.test(t[1]) ? t[1] : null;
+  const s = str(address) || '';
+  // 앞에 사업지구명이 붙고 실제 주소는 괄호 안에 있는 경우가 있다: "파주메디컬클러스터 … (경기도 파주시 서패동 …)"
+  const m = s.match(/(?:^|[\s(])(?:서울특별시|서울|경기도|경기)\s+([^\s()]+?[시군구])(?=[\s)]|$)/);
+  const t = s.split(' ');
+  const g = m ? m[1] : t.length >= 2 && /.+[시군구]$/.test(t[1]) ? t[1] : null;
+  return g ? g.replace(/특례시$/, '시') : null;
 }
 
 export function fillRate(rows, field) {

@@ -3,7 +3,7 @@
 // 공고가 있는 시군구의 최근 6개월 중위 ㎡당가를 계산해 meta.market 에 싣는다.
 //
 // 원칙
-//  1) 부가 데이터다 — 어떤 실패도 주간 갱신을 막지 않는다(항상 exit 0, 경고는 meta.market 안에만).
+//  1) 부가 데이터다 — 어떤 실패도 정기 갱신을 막지 않는다(항상 exit 0, 경고는 meta.market 안에만).
 //  2) fetch 와 같은 흐름 — data/next/meta.json 에만 쓰고, 승격은 validate 가 한다.
 //  3) 실패한 주는 직전 주의 시세를 stale 로 유지한다(공고 데이터와 같은 태도).
 //  4) 표본이 적으면(밴드 5건 미만) 화면이 표시하지 않는다 — 억지로 채우지 않는다.
@@ -16,7 +16,8 @@ const ENABLED = (process.env.MARKET_ENABLED || 'true') !== 'false';
 const MONTHS_N = Math.min(12, Math.max(1, Number(process.env.MARKET_MONTHS || 6)));
 const ROWS = Number(process.env.MARKET_PAGE_SIZE || 999);
 const TODAY = process.env.TODAY || L.kstToday();
-const WINDOW_DAYS = 45;   // fetch 와 같은 기준 — 이 기간 안에 마감(예정)인 공고의 시군구만 조회
+const WINDOW_DAYS = 45;
+const REUSE_DAYS = 6;   // 매일 실행해도 6일 안의 계산은 재사용하고 새 시군구만 조회 — 전체 재조회는 주 1회꼴   // fetch 와 같은 기준 — 이 기간 안에 마감(예정)인 공고의 시군구만 조회
 
 // 법정동코드 앞 5자리(시군구). 구가 있는 시는 구 코드를 모두 합산한다.
 // 부천은 2016 구 폐지·2024 재설치를 거쳤으므로 신·구 코드를 모두 시도한다(없는 코드는 0건으로 무해).
@@ -40,7 +41,9 @@ export const LAWD = {
     과천시: ['41290'], 구리시: ['41310'], 남양주시: ['41360'], 오산시: ['41370'], 시흥시: ['41390'],
     군포시: ['41410'], 의왕시: ['41430'], 하남시: ['41450'],
     용인시: ['41461', '41463', '41465'],
-    파주시: ['41480'], 이천시: ['41500'], 안성시: ['41550'], 김포시: ['41570'], 화성시: ['41590'],
+    파주시: ['41480'], 이천시: ['41500'], 안성시: ['41550'], 김포시: ['41570'],
+    // 화성은 2026.2 일반구(만세·효행·병점·동탄) 설치 후 실거래가 새 구 코드로만 조회된다(옛 41590 은 과거 거래까지 0건)
+    화성시: ['41591', '41593', '41595', '41597'],
     광주시: ['41610'], 양주시: ['41630'], 포천시: ['41650'], 여주시: ['41670'],
     연천군: ['41800'], 가평군: ['41820'], 양평군: ['41830'],
   },
@@ -183,7 +186,11 @@ async function main() {
   }
 
   const months = recentMonths(TODAY);
-  console.log(`── 주변 실거래 시세 (${months[0]}~${months.at(-1)}, 시군구 ${targets.size}곳) ──`);
+  // 같은 6개월 구간으로 최근(REUSE_DAYS 안)에 계산한 시군구는 그대로 쓴다. 달이 바뀌면 구간이 달라져 전체를 다시 계산한다.
+  const reuse = hasPrev && ['ok', 'partial'].includes(prev.status) && prev.from === months[0]
+    && (prev.asOf ?? '') >= L.addDays(TODAY, -REUSE_DAYS) ? prev.areas : {};
+  const nReuse = [...targets.keys()].filter((k) => reuse[k]).length;
+  console.log(`── 주변 실거래 시세 (${months[0]}~${months.at(-1)}, 시군구 ${targets.size}곳${nReuse ? ` · ${nReuse}곳 재사용(${prev.asOf} 계산)` : ''}) ──`);
   const areas = {};
   const missing = [];
   const failed = [];
@@ -193,6 +200,10 @@ async function main() {
       if (!codes) {
         missing.push(key);
         console.warn(`  · ${key}: 법정동코드 미등록 — 표시 생략`);
+        continue;
+      }
+      if (reuse[key]) {
+        areas[key] = reuse[key];
         continue;
       }
       try {
@@ -219,11 +230,12 @@ async function main() {
     }
     meta.market = {
       status: failed.length ? 'partial' : 'ok',
-      asOf: TODAY, from: months[0], to: months.at(-1), monthsN: months.length,
+      // 재사용분이 있으면 계산일은 처음 계산한 날 그대로 — 매일 재사용이 기한을 계속 늘리지 않게
+      asOf: nReuse ? prev.asOf : TODAY, from: months[0], to: months.at(-1), monthsN: months.length,
       areas, missing, failed,
     };
   } catch (e) {
-    // 인증·한도·네트워크 — 어떤 경우에도 주간 갱신은 계속된다
+    // 인증·한도·네트워크 — 어떤 경우에도 정기 갱신은 계속된다
     const note = L.redact(e.message);
     if (e.kind === 'auth') keepPrev('not-enabled', note);
     else keepPrev('error', note);

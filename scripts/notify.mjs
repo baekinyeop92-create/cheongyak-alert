@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// 주간 요약: 아직 알리지 않은 신규 공고 → _out/digest.md (GitHub 이슈 본문) + 선택: 텔레그램
+// 신규 요약: 아직 알리지 않은 신규 공고 → _out/digest.md (GitHub 이슈 본문) + 선택: 텔레그램
 // '아직 알리지 않은' = 마지막으로 배포·이슈까지 성공한 실행(data/delivery.json) 이후 처음 잡힌 공고.
-// 배포나 이슈가 실패한 주의 신규 공고는 다음 실행 요약에 그대로 넘어간다.
+// 배포나 이슈가 실패한 실행의 신규 공고는 다음 실행 요약에 그대로 넘어간다.
 // 이슈는 워크플로가 gh CLI 로 올린다. 저장소 주인이 @멘션되므로 GitHub 알림 메일이 간다.
 import path from 'node:path';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -37,17 +37,17 @@ async function main() {
   const pass = by('pass');
   const border = by('border');
   const unknown = by('unknown');
-  const closing = all.filter((n) => !isNew(n) && evaluate(n).bucket === 'pass' && ['closing', 'open'].includes(statusOf(n, today).key) && n.end && n.end <= L.addDays(today, 7));
+  const closing = all.filter((n) => !isNew(n) && evaluate(n).bucket === 'pass' && ['closing', 'open'].includes(statusOf(n, today).key) && n.end && n.end <= L.addDays(today, 3));
 
   const owner = (process.env.GITHUB_REPOSITORY || '').split('/')[0];
   const lines = [];
-  if (owner) lines.push(`@${owner} 이번 주 서울·경기 청약 공고입니다.\n`);
+  if (owner) lines.push(`@${owner} 새로 올라온 서울·경기 청약 공고입니다.\n`);
   lines.push(`**기준** 주택형 최고 분양가 ${eok(DEFAULT_CAP)} 이하 · 갱신 ${String(meta.runAt ?? '').slice(0, 16).replace('T', ' ')} UTC · 점검 ${meta.status === 'ok' ? '정상' : `⚠ ${meta.status}`}\n`);
   if (!since) lines.push('_첫 요약이라 현재 보관 중인 공고 전체를 신규로 표시합니다._\n');
   if (pass.length) lines.push(`### 신규 · ${eok(DEFAULT_CAP)} 이하 ${pass.length}건\n${table(pass)}`);
   if (border.length) lines.push(`### 신규 · 경계(상한 초과 10% 이내 — 일부 세대는 상한 이하일 수 있음) ${border.length}건\n${table(border)}`);
   if (unknown.length) lines.push(`### 신규 · 가격 미확인(공고문 확인 필요) ${unknown.length}건\n${table(unknown)}`);
-  if (closing.length) lines.push(`### 7일 안에 마감 (기존 공고) ${closing.length}건\n${table(closing)}`);
+  if (closing.length) lines.push(`### 3일 안에 마감 (기존 공고) ${closing.length}건\n${table(closing)}`);
   if (meta.validation?.warnings?.length) lines.push(`### ⚠ 점검 경고\n${meta.validation.warnings.map((w) => `- ${w}`).join('\n')}\n`);
   if (site) lines.push(`---\n전체 목록·필터: ${site}  ·  RSS: ${site}feed.xml`);
 

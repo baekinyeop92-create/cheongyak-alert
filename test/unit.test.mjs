@@ -31,6 +31,11 @@ test('지역·시군구', () => {
   assert.equal(L.sigunguOf('경기도 성남시 수정구 신흥동'), '성남시');
   assert.equal(L.sigunguOf('서울특별시 강서구 마곡동'), '강서구');
   assert.equal(L.sigunguOf('세종특별자치시 다솜동'), null);
+  assert.equal(L.sigunguOf('경기도 화성특례시 향남읍 상신리 1'), '화성시', '특례시 표기를 일반 시 이름으로 — 같은 시가 둘로 갈리지 않게');
+  assert.equal(L.sigunguOf('경기도 수원시 영통구 이의동'), '수원시');
+  assert.equal(L.sigunguOf('파주메디컬클러스터 도시개발구역 A2BL (경기도 파주시 서패동 432번지 일원)'), '파주시', '실제 주소가 괄호 안에 있어도');
+  assert.equal(L.sigunguOf('김포 풍무역세권 C5블록 (경기도 김포시 사우동 527-1 일원)'), '김포시');
+  assert.equal(L.sigunguOf('부산광역시 해운대구 우동 1'), '해운대구', '다른 시·도도 기존 방식대로');
 });
 
 test('주택형 코드에서 전용면적', () => {
@@ -220,4 +225,13 @@ test('공유: 공유 시트 → 복사 → 직접 복사 창 순서로 폴백, �
   let asked = null;
   assert.equal(await shareOrCopy(data, { nav: {}, doc: null, ask: (_, v) => { asked = v; } }), 'manual', '복사도 안 되면 직접 복사 창');
   assert.equal(asked, 'body\nhttps://x/');
+});
+
+test('실행 주기: 워크플로 재시도 cron 과 재시도 판단 코드가 같은 값을 쓴다', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const yml = await readFile(new URL('../.github/workflows/weekly.yml', import.meta.url), 'utf8');
+  const crons = [...yml.matchAll(/- cron: "([^"]+)"/g)].map((m) => m[1]);
+  assert.deepEqual(crons, ['0 21 * * *', '0 3 * * *'], '매일 06:00 + 12:00 KST');
+  const gate = await readFile(new URL('../scripts/should-run.mjs', import.meta.url), 'utf8');
+  assert.equal(gate.match(/RETRY_CRON = '([^']+)'/)[1], crons[1], '다르면 재시도 슬롯이 정규 실행처럼 매번 돈다');
 });

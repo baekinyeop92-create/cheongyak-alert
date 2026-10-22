@@ -66,7 +66,7 @@ async function main() {
       continue;
     }
     if (['ok', 'disabled', 'not-enabled'].includes(s.status)) continue;
-    warns.push(`${s.label} 수집 실패(${s.status}): ${s.error} — 이 소스의 이번 주 신규 공고가 빠졌을 수 있음. 다음 실행이 ${s.windowStart} 이후를 다시 훑습니다.`);
+    warns.push(`${s.label} 수집 실패(${s.status}): ${s.error} — 이 소스의 이번 실행 신규 공고가 빠졌을 수 있음. 다음 실행이 ${s.windowStart} 이후를 다시 훑습니다.`);
   }
   for (const k of CORE) {
     const s = src[k];
