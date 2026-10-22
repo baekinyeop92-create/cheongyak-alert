@@ -1,26 +1,26 @@
 {
   "version": 2,
-  "runAt": "2026-10-20T16:01:13.666Z",
-  "today": "2026-10-21",
-  "prevRunAt": "2026-10-20T15:12:42.756Z",
+  "runAt": "2026-10-22T04:31:27.943Z",
+  "today": "2026-10-22",
+  "prevRunAt": "2026-10-20T16:01:13.666Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-10-20T16:01:13.666Z",
-  "lastSuccessToday": "2026-10-21",
+  "lastSuccessAt": "2026-10-22T04:31:27.943Z",
+  "lastSuccessToday": "2026-10-22",
   "sources": {
     "apt": {
       "label": "아파트",
       "status": "ok",
       "operation": "getAPTLttotPblancDetail",
-      "expected": 2908,
-      "fetched": 2908,
+      "expected": 2909,
+      "fetched": 2909,
       "pages": 6,
-      "inRegion": 1116,
+      "inRegion": 1117,
       "excluded": 0,
-      "inWindow": 32,
+      "inWindow": 33,
       "missing": 0,
-      "windowStart": "2026-09-06",
-      "lastOkToday": "2026-10-21",
-      "lastGoodExpected": 2908,
+      "windowStart": "2026-09-07",
+      "lastOkToday": "2026-10-22",
+      "lastGoodExpected": 2909,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -32,16 +32,16 @@
       "label": "무순위·잔여",
       "status": "ok",
       "operation": "getRemndrLttotPblancDetail",
-      "expected": 1718,
-      "fetched": 1718,
+      "expected": 1722,
+      "fetched": 1722,
       "pages": 4,
-      "inRegion": 950,
+      "inRegion": 953,
       "excluded": 0,
-      "inWindow": 41,
+      "inWindow": 44,
       "missing": 0,
-      "windowStart": "2026-09-06",
-      "lastOkToday": "2026-10-21",
-      "lastGoodExpected": 1718,
+      "windowStart": "2026-09-07",
+      "lastOkToday": "2026-10-22",
+      "lastGoodExpected": 1722,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -53,16 +53,16 @@
       "label": "임의공급",
       "status": "ok",
       "operation": "getOPTLttotPblancDetail",
-      "expected": 683,
-      "fetched": 683,
+      "expected": 686,
+      "fetched": 686,
       "pages": 2,
-      "inRegion": 484,
+      "inRegion": 487,
       "excluded": 0,
-      "inWindow": 48,
+      "inWindow": 51,
       "missing": 0,
-      "windowStart": "2026-09-06",
-      "lastOkToday": "2026-10-21",
-      "lastGoodExpected": 683,
+      "windowStart": "2026-09-07",
+      "lastOkToday": "2026-10-22",
+      "lastGoodExpected": 686,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -81,8 +81,8 @@
       "excluded": 31,
       "inWindow": 20,
       "missing": 0,
-      "windowStart": "2026-09-06",
-      "lastOkToday": "2026-10-21",
+      "windowStart": "2026-09-07",
+      "lastOkToday": "2026-10-22",
       "lastGoodExpected": 628,
       "error": null,
       "fill": {
@@ -102,19 +102,25 @@
       "excluded": 0,
       "inWindow": 0,
       "missing": 0,
-      "windowStart": "2026-09-06",
+      "windowStart": "2026-09-07",
       "lastOkToday": null,
-      "error": "LH 분양임대공고문 API 활용신청이 안 된 키입니다(선택 소스 — 청약홈 수집에는 영향 없음)"
+      "error": "LH 분양임대공고문 API 미연결 — 활용신청하면 다음 실행부터 자동 연결(선택 소스, 청약홈 수집에는 영향 없음)"
     }
   },
   "price": {
-    "calls": 22,
+    "calls": 26,
     "empty": 0,
     "errors": 0
   },
   "warnings": [],
   "newIds": [
-    "apt:2026000373:2026000373"
+    "apt:2026000502:2026000502",
+    "remndr:2026930044:2026930044",
+    "remndr:2026910268:2026910268",
+    "remndr:2026910265:2026910265",
+    "opt:2026940235:2026940235",
+    "opt:2026940233:2026940233",
+    "opt:2026940231:2026940231"
   ],
   "opCache": {
     "apt": "getAPTLttotPblancDetail",
@@ -126,17 +132,17 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-09-06",
+  "windowStart": "2026-09-07",
   "counts": {
-    "stored": 141,
+    "stored": 148,
     "dup": 0,
-    "visible": 141,
-    "active": 5,
-    "pass": 122,
+    "visible": 148,
+    "active": 12,
+    "pass": 129,
     "border": 1,
     "unknown": 0,
     "over": 18,
-    "activePass": 3
+    "activePass": 10
   },
   "market": {
     "status": "ok",
@@ -418,6 +424,10 @@
           }
         }
       },
+      "경기|화성시": {
+        "n": 0,
+        "bands": {}
+      },
       "경기|양평군": {
         "n": 306,
         "bands": {
@@ -480,10 +490,6 @@
             "m2": 544
           }
         }
-      },
-      "경기|화성시": {
-        "n": 0,
-        "bands": {}
       },
       "경기|이천시": {
         "n": 996,
@@ -650,6 +656,27 @@
           "all": {
             "n": 1246,
             "m2": 1894
+          }
+        }
+      },
+      "경기|파주시": {
+        "n": 2367,
+        "bands": {
+          "s": {
+            "n": 707,
+            "m2": 418
+          },
+          "m": {
+            "n": 1353,
+            "m2": 477
+          },
+          "l": {
+            "n": 307,
+            "m2": 358
+          },
+          "all": {
+            "n": 2367,
+            "m2": 451
           }
         }
       },
@@ -843,14 +870,12 @@
         }
       }
     },
-    "missing": [
-      "경기|화성특례시"
-    ],
+    "missing": [],
     "failed": []
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-10-20T16:04:03.389Z",
+    "checkedAt": "2026-10-22T04:31:59.331Z",
     "warnings": []
   }
 }
