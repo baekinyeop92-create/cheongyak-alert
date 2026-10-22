@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "runAt": "2026-10-22T04:34:53.691Z",
+  "runAt": "2026-10-22T11:04:56.788Z",
   "today": "2026-10-22",
-  "prevRunAt": "2026-10-22T04:31:27.943Z",
+  "prevRunAt": "2026-10-22T04:34:53.691Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-10-22T04:34:53.691Z",
+  "lastSuccessAt": "2026-10-22T11:04:56.788Z",
   "lastSuccessToday": "2026-10-22",
   "sources": {
     "apt": {
@@ -93,18 +93,18 @@
     },
     "lh": {
       "label": "LH 공고",
-      "status": "not-enabled",
+      "status": "ok",
       "operation": "lhLeaseNoticeInfo1",
-      "expected": 0,
-      "fetched": 0,
-      "pages": 0,
-      "inRegion": 0,
-      "excluded": 0,
-      "inWindow": 0,
+      "expected": 43,
+      "fetched": 43,
+      "pages": 4,
+      "inRegion": 43,
+      "excluded": 13,
+      "inWindow": 8,
       "missing": 0,
       "windowStart": "2026-09-07",
-      "lastOkToday": null,
-      "error": "LH 분양임대공고문 API 미연결 — 활용신청하면 다음 실행부터 자동 연결(선택 소스, 청약홈 수집에는 영향 없음)"
+      "lastOkToday": "2026-10-22",
+      "error": null
     }
   },
   "price": {
@@ -113,7 +113,16 @@
     "errors": 0
   },
   "warnings": [],
-  "newIds": [],
+  "newIds": [
+    "lh:0000061181",
+    "lh:0000061175",
+    "lh:0000061172",
+    "lh:0000061153",
+    "lh:0000061125",
+    "lh:0000061168",
+    "lh:0000061158",
+    "lh:0000061159"
+  ],
   "opCache": {
     "apt": "getAPTLttotPblancDetail",
     "apt:mdl": "getAPTLttotPblancMdl",
@@ -126,13 +135,13 @@
   },
   "windowStart": "2026-09-07",
   "counts": {
-    "stored": 148,
-    "dup": 0,
-    "visible": 148,
+    "stored": 156,
+    "dup": 6,
+    "visible": 150,
     "active": 12,
     "pass": 129,
     "border": 1,
-    "unknown": 0,
+    "unknown": 2,
     "over": 18,
     "activePass": 10
   },
@@ -1005,7 +1014,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-10-22T04:39:59.203Z",
+    "checkedAt": "2026-10-22T11:05:30.432Z",
     "warnings": []
   }
 }
