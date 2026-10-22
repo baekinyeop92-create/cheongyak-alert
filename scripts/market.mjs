@@ -189,7 +189,12 @@ async function main() {
   // 같은 6개월 구간으로 최근(REUSE_DAYS 안)에 계산한 시군구는 그대로 쓴다. 달이 바뀌면 구간이 달라져 전체를 다시 계산한다.
   const reuse = hasPrev && ['ok', 'partial'].includes(prev.status) && prev.from === months[0]
     && (prev.asOf ?? '') >= L.addDays(TODAY, -REUSE_DAYS) ? prev.areas : {};
-  const nReuse = [...targets.keys()].filter((k) => reuse[k]).length;
+  // 계산에 쓴 법정동코드가 지금과 같은 곳만 재사용 — 코드표가 바뀌면(예: 화성 일반구 신설) 다시 조회한다
+  const reusable = (key, codes) => {
+    const a = reuse[key];
+    return !!a && Array.isArray(a.codes) && a.codes.join() === (codes ?? []).join();
+  };
+  const nReuse = [...targets].filter(([k, codes]) => reusable(k, codes)).length;
   console.log(`── 주변 실거래 시세 (${months[0]}~${months.at(-1)}, 시군구 ${targets.size}곳${nReuse ? ` · ${nReuse}곳 재사용(${prev.asOf} 계산)` : ''}) ──`);
   const areas = {};
   const missing = [];
@@ -202,7 +207,7 @@ async function main() {
         console.warn(`  · ${key}: 법정동코드 미등록 — 표시 생략`);
         continue;
       }
-      if (reuse[key]) {
+      if (reusable(key, codes)) {
         areas[key] = reuse[key];
         continue;
       }
@@ -217,7 +222,7 @@ async function main() {
         }
         const usable = usableTrades(items);
         const stat = areaStats(usable);
-        areas[key] = stat;
+        areas[key] = { ...stat, codes };
         streak = 0;
         console.log(`  ✓ ${key}: 거래 ${usable.length}건 (밴드 ${Object.entries(stat.bands).filter(([k]) => k !== 'all').map(([k, v]) => `${k}:${v.n}`).join(' ') || '없음'})`);
       } catch (e) {

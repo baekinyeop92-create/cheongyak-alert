@@ -466,6 +466,17 @@ test('실거래 시세: 최근 계산은 재사용 — 매일 실행에서 API �
   assert.equal(mk.status, 'ok', '조회할 새 시군구가 없으면 장애와 무관');
   assert.equal(mk.asOf, '2026-09-28', '계산일은 처음 계산한 날 — 재사용이 기한을 늘리지 않는다');
   assert.equal(mk.areas['서울|강서구'].bands.m.n, 6);
+
+  // 계산에 쓴 코드가 지금과 다르면(코드표 수정 — 예: 화성 일반구 신설) 재사용하지 않고 다시 조회한다
+  state.rtmsFail = false;
+  const metaPath = path.join(dir, 'data', 'meta.json');
+  const meta = JSON.parse(await readFile(metaPath, 'utf8'));
+  meta.market.areas['서울|강서구'].codes = ['00000'];
+  await writeFile(metaPath, JSON.stringify(meta));
+  await run('fetch.mjs', dir, { RUN_AT: '2026-09-29T21:00:00.000Z' });
+  const m2 = await run('market.mjs', dir);
+  assert.match(m2.stdout, /✓ 서울\|강서구: 거래 11건/, '코드가 바뀐 곳은 새로 조회');
+  assert.doesNotMatch(m2.stdout, /✓ 경기\|광명시: 거래/, '나머지는 재사용');
   await rm(dir, { recursive: true, force: true });
 });
 
