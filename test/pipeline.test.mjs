@@ -131,6 +131,7 @@ test('정상 수집: 범위·칸 분류·폴백·페이지네이션', async () =
   const digest = await readFile(path.join(dir, '_out', 'digest.md'), 'utf8');
   assert.ok(digest.startsWith('@tester'), '저장소 주인 멘션 → 알림 메일');
   assert.ok(digest.includes('강서 리버뷰') && digest.includes('가격 미확인'));
+  assert.ok(!digest.includes('송파 레이크 무순위'), '처음 잡혔을 때 이미 마감된 공고는 알리지 않는다');
   assert.ok(Number(n.output.digest_count) >= 7);
   await rm(dir, { recursive: true, force: true });
 });

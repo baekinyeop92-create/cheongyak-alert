@@ -33,7 +33,9 @@ async function main() {
   const isNew = (n) => !since || (n.firstSeenAt ?? '') > since;
   const MAX = 60;
   const table = (list) => `${HEAD}\n${list.slice(0, MAX).map((n) => row(n, today)).join('\n')}${list.length > MAX ? `\n\n외 ${list.length - MAX}건 — 사이트에서 확인` : ''}\n`;
-  const by = (b) => all.filter((n) => isNew(n) && evaluate(n).bucket === b).sort((a, c) => statusOf(a, today).order - statusOf(c, today).order);
+  // 처음 잡혔을 때 이미 마감된 공고(소스를 새로 연결했을 때 등)는 신청할 수 없으니 알리지 않는다 — 사이트 목록엔 남는다
+  const by = (b) => all.filter((n) => isNew(n) && evaluate(n).bucket === b && statusOf(n, today).key !== 'closed')
+    .sort((a, c) => statusOf(a, today).order - statusOf(c, today).order);
   const pass = by('pass');
   const border = by('border');
   const unknown = by('unknown');
