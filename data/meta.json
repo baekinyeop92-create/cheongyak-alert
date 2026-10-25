@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "runAt": "2026-10-24T21:14:54.275Z",
-  "today": "2026-10-25",
-  "prevRunAt": "2026-10-23T21:20:19.422Z",
+  "runAt": "2026-10-25T22:58:43.721Z",
+  "today": "2026-10-26",
+  "prevRunAt": "2026-10-24T21:14:54.275Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-10-24T21:14:54.275Z",
-  "lastSuccessToday": "2026-10-25",
+  "lastSuccessAt": "2026-10-25T22:58:43.721Z",
+  "lastSuccessToday": "2026-10-26",
   "sources": {
     "apt": {
       "label": "아파트",
@@ -18,8 +18,8 @@
       "excluded": 0,
       "inWindow": 37,
       "missing": 0,
-      "windowStart": "2026-09-10",
-      "lastOkToday": "2026-10-25",
+      "windowStart": "2026-09-11",
+      "lastOkToday": "2026-10-26",
       "lastGoodExpected": 2916,
       "error": null,
       "fill": {
@@ -39,8 +39,8 @@
       "excluded": 0,
       "inWindow": 45,
       "missing": 0,
-      "windowStart": "2026-09-10",
-      "lastOkToday": "2026-10-25",
+      "windowStart": "2026-09-11",
+      "lastOkToday": "2026-10-26",
       "lastGoodExpected": 1724,
       "error": null,
       "fill": {
@@ -60,8 +60,8 @@
       "excluded": 0,
       "inWindow": 53,
       "missing": 0,
-      "windowStart": "2026-09-10",
-      "lastOkToday": "2026-10-25",
+      "windowStart": "2026-09-11",
+      "lastOkToday": "2026-10-26",
       "lastGoodExpected": 688,
       "error": null,
       "fill": {
@@ -81,8 +81,8 @@
       "excluded": 31,
       "inWindow": 22,
       "missing": 0,
-      "windowStart": "2026-09-10",
-      "lastOkToday": "2026-10-25",
+      "windowStart": "2026-09-11",
+      "lastOkToday": "2026-10-26",
       "lastGoodExpected": 630,
       "error": null,
       "fill": {
@@ -95,15 +95,15 @@
       "label": "LH 공고",
       "status": "ok",
       "operation": "lhLeaseNoticeInfo1",
-      "expected": 45,
-      "fetched": 45,
+      "expected": 44,
+      "fetched": 44,
       "pages": 4,
-      "inRegion": 45,
+      "inRegion": 44,
       "excluded": 13,
       "inWindow": 10,
       "missing": 0,
-      "windowStart": "2026-09-10",
-      "lastOkToday": "2026-10-25",
+      "windowStart": "2026-09-11",
+      "lastOkToday": "2026-10-26",
       "error": null
     }
   },
@@ -124,7 +124,7 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-09-10",
+  "windowStart": "2026-09-11",
   "counts": {
     "stored": 167,
     "dup": 8,
@@ -292,30 +292,6 @@
         },
         "codes": [
           "41670"
-        ]
-      },
-      "서울|성북구": {
-        "n": 1966,
-        "bands": {
-          "s": {
-            "n": 837,
-            "m2": 1485
-          },
-          "m": {
-            "n": 792,
-            "m2": 1173
-          },
-          "l": {
-            "n": 337,
-            "m2": 924
-          },
-          "all": {
-            "n": 1966,
-            "m2": 1241
-          }
-        },
-        "codes": [
-          "11290"
         ]
       },
       "경기|의정부시": {
@@ -564,30 +540,6 @@
           "11650"
         ]
       },
-      "경기|김포시": {
-        "n": 2366,
-        "bands": {
-          "s": {
-            "n": 572,
-            "m2": 590
-          },
-          "m": {
-            "n": 1378,
-            "m2": 554
-          },
-          "l": {
-            "n": 416,
-            "m2": 455
-          },
-          "all": {
-            "n": 2366,
-            "m2": 544
-          }
-        },
-        "codes": [
-          "41570"
-        ]
-      },
       "경기|이천시": {
         "n": 997,
         "bands": {
@@ -707,6 +659,30 @@
         "codes": [
           "41171",
           "41173"
+        ]
+      },
+      "경기|김포시": {
+        "n": 2366,
+        "bands": {
+          "s": {
+            "n": 572,
+            "m2": 590
+          },
+          "m": {
+            "n": 1378,
+            "m2": 554
+          },
+          "l": {
+            "n": 416,
+            "m2": 455
+          },
+          "all": {
+            "n": 2366,
+            "m2": 544
+          }
+        },
+        "codes": [
+          "41570"
         ]
       },
       "서울|노원구": {
@@ -1029,7 +1005,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-10-24T21:15:25.906Z",
+    "checkedAt": "2026-10-25T22:59:20.633Z",
     "warnings": []
   }
 }
