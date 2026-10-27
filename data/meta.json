@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "runAt": "2026-10-25T22:58:43.721Z",
-  "today": "2026-10-26",
-  "prevRunAt": "2026-10-24T21:14:54.275Z",
+  "runAt": "2026-10-27T00:09:48.262Z",
+  "today": "2026-10-27",
+  "prevRunAt": "2026-10-25T22:58:43.721Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-10-25T22:58:43.721Z",
-  "lastSuccessToday": "2026-10-26",
+  "lastSuccessAt": "2026-10-27T00:09:48.262Z",
+  "lastSuccessToday": "2026-10-27",
   "sources": {
     "apt": {
       "label": "아파트",
@@ -18,8 +18,8 @@
       "excluded": 0,
       "inWindow": 37,
       "missing": 0,
-      "windowStart": "2026-09-11",
-      "lastOkToday": "2026-10-26",
+      "windowStart": "2026-09-12",
+      "lastOkToday": "2026-10-27",
       "lastGoodExpected": 2916,
       "error": null,
       "fill": {
@@ -32,16 +32,16 @@
       "label": "무순위·잔여",
       "status": "ok",
       "operation": "getRemndrLttotPblancDetail",
-      "expected": 1724,
-      "fetched": 1724,
+      "expected": 1727,
+      "fetched": 1727,
       "pages": 4,
-      "inRegion": 954,
+      "inRegion": 957,
       "excluded": 0,
-      "inWindow": 45,
+      "inWindow": 48,
       "missing": 0,
-      "windowStart": "2026-09-11",
-      "lastOkToday": "2026-10-26",
-      "lastGoodExpected": 1724,
+      "windowStart": "2026-09-12",
+      "lastOkToday": "2026-10-27",
+      "lastGoodExpected": 1727,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -53,16 +53,16 @@
       "label": "임의공급",
       "status": "ok",
       "operation": "getOPTLttotPblancDetail",
-      "expected": 688,
-      "fetched": 688,
+      "expected": 690,
+      "fetched": 690,
       "pages": 2,
-      "inRegion": 489,
+      "inRegion": 491,
       "excluded": 0,
-      "inWindow": 53,
+      "inWindow": 55,
       "missing": 0,
-      "windowStart": "2026-09-11",
-      "lastOkToday": "2026-10-26",
-      "lastGoodExpected": 688,
+      "windowStart": "2026-09-12",
+      "lastOkToday": "2026-10-27",
+      "lastGoodExpected": 690,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -81,8 +81,8 @@
       "excluded": 31,
       "inWindow": 22,
       "missing": 0,
-      "windowStart": "2026-09-11",
-      "lastOkToday": "2026-10-26",
+      "windowStart": "2026-09-12",
+      "lastOkToday": "2026-10-27",
       "lastGoodExpected": 630,
       "error": null,
       "fill": {
@@ -102,8 +102,8 @@
       "excluded": 13,
       "inWindow": 10,
       "missing": 0,
-      "windowStart": "2026-09-11",
-      "lastOkToday": "2026-10-26",
+      "windowStart": "2026-09-12",
+      "lastOkToday": "2026-10-27",
       "error": null
     }
   },
@@ -113,7 +113,13 @@
     "errors": 0
   },
   "warnings": [],
-  "newIds": [],
+  "newIds": [
+    "remndr:2026930042:2026930042",
+    "remndr:2026910269:2026910269",
+    "remndr:2026910257:2026910257",
+    "opt:2026940238:2026940238",
+    "opt:2026940236:2026940236"
+  ],
   "opCache": {
     "apt": "getAPTLttotPblancDetail",
     "apt:mdl": "getAPTLttotPblancMdl",
@@ -124,17 +130,17 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-09-11",
+  "windowStart": "2026-09-12",
   "counts": {
-    "stored": 167,
+    "stored": 172,
     "dup": 8,
-    "visible": 159,
-    "active": 18,
-    "pass": 137,
+    "visible": 164,
+    "active": 20,
+    "pass": 142,
     "border": 1,
     "unknown": 2,
     "over": 19,
-    "activePass": 15
+    "activePass": 17
   },
   "market": {
     "status": "ok",
@@ -564,28 +570,28 @@
           "41500"
         ]
       },
-      "서울|강북구": {
-        "n": 788,
+      "서울|성동구": {
+        "n": 780,
         "bands": {
           "s": {
-            "n": 286,
-            "m2": 1164
+            "n": 323,
+            "m2": 2804
           },
           "m": {
-            "n": 398,
-            "m2": 890
+            "n": 326,
+            "m2": 2177
           },
           "l": {
-            "n": 104,
-            "m2": 697
+            "n": 131,
+            "m2": 1692
           },
           "all": {
-            "n": 788,
-            "m2": 931
+            "n": 780,
+            "m2": 2404
           }
         },
         "codes": [
-          "11305"
+          "11200"
         ]
       },
       "서울|양천구": {
@@ -610,30 +616,6 @@
         },
         "codes": [
           "11470"
-        ]
-      },
-      "서울|성동구": {
-        "n": 780,
-        "bands": {
-          "s": {
-            "n": 323,
-            "m2": 2804
-          },
-          "m": {
-            "n": 326,
-            "m2": 2177
-          },
-          "l": {
-            "n": 131,
-            "m2": 1692
-          },
-          "all": {
-            "n": 780,
-            "m2": 2404
-          }
-        },
-        "codes": [
-          "11200"
         ]
       },
       "경기|안양시": {
@@ -709,6 +691,30 @@
           "11350"
         ]
       },
+      "서울|강북구": {
+        "n": 788,
+        "bands": {
+          "s": {
+            "n": 286,
+            "m2": 1164
+          },
+          "m": {
+            "n": 398,
+            "m2": 890
+          },
+          "l": {
+            "n": 104,
+            "m2": 697
+          },
+          "all": {
+            "n": 788,
+            "m2": 931
+          }
+        },
+        "codes": [
+          "11305"
+        ]
+      },
       "서울|강서구": {
         "n": 2448,
         "bands": {
@@ -779,6 +785,30 @@
         },
         "codes": [
           "41410"
+        ]
+      },
+      "경기|안성시": {
+        "n": 1028,
+        "bands": {
+          "s": {
+            "n": 600,
+            "m2": 229
+          },
+          "m": {
+            "n": 397,
+            "m2": 319
+          },
+          "l": {
+            "n": 31,
+            "m2": 280
+          },
+          "all": {
+            "n": 1028,
+            "m2": 249
+          }
+        },
+        "codes": [
+          "41550"
         ]
       },
       "서울|중구": {
@@ -1005,7 +1035,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-10-25T22:59:20.633Z",
+    "checkedAt": "2026-10-27T00:10:20.649Z",
     "warnings": []
   }
 }

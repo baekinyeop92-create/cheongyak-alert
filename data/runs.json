@@ -397,5 +397,24 @@
       "urbty": "ok",
       "lh": "ok"
     }
+  },
+  {
+    "at": "2026-10-27T00:09:48.262Z",
+    "status": "ok",
+    "event": "schedule",
+    "run": "https://github.com/baekinyeop92-create/cheongyak-alert/actions/runs/40424579594",
+    "new": 5,
+    "counts": {
+      "visible": 164,
+      "pass": 142,
+      "active": 20
+    },
+    "sources": {
+      "apt": "ok",
+      "remndr": "ok",
+      "opt": "ok",
+      "urbty": "ok",
+      "lh": "ok"
+    }
   }
 ]
