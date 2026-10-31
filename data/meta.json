@@ -1,26 +1,26 @@
 {
   "version": 2,
-  "runAt": "2026-10-30T00:32:38.059Z",
-  "today": "2026-10-30",
-  "prevRunAt": "2026-10-29T00:33:06.989Z",
+  "runAt": "2026-10-31T00:17:32.485Z",
+  "today": "2026-10-31",
+  "prevRunAt": "2026-10-30T00:32:38.059Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-10-30T00:32:38.059Z",
-  "lastSuccessToday": "2026-10-30",
+  "lastSuccessAt": "2026-10-31T00:17:32.485Z",
+  "lastSuccessToday": "2026-10-31",
   "sources": {
     "apt": {
       "label": "아파트",
       "status": "ok",
       "operation": "getAPTLttotPblancDetail",
-      "expected": 2921,
-      "fetched": 2921,
+      "expected": 2929,
+      "fetched": 2929,
       "pages": 6,
-      "inRegion": 1124,
+      "inRegion": 1130,
       "excluded": 0,
-      "inWindow": 40,
+      "inWindow": 46,
       "missing": 0,
-      "windowStart": "2026-09-15",
-      "lastOkToday": "2026-10-30",
-      "lastGoodExpected": 2921,
+      "windowStart": "2026-09-16",
+      "lastOkToday": "2026-10-31",
+      "lastGoodExpected": 2929,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -39,8 +39,8 @@
       "excluded": 0,
       "inWindow": 50,
       "missing": 0,
-      "windowStart": "2026-09-15",
-      "lastOkToday": "2026-10-30",
+      "windowStart": "2026-09-16",
+      "lastOkToday": "2026-10-31",
       "lastGoodExpected": 1731,
       "error": null,
       "fill": {
@@ -60,8 +60,8 @@
       "excluded": 0,
       "inWindow": 58,
       "missing": 0,
-      "windowStart": "2026-09-15",
-      "lastOkToday": "2026-10-30",
+      "windowStart": "2026-09-16",
+      "lastOkToday": "2026-10-31",
       "lastGoodExpected": 694,
       "error": null,
       "fill": {
@@ -81,8 +81,8 @@
       "excluded": 31,
       "inWindow": 22,
       "missing": 0,
-      "windowStart": "2026-09-15",
-      "lastOkToday": "2026-10-30",
+      "windowStart": "2026-09-16",
+      "lastOkToday": "2026-10-31",
       "lastGoodExpected": 630,
       "error": null,
       "fill": {
@@ -95,29 +95,33 @@
       "label": "LH 공고",
       "status": "ok",
       "operation": "lhLeaseNoticeInfo1",
-      "expected": 46,
-      "fetched": 46,
+      "expected": 48,
+      "fetched": 48,
       "pages": 4,
-      "inRegion": 46,
+      "inRegion": 48,
       "excluded": 14,
-      "inWindow": 11,
+      "inWindow": 13,
       "missing": 0,
-      "windowStart": "2026-09-15",
-      "lastOkToday": "2026-10-30",
+      "windowStart": "2026-09-16",
+      "lastOkToday": "2026-10-31",
       "error": null
     }
   },
   "price": {
-    "calls": 34,
+    "calls": 37,
     "empty": 0,
     "errors": 0
   },
   "warnings": [],
   "newIds": [
-    "apt:2026000535:2026000535",
-    "apt:2026000525:2026000525",
-    "apt:2026000499:2026000499",
-    "opt:2026940237:2026940237"
+    "apt:2026820013:2026820013",
+    "apt:2026000533:2026000533",
+    "apt:2026000528:2026000528",
+    "apt:2026000527:2026000527",
+    "apt:2026000515:2026000515",
+    "apt:2026000472:2026000472",
+    "lh:0000061189",
+    "lh:0000061196"
   ],
   "opCache": {
     "apt": "getAPTLttotPblancDetail",
@@ -129,17 +133,17 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-09-15",
+  "windowStart": "2026-09-16",
   "counts": {
-    "stored": 181,
-    "dup": 9,
-    "visible": 172,
-    "active": 17,
-    "pass": 149,
+    "stored": 189,
+    "dup": 11,
+    "visible": 178,
+    "active": 22,
+    "pass": 155,
     "border": 1,
     "unknown": 2,
     "over": 20,
-    "activePass": 16
+    "activePass": 21
   },
   "market": {
     "status": "ok",
@@ -497,6 +501,30 @@
           "41830"
         ]
       },
+      "경기|구리시": {
+        "n": 1341,
+        "bands": {
+          "s": {
+            "n": 498,
+            "m2": 1130
+          },
+          "m": {
+            "n": 724,
+            "m2": 918
+          },
+          "l": {
+            "n": 119,
+            "m2": 888
+          },
+          "all": {
+            "n": 1341,
+            "m2": 977
+          }
+        },
+        "codes": [
+          "41310"
+        ]
+      },
       "경기|파주시": {
         "n": 2374,
         "bands": {
@@ -519,6 +547,31 @@
         },
         "codes": [
           "41480"
+        ]
+      },
+      "경기|안산시": {
+        "n": 2281,
+        "bands": {
+          "s": {
+            "n": 1026,
+            "m2": 605
+          },
+          "m": {
+            "n": 989,
+            "m2": 599
+          },
+          "l": {
+            "n": 266,
+            "m2": 579
+          },
+          "all": {
+            "n": 2281,
+            "m2": 598
+          }
+        },
+        "codes": [
+          "41271",
+          "41273"
         ]
       },
       "서울|서초구": {
@@ -810,30 +863,6 @@
           "41550"
         ]
       },
-      "경기|오산시": {
-        "n": 1917,
-        "bands": {
-          "s": {
-            "n": 603,
-            "m2": 440
-          },
-          "m": {
-            "n": 1110,
-            "m2": 519
-          },
-          "l": {
-            "n": 204,
-            "m2": 406
-          },
-          "all": {
-            "n": 1917,
-            "m2": 477
-          }
-        },
-        "codes": [
-          "41370"
-        ]
-      },
       "서울|관악구": {
         "n": 1245,
         "bands": {
@@ -1004,6 +1033,30 @@
           "11710"
         ]
       },
+      "경기|오산시": {
+        "n": 1917,
+        "bands": {
+          "s": {
+            "n": 603,
+            "m2": 440
+          },
+          "m": {
+            "n": 1110,
+            "m2": 519
+          },
+          "l": {
+            "n": 204,
+            "m2": 406
+          },
+          "all": {
+            "n": 1917,
+            "m2": 477
+          }
+        },
+        "codes": [
+          "41370"
+        ]
+      },
       "서울|영등포구": {
         "n": 1482,
         "bands": {
@@ -1034,7 +1087,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-10-30T00:33:19.236Z",
+    "checkedAt": "2026-10-31T00:18:08.952Z",
     "warnings": []
   }
 }
