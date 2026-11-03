@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "runAt": "2026-11-02T00:07:13.259Z",
-  "today": "2026-11-02",
-  "prevRunAt": "2026-10-31T23:54:01.815Z",
+  "runAt": "2026-11-03T02:44:05.925Z",
+  "today": "2026-11-03",
+  "prevRunAt": "2026-11-02T00:07:13.259Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-11-02T00:07:13.259Z",
-  "lastSuccessToday": "2026-11-02",
+  "lastSuccessAt": "2026-11-03T02:44:05.925Z",
+  "lastSuccessToday": "2026-11-03",
   "sources": {
     "apt": {
       "label": "아파트",
@@ -18,8 +18,8 @@
       "excluded": 0,
       "inWindow": 46,
       "missing": 0,
-      "windowStart": "2026-09-18",
-      "lastOkToday": "2026-11-02",
+      "windowStart": "2026-09-19",
+      "lastOkToday": "2026-11-03",
       "lastGoodExpected": 2929,
       "error": null,
       "fill": {
@@ -32,16 +32,16 @@
       "label": "무순위·잔여",
       "status": "ok",
       "operation": "getRemndrLttotPblancDetail",
-      "expected": 1731,
-      "fetched": 1731,
+      "expected": 1732,
+      "fetched": 1732,
       "pages": 4,
-      "inRegion": 959,
+      "inRegion": 960,
       "excluded": 0,
-      "inWindow": 50,
+      "inWindow": 51,
       "missing": 0,
-      "windowStart": "2026-09-18",
-      "lastOkToday": "2026-11-02",
-      "lastGoodExpected": 1731,
+      "windowStart": "2026-09-19",
+      "lastOkToday": "2026-11-03",
+      "lastGoodExpected": 1732,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -53,16 +53,16 @@
       "label": "임의공급",
       "status": "ok",
       "operation": "getOPTLttotPblancDetail",
-      "expected": 694,
-      "fetched": 694,
+      "expected": 696,
+      "fetched": 696,
       "pages": 2,
-      "inRegion": 494,
+      "inRegion": 496,
       "excluded": 0,
-      "inWindow": 58,
+      "inWindow": 60,
       "missing": 0,
-      "windowStart": "2026-09-18",
-      "lastOkToday": "2026-11-02",
-      "lastGoodExpected": 694,
+      "windowStart": "2026-09-19",
+      "lastOkToday": "2026-11-03",
+      "lastGoodExpected": 696,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -81,8 +81,8 @@
       "excluded": 31,
       "inWindow": 22,
       "missing": 0,
-      "windowStart": "2026-09-18",
-      "lastOkToday": "2026-11-02",
+      "windowStart": "2026-09-19",
+      "lastOkToday": "2026-11-03",
       "lastGoodExpected": 630,
       "error": null,
       "fill": {
@@ -93,18 +93,18 @@
     },
     "lh": {
       "label": "LH 공고",
-      "status": "ok",
+      "status": "error",
       "operation": "lhLeaseNoticeInfo1",
-      "expected": 48,
-      "fetched": 48,
-      "pages": 4,
-      "inRegion": 48,
-      "excluded": 14,
-      "inWindow": 13,
+      "expected": 0,
+      "fetched": 0,
+      "pages": 0,
+      "inRegion": 0,
+      "excluded": 0,
+      "inWindow": 0,
       "missing": 0,
-      "windowStart": "2026-09-18",
+      "windowStart": "2026-09-19",
       "lastOkToday": "2026-11-02",
-      "error": null
+      "error": "네트워크 실패: UND_ERR_CONNECT_TIMEOUT"
     }
   },
   "price": {
@@ -113,7 +113,11 @@
     "errors": 0
   },
   "warnings": [],
-  "newIds": [],
+  "newIds": [
+    "remndr:2026910281:2026910281",
+    "opt:2026940246:2026940246",
+    "opt:2026940245:2026940245"
+  ],
   "opCache": {
     "apt": "getAPTLttotPblancDetail",
     "apt:mdl": "getAPTLttotPblancMdl",
@@ -124,17 +128,17 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-09-18",
+  "windowStart": "2026-09-19",
   "counts": {
-    "stored": 189,
+    "stored": 192,
     "dup": 11,
-    "visible": 178,
-    "active": 22,
-    "pass": 155,
+    "visible": 181,
+    "active": 20,
+    "pass": 158,
     "border": 1,
     "unknown": 2,
     "over": 20,
-    "activePass": 21
+    "activePass": 20
   },
   "market": {
     "status": "ok",
@@ -539,30 +543,6 @@
         },
         "codes": [
           "41630"
-        ]
-      },
-      "서울|성동구": {
-        "n": 599,
-        "bands": {
-          "s": {
-            "n": 250,
-            "m2": 2814
-          },
-          "m": {
-            "n": 250,
-            "m2": 2210
-          },
-          "l": {
-            "n": 99,
-            "m2": 1688
-          },
-          "all": {
-            "n": 599,
-            "m2": 2446
-          }
-        },
-        "codes": [
-          "11200"
         ]
       },
       "경기|의정부시": {
@@ -1054,7 +1034,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-11-02T00:07:48.930Z",
+    "checkedAt": "2026-11-03T02:46:04.625Z",
     "warnings": []
   }
 }
