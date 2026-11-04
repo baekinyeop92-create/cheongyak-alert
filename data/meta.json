@@ -1,26 +1,26 @@
 {
   "version": 2,
-  "runAt": "2026-11-03T02:44:05.925Z",
-  "today": "2026-11-03",
-  "prevRunAt": "2026-11-02T00:07:13.259Z",
+  "runAt": "2026-11-04T00:59:44.455Z",
+  "today": "2026-11-04",
+  "prevRunAt": "2026-11-03T02:44:05.925Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-11-03T02:44:05.925Z",
-  "lastSuccessToday": "2026-11-03",
+  "lastSuccessAt": "2026-11-04T00:59:44.455Z",
+  "lastSuccessToday": "2026-11-04",
   "sources": {
     "apt": {
       "label": "아파트",
       "status": "ok",
       "operation": "getAPTLttotPblancDetail",
-      "expected": 2929,
-      "fetched": 2929,
+      "expected": 2931,
+      "fetched": 2931,
       "pages": 6,
-      "inRegion": 1130,
+      "inRegion": 1131,
       "excluded": 0,
-      "inWindow": 46,
+      "inWindow": 47,
       "missing": 0,
-      "windowStart": "2026-09-19",
-      "lastOkToday": "2026-11-03",
-      "lastGoodExpected": 2929,
+      "windowStart": "2026-09-20",
+      "lastOkToday": "2026-11-04",
+      "lastGoodExpected": 2931,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -32,16 +32,16 @@
       "label": "무순위·잔여",
       "status": "ok",
       "operation": "getRemndrLttotPblancDetail",
-      "expected": 1732,
-      "fetched": 1732,
+      "expected": 1735,
+      "fetched": 1735,
       "pages": 4,
       "inRegion": 960,
       "excluded": 0,
       "inWindow": 51,
       "missing": 0,
-      "windowStart": "2026-09-19",
-      "lastOkToday": "2026-11-03",
-      "lastGoodExpected": 1732,
+      "windowStart": "2026-09-20",
+      "lastOkToday": "2026-11-04",
+      "lastGoodExpected": 1735,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -60,8 +60,8 @@
       "excluded": 0,
       "inWindow": 60,
       "missing": 0,
-      "windowStart": "2026-09-19",
-      "lastOkToday": "2026-11-03",
+      "windowStart": "2026-09-20",
+      "lastOkToday": "2026-11-04",
       "lastGoodExpected": 696,
       "error": null,
       "fill": {
@@ -81,8 +81,8 @@
       "excluded": 31,
       "inWindow": 22,
       "missing": 0,
-      "windowStart": "2026-09-19",
-      "lastOkToday": "2026-11-03",
+      "windowStart": "2026-09-20",
+      "lastOkToday": "2026-11-04",
       "lastGoodExpected": 630,
       "error": null,
       "fill": {
@@ -93,30 +93,31 @@
     },
     "lh": {
       "label": "LH 공고",
-      "status": "error",
+      "status": "ok",
       "operation": "lhLeaseNoticeInfo1",
-      "expected": 0,
-      "fetched": 0,
-      "pages": 0,
-      "inRegion": 0,
-      "excluded": 0,
-      "inWindow": 0,
+      "expected": 51,
+      "fetched": 51,
+      "pages": 4,
+      "inRegion": 51,
+      "excluded": 14,
+      "inWindow": 16,
       "missing": 0,
-      "windowStart": "2026-09-19",
-      "lastOkToday": "2026-11-02",
-      "error": "네트워크 실패: UND_ERR_CONNECT_TIMEOUT"
+      "windowStart": "2026-09-20",
+      "lastOkToday": "2026-11-04",
+      "error": null
     }
   },
   "price": {
-    "calls": 37,
+    "calls": 34,
     "empty": 0,
     "errors": 0
   },
   "warnings": [],
   "newIds": [
-    "remndr:2026910281:2026910281",
-    "opt:2026940246:2026940246",
-    "opt:2026940245:2026940245"
+    "apt:2026820014:2026820014",
+    "lh:0000061192",
+    "lh:0000061199",
+    "lh:0000061200"
   ],
   "opCache": {
     "apt": "getAPTLttotPblancDetail",
@@ -128,17 +129,17 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-09-19",
+  "windowStart": "2026-09-20",
   "counts": {
-    "stored": 192,
-    "dup": 11,
-    "visible": 181,
+    "stored": 196,
+    "dup": 12,
+    "visible": 184,
     "active": 20,
-    "pass": 158,
+    "pass": 159,
     "border": 1,
-    "unknown": 2,
+    "unknown": 4,
     "over": 20,
-    "activePass": 20
+    "activePass": 18
   },
   "market": {
     "status": "ok",
@@ -1034,7 +1035,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-11-03T02:46:04.625Z",
+    "checkedAt": "2026-11-04T01:00:57.046Z",
     "warnings": []
   }
 }
