@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "runAt": "2026-11-04T00:59:44.455Z",
-  "today": "2026-11-04",
-  "prevRunAt": "2026-11-03T02:44:05.925Z",
+  "runAt": "2026-11-05T01:13:49.195Z",
+  "today": "2026-11-05",
+  "prevRunAt": "2026-11-04T00:59:44.455Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-11-04T00:59:44.455Z",
-  "lastSuccessToday": "2026-11-04",
+  "lastSuccessAt": "2026-11-05T01:13:49.195Z",
+  "lastSuccessToday": "2026-11-05",
   "sources": {
     "apt": {
       "label": "아파트",
@@ -18,8 +18,8 @@
       "excluded": 0,
       "inWindow": 47,
       "missing": 0,
-      "windowStart": "2026-09-20",
-      "lastOkToday": "2026-11-04",
+      "windowStart": "2026-09-21",
+      "lastOkToday": "2026-11-05",
       "lastGoodExpected": 2931,
       "error": null,
       "fill": {
@@ -32,16 +32,16 @@
       "label": "무순위·잔여",
       "status": "ok",
       "operation": "getRemndrLttotPblancDetail",
-      "expected": 1735,
-      "fetched": 1735,
+      "expected": 1738,
+      "fetched": 1738,
       "pages": 4,
       "inRegion": 960,
       "excluded": 0,
       "inWindow": 51,
       "missing": 0,
-      "windowStart": "2026-09-20",
-      "lastOkToday": "2026-11-04",
-      "lastGoodExpected": 1735,
+      "windowStart": "2026-09-21",
+      "lastOkToday": "2026-11-05",
+      "lastGoodExpected": 1738,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -60,8 +60,8 @@
       "excluded": 0,
       "inWindow": 60,
       "missing": 0,
-      "windowStart": "2026-09-20",
-      "lastOkToday": "2026-11-04",
+      "windowStart": "2026-09-21",
+      "lastOkToday": "2026-11-05",
       "lastGoodExpected": 696,
       "error": null,
       "fill": {
@@ -74,16 +74,16 @@
       "label": "오피스텔·도시형",
       "status": "ok",
       "operation": "getUrbtyOfctlLttotPblancDetail",
-      "expected": 630,
-      "fetched": 630,
+      "expected": 631,
+      "fetched": 631,
       "pages": 2,
-      "inRegion": 430,
+      "inRegion": 431,
       "excluded": 31,
-      "inWindow": 22,
+      "inWindow": 23,
       "missing": 0,
-      "windowStart": "2026-09-20",
-      "lastOkToday": "2026-11-04",
-      "lastGoodExpected": 630,
+      "windowStart": "2026-09-21",
+      "lastOkToday": "2026-11-05",
+      "lastGoodExpected": 631,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -95,29 +95,27 @@
       "label": "LH 공고",
       "status": "ok",
       "operation": "lhLeaseNoticeInfo1",
-      "expected": 51,
-      "fetched": 51,
+      "expected": 52,
+      "fetched": 52,
       "pages": 4,
-      "inRegion": 51,
+      "inRegion": 52,
       "excluded": 14,
-      "inWindow": 16,
+      "inWindow": 17,
       "missing": 0,
-      "windowStart": "2026-09-20",
-      "lastOkToday": "2026-11-04",
+      "windowStart": "2026-09-21",
+      "lastOkToday": "2026-11-05",
       "error": null
     }
   },
   "price": {
-    "calls": 34,
+    "calls": 29,
     "empty": 0,
     "errors": 0
   },
   "warnings": [],
   "newIds": [
-    "apt:2026820014:2026820014",
-    "lh:0000061192",
-    "lh:0000061199",
-    "lh:0000061200"
+    "urbty:2026950096:2026950096",
+    "lh:0000061205"
   ],
   "opCache": {
     "apt": "getAPTLttotPblancDetail",
@@ -129,17 +127,17 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-09-20",
+  "windowStart": "2026-09-21",
   "counts": {
-    "stored": 196,
-    "dup": 12,
-    "visible": 184,
-    "active": 20,
-    "pass": 159,
+    "stored": 198,
+    "dup": 13,
+    "visible": 185,
+    "active": 18,
+    "pass": 160,
     "border": 1,
     "unknown": 4,
     "over": 20,
-    "activePass": 18
+    "activePass": 16
   },
   "market": {
     "status": "ok",
@@ -1035,7 +1033,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-11-04T01:00:57.046Z",
+    "checkedAt": "2026-11-05T01:14:21.724Z",
     "warnings": []
   }
 }
