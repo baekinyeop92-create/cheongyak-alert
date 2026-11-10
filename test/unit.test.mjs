@@ -231,7 +231,7 @@ test('실행 주기: 워크플로 재시도 cron 과 재시도 판단 코드가 
   const { readFile } = await import('node:fs/promises');
   const yml = await readFile(new URL('../.github/workflows/weekly.yml', import.meta.url), 'utf8');
   const crons = [...yml.matchAll(/- cron: "([^"]+)"/g)].map((m) => m[1]);
-  assert.deepEqual(crons, ['0 21 * * *', '0 3 * * *'], '매일 06:00 + 12:00 KST');
+  assert.deepEqual(crons, ['23 19 * * *', '53 2 * * *'], '매일 04:23 + 11:53 KST (정각 회피)');
   const gate = await readFile(new URL('../scripts/should-run.mjs', import.meta.url), 'utf8');
   assert.equal(gate.match(/RETRY_CRON = '([^']+)'/)[1], crons[1], '다르면 재시도 슬롯이 정규 실행처럼 매번 돈다');
 });

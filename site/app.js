@@ -387,11 +387,11 @@ const SRC_STATUS = {
 
 function nextRun(runAt) {
   if (!runAt) return '—';
-  // 마지막 실행 다음의 06:00 KST (매일). KST 시각을 UTC 필드에 얹어 계산한다.
+  // 마지막 실행 다음의 정규 실행일(매일 04:23 KST 예약). GitHub 예약은 몇 시간씩 밀리기도 해서 시각 대신 '오전'으로 적는다.
   const k = new Date(Date.parse(runAt) + 9 * 3600000);
-  const d = new Date(Date.UTC(k.getUTCFullYear(), k.getUTCMonth(), k.getUTCDate(), 6));
+  const d = new Date(Date.UTC(k.getUTCFullYear(), k.getUTCMonth(), k.getUTCDate(), 4, 23));
   if (k >= d) d.setUTCDate(d.getUTCDate() + 1);
-  return `${d.getUTCMonth() + 1}/${d.getUTCDate()} 06:00`;
+  return `${d.getUTCMonth() + 1}/${d.getUTCDate()} 오전`;
 }
 
 function audit() {
@@ -441,7 +441,7 @@ function audit() {
       <p><b>청약 자격(참고)</b> 카드의 ‘신청 가능성’은 거주지 프로필(이 기기에만 저장, 서버 전송 없음)과 공고의 순위별 지역 접수일·규제 플래그로 추정한 값입니다. ‘청약 자격·선정 기준’ 펼침의 요건·비율은 일반 제도 기준(${AS_OF})이며, 무순위 거주요건·특별공급 소득 기준처럼 공고마다 다른 항목은 표시하지 않습니다 — <b>확정 요건은 항상 모집공고문</b>입니다.</p>
       <p><b>단지 전체 세대수(참고)</b> 무순위·임의공급 카드의 ‘단지 전체’는 청약홈에 남아 있는 <b>같은 이름·같은 지역의 본청약 공고(2019년 이후)</b>의 공급규모를 연결한 값입니다. 이름이 다르거나 본청약이 청약홈 밖(2019년 이전 등)이면 표시하지 않으며, ‘본청약 공고’ 버튼으로 원공고를 직접 확인할 수 있습니다. 임대분 등이 빠진 분양 기준 규모라 실제 단지 총세대수와 다를 수 있습니다.</p>
       <p><b>수집 범위</b> 청약홈 APT·무순위/잔여세대·임의공급·오피스텔/도시형생활주택(민간임대·생활숙박시설 제외) + LH 분양주택·신혼희망타운 공고(행복주택 등 임대 제외 · LH 공고는 분양가 정보가 없어 ‘가격 미확인’ 칸에 표시). 받은 건수가 API 총건수와 다르면 그 주는 실패로 기록하고 다음 실행이 빠진 기간을 다시 훑습니다. 한 번 올라온 공고는 API에서 사라져도 지우지 않습니다.</p>
-      <p><b>한계</b> SH·GH가 자체 청약시스템에만 올리는 공고는 공개 API가 없어 자동 수집 대상이 아닙니다. 청약홈 API는 공고 다음 날 새벽에 반영되고 이 사이트는 매일 06시에 갱신하므로, 공고 당일·다음 날 마감되는 무순위·임의공급은 놓칠 수 있습니다(아래 청약홈 캘린더에서 함께 확인하세요). 공공지원 민간임대·민간임대는 분양이 아니라 제외합니다. 최종 기준은 항상 입주자모집공고 원문입니다.</p>
+      <p><b>한계</b> SH·GH가 자체 청약시스템에만 올리는 공고는 공개 API가 없어 자동 수집 대상이 아닙니다. 청약홈 API는 공고 다음 날 새벽에 반영되고 이 사이트는 매일 오전에 갱신하므로, 공고 당일·다음 날 마감되는 무순위·임의공급은 놓칠 수 있습니다(아래 청약홈 캘린더에서 함께 확인하세요). 공공지원 민간임대·민간임대는 분양이 아니라 제외합니다. 최종 기준은 항상 입주자모집공고 원문입니다.</p>
       <div class="links">
         <a href="https://www.applyhome.co.kr/ai/aib/selectSubscrptCalenderView.do" target="_blank" rel="noopener">청약홈 캘린더</a>
         <a href="https://apply.lh.or.kr/" target="_blank" rel="noopener">LH청약플러스</a>
