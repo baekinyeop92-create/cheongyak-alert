@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "runAt": "2026-11-11T00:06:38.684Z",
-  "today": "2026-11-11",
-  "prevRunAt": "2026-11-10T06:46:13.283Z",
+  "runAt": "2026-11-12T01:35:07.236Z",
+  "today": "2026-11-12",
+  "prevRunAt": "2026-11-11T00:06:38.684Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-11-11T00:06:38.684Z",
-  "lastSuccessToday": "2026-11-11",
+  "lastSuccessAt": "2026-11-12T01:35:07.236Z",
+  "lastSuccessToday": "2026-11-12",
   "sources": {
     "apt": {
       "label": "아파트",
@@ -18,8 +18,8 @@
       "excluded": 0,
       "inWindow": 51,
       "missing": 0,
-      "windowStart": "2026-09-27",
-      "lastOkToday": "2026-11-11",
+      "windowStart": "2026-09-28",
+      "lastOkToday": "2026-11-12",
       "lastGoodExpected": 2935,
       "error": null,
       "fill": {
@@ -32,16 +32,16 @@
       "label": "무순위·잔여",
       "status": "ok",
       "operation": "getRemndrLttotPblancDetail",
-      "expected": 1745,
-      "fetched": 1745,
+      "expected": 1749,
+      "fetched": 1749,
       "pages": 4,
-      "inRegion": 965,
+      "inRegion": 968,
       "excluded": 0,
-      "inWindow": 56,
+      "inWindow": 59,
       "missing": 0,
-      "windowStart": "2026-09-27",
-      "lastOkToday": "2026-11-11",
-      "lastGoodExpected": 1745,
+      "windowStart": "2026-09-28",
+      "lastOkToday": "2026-11-12",
+      "lastGoodExpected": 1749,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -53,16 +53,16 @@
       "label": "임의공급",
       "status": "ok",
       "operation": "getOPTLttotPblancDetail",
-      "expected": 703,
-      "fetched": 703,
+      "expected": 705,
+      "fetched": 705,
       "pages": 2,
-      "inRegion": 500,
+      "inRegion": 501,
       "excluded": 0,
-      "inWindow": 64,
+      "inWindow": 65,
       "missing": 0,
-      "windowStart": "2026-09-27",
-      "lastOkToday": "2026-11-11",
-      "lastGoodExpected": 703,
+      "windowStart": "2026-09-28",
+      "lastOkToday": "2026-11-12",
+      "lastGoodExpected": 705,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -81,8 +81,8 @@
       "excluded": 31,
       "inWindow": 24,
       "missing": 0,
-      "windowStart": "2026-09-27",
-      "lastOkToday": "2026-11-11",
+      "windowStart": "2026-09-28",
+      "lastOkToday": "2026-11-12",
       "lastGoodExpected": 632,
       "error": null,
       "fill": {
@@ -102,22 +102,22 @@
       "excluded": 14,
       "inWindow": 21,
       "missing": 1,
-      "windowStart": "2026-09-27",
-      "lastOkToday": "2026-11-11",
+      "windowStart": "2026-09-28",
+      "lastOkToday": "2026-11-12",
       "error": null
     }
   },
   "price": {
-    "calls": 33,
+    "calls": 34,
     "empty": 0,
     "errors": 0
   },
   "warnings": [],
   "newIds": [
-    "remndr:2026910284:2026910284",
-    "opt:2026940254:2026940254",
-    "opt:2026940251:2026940251",
-    "opt:2026940247:2026940247"
+    "remndr:2026910297:2026910297",
+    "remndr:2026910293:2026910293",
+    "remndr:2026910288:2026910288",
+    "opt:2026940250:2026940250"
   ],
   "opCache": {
     "apt": "getAPTLttotPblancDetail",
@@ -129,17 +129,17 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-09-27",
+  "windowStart": "2026-09-28",
   "counts": {
-    "stored": 217,
+    "stored": 221,
     "dup": 14,
-    "visible": 203,
-    "active": 29,
-    "pass": 174,
+    "visible": 207,
+    "active": 26,
+    "pass": 178,
     "border": 1,
     "unknown": 8,
     "over": 20,
-    "activePass": 23
+    "activePass": 20
   },
   "market": {
     "status": "ok",
@@ -1083,7 +1083,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-11-11T00:07:09.826Z",
+    "checkedAt": "2026-11-12T01:35:37.137Z",
     "warnings": []
   }
 }
