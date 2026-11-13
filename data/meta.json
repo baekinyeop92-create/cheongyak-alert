@@ -1,26 +1,26 @@
 {
   "version": 2,
-  "runAt": "2026-11-12T01:35:07.236Z",
-  "today": "2026-11-12",
-  "prevRunAt": "2026-11-11T00:06:38.684Z",
+  "runAt": "2026-11-13T00:34:19.148Z",
+  "today": "2026-11-13",
+  "prevRunAt": "2026-11-12T01:35:07.236Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-11-12T01:35:07.236Z",
-  "lastSuccessToday": "2026-11-12",
+  "lastSuccessAt": "2026-11-13T00:34:19.148Z",
+  "lastSuccessToday": "2026-11-13",
   "sources": {
     "apt": {
       "label": "아파트",
       "status": "ok",
       "operation": "getAPTLttotPblancDetail",
-      "expected": 2935,
-      "fetched": 2935,
+      "expected": 2937,
+      "fetched": 2937,
       "pages": 6,
-      "inRegion": 1135,
+      "inRegion": 1137,
       "excluded": 0,
-      "inWindow": 51,
+      "inWindow": 53,
       "missing": 0,
-      "windowStart": "2026-09-28",
-      "lastOkToday": "2026-11-12",
-      "lastGoodExpected": 2935,
+      "windowStart": "2026-09-29",
+      "lastOkToday": "2026-11-13",
+      "lastGoodExpected": 2937,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -32,16 +32,16 @@
       "label": "무순위·잔여",
       "status": "ok",
       "operation": "getRemndrLttotPblancDetail",
-      "expected": 1749,
-      "fetched": 1749,
+      "expected": 1750,
+      "fetched": 1750,
       "pages": 4,
       "inRegion": 968,
       "excluded": 0,
       "inWindow": 59,
       "missing": 0,
-      "windowStart": "2026-09-28",
-      "lastOkToday": "2026-11-12",
-      "lastGoodExpected": 1749,
+      "windowStart": "2026-09-29",
+      "lastOkToday": "2026-11-13",
+      "lastGoodExpected": 1750,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -60,8 +60,8 @@
       "excluded": 0,
       "inWindow": 65,
       "missing": 0,
-      "windowStart": "2026-09-28",
-      "lastOkToday": "2026-11-12",
+      "windowStart": "2026-09-29",
+      "lastOkToday": "2026-11-13",
       "lastGoodExpected": 705,
       "error": null,
       "fill": {
@@ -74,16 +74,16 @@
       "label": "오피스텔·도시형",
       "status": "ok",
       "operation": "getUrbtyOfctlLttotPblancDetail",
-      "expected": 632,
-      "fetched": 632,
+      "expected": 633,
+      "fetched": 633,
       "pages": 2,
-      "inRegion": 432,
+      "inRegion": 433,
       "excluded": 31,
-      "inWindow": 24,
+      "inWindow": 25,
       "missing": 0,
-      "windowStart": "2026-09-28",
-      "lastOkToday": "2026-11-12",
-      "lastGoodExpected": 632,
+      "windowStart": "2026-09-29",
+      "lastOkToday": "2026-11-13",
+      "lastGoodExpected": 633,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -102,22 +102,21 @@
       "excluded": 14,
       "inWindow": 21,
       "missing": 1,
-      "windowStart": "2026-09-28",
-      "lastOkToday": "2026-11-12",
+      "windowStart": "2026-09-29",
+      "lastOkToday": "2026-11-13",
       "error": null
     }
   },
   "price": {
-    "calls": 34,
+    "calls": 35,
     "empty": 0,
     "errors": 0
   },
   "warnings": [],
   "newIds": [
-    "remndr:2026910297:2026910297",
-    "remndr:2026910293:2026910293",
-    "remndr:2026910288:2026910288",
-    "opt:2026940250:2026940250"
+    "apt:2026000576:2026000576",
+    "apt:2026000457:2026000457",
+    "urbty:2026950090:2026950090"
   ],
   "opCache": {
     "apt": "getAPTLttotPblancDetail",
@@ -129,13 +128,13 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-09-28",
+  "windowStart": "2026-09-29",
   "counts": {
-    "stored": 221,
+    "stored": 224,
     "dup": 14,
-    "visible": 207,
+    "visible": 210,
     "active": 26,
-    "pass": 178,
+    "pass": 181,
     "border": 1,
     "unknown": 8,
     "over": 20,
@@ -148,32 +147,6 @@
     "to": "202610",
     "monthsN": 6,
     "areas": {
-      "경기|성남시": {
-        "n": 3351,
-        "bands": {
-          "s": {
-            "n": 1518,
-            "m2": 2118
-          },
-          "m": {
-            "n": 1213,
-            "m2": 1765
-          },
-          "l": {
-            "n": 620,
-            "m2": 1609
-          },
-          "all": {
-            "n": 3351,
-            "m2": 1860
-          }
-        },
-        "codes": [
-          "41131",
-          "41133",
-          "41135"
-        ]
-      },
       "서울|강동구": {
         "n": 1512,
         "bands": {
@@ -246,6 +219,33 @@
         },
         "codes": [
           "41210"
+        ]
+      },
+      "경기|부천시": {
+        "n": 4241,
+        "bands": {
+          "s": {
+            "n": 1922,
+            "m2": 734
+          },
+          "m": {
+            "n": 1808,
+            "m2": 747
+          },
+          "l": {
+            "n": 511,
+            "m2": 670
+          },
+          "all": {
+            "n": 4241,
+            "m2": 734
+          }
+        },
+        "codes": [
+          "41190",
+          "41192",
+          "41194",
+          "41196"
         ]
       },
       "경기|화성시": {
@@ -591,31 +591,30 @@
           "41630"
         ]
       },
-      "경기|부천시": {
-        "n": 4241,
+      "경기|성남시": {
+        "n": 3351,
         "bands": {
           "s": {
-            "n": 1922,
-            "m2": 734
+            "n": 1518,
+            "m2": 2118
           },
           "m": {
-            "n": 1808,
-            "m2": 747
+            "n": 1213,
+            "m2": 1765
           },
           "l": {
-            "n": 511,
-            "m2": 670
+            "n": 620,
+            "m2": 1609
           },
           "all": {
-            "n": 4241,
-            "m2": 734
+            "n": 3351,
+            "m2": 1860
           }
         },
         "codes": [
-          "41190",
-          "41192",
-          "41194",
-          "41196"
+          "41131",
+          "41133",
+          "41135"
         ]
       },
       "서울|양천구": {
@@ -931,30 +930,6 @@
           "41430"
         ]
       },
-      "경기|과천시": {
-        "n": 134,
-        "bands": {
-          "s": {
-            "n": 46,
-            "m2": 3449
-          },
-          "m": {
-            "n": 68,
-            "m2": 2765
-          },
-          "l": {
-            "n": 20,
-            "m2": 2418
-          },
-          "all": {
-            "n": 134,
-            "m2": 2906
-          }
-        },
-        "codes": [
-          "41290"
-        ]
-      },
       "경기|고양시": {
         "n": 5558,
         "bands": {
@@ -1003,6 +978,30 @@
         },
         "codes": [
           "11215"
+        ]
+      },
+      "경기|과천시": {
+        "n": 134,
+        "bands": {
+          "s": {
+            "n": 46,
+            "m2": 3449
+          },
+          "m": {
+            "n": 68,
+            "m2": 2765
+          },
+          "l": {
+            "n": 20,
+            "m2": 2418
+          },
+          "all": {
+            "n": 134,
+            "m2": 2906
+          }
+        },
+        "codes": [
+          "41290"
         ]
       },
       "서울|송파구": {
@@ -1083,7 +1082,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-11-12T01:35:37.137Z",
+    "checkedAt": "2026-11-13T00:34:51.383Z",
     "warnings": []
   }
 }
