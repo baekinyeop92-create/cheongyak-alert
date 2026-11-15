@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "runAt": "2026-11-14T23:05:42.357Z",
-  "today": "2026-11-15",
-  "prevRunAt": "2026-11-14T00:22:52.562Z",
+  "runAt": "2026-11-15T23:25:15.852Z",
+  "today": "2026-11-16",
+  "prevRunAt": "2026-11-14T23:05:42.357Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-11-14T23:05:42.357Z",
-  "lastSuccessToday": "2026-11-15",
+  "lastSuccessAt": "2026-11-15T23:25:15.852Z",
+  "lastSuccessToday": "2026-11-16",
   "sources": {
     "apt": {
       "label": "아파트",
@@ -18,8 +18,8 @@
       "excluded": 0,
       "inWindow": 55,
       "missing": 0,
-      "windowStart": "2026-10-01",
-      "lastOkToday": "2026-11-15",
+      "windowStart": "2026-10-02",
+      "lastOkToday": "2026-11-16",
       "lastGoodExpected": 2943,
       "error": null,
       "fill": {
@@ -39,8 +39,8 @@
       "excluded": 0,
       "inWindow": 60,
       "missing": 0,
-      "windowStart": "2026-10-01",
-      "lastOkToday": "2026-11-15",
+      "windowStart": "2026-10-02",
+      "lastOkToday": "2026-11-16",
       "lastGoodExpected": 1751,
       "error": null,
       "fill": {
@@ -60,8 +60,8 @@
       "excluded": 0,
       "inWindow": 66,
       "missing": 0,
-      "windowStart": "2026-10-01",
-      "lastOkToday": "2026-11-15",
+      "windowStart": "2026-10-02",
+      "lastOkToday": "2026-11-16",
       "lastGoodExpected": 706,
       "error": null,
       "fill": {
@@ -81,8 +81,8 @@
       "excluded": 31,
       "inWindow": 25,
       "missing": 0,
-      "windowStart": "2026-10-01",
-      "lastOkToday": "2026-11-15",
+      "windowStart": "2026-10-02",
+      "lastOkToday": "2026-11-16",
       "lastGoodExpected": 633,
       "error": null,
       "fill": {
@@ -102,8 +102,8 @@
       "excluded": 14,
       "inWindow": 22,
       "missing": 1,
-      "windowStart": "2026-10-01",
-      "lastOkToday": "2026-11-15",
+      "windowStart": "2026-10-02",
+      "lastOkToday": "2026-11-16",
       "error": null
     }
   },
@@ -124,7 +124,7 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-10-01",
+  "windowStart": "2026-10-02",
   "counts": {
     "stored": 229,
     "dup": 14,
@@ -1102,7 +1102,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-11-14T23:11:33.040Z",
+    "checkedAt": "2026-11-15T23:25:56.411Z",
     "warnings": []
   }
 }
