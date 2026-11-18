@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "runAt": "2026-11-17T02:30:18.707Z",
-  "today": "2026-11-17",
-  "prevRunAt": "2026-11-15T23:25:15.852Z",
+  "runAt": "2026-11-18T01:42:04.526Z",
+  "today": "2026-11-18",
+  "prevRunAt": "2026-11-17T02:30:18.707Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-11-17T02:30:18.707Z",
-  "lastSuccessToday": "2026-11-17",
+  "lastSuccessAt": "2026-11-18T01:42:04.526Z",
+  "lastSuccessToday": "2026-11-18",
   "sources": {
     "apt": {
       "label": "아파트",
@@ -18,8 +18,8 @@
       "excluded": 0,
       "inWindow": 55,
       "missing": 0,
-      "windowStart": "2026-10-03",
-      "lastOkToday": "2026-11-17",
+      "windowStart": "2026-10-04",
+      "lastOkToday": "2026-11-18",
       "lastGoodExpected": 2943,
       "error": null,
       "fill": {
@@ -32,16 +32,16 @@
       "label": "무순위·잔여",
       "status": "ok",
       "operation": "getRemndrLttotPblancDetail",
-      "expected": 1752,
-      "fetched": 1752,
+      "expected": 1753,
+      "fetched": 1753,
       "pages": 4,
-      "inRegion": 969,
+      "inRegion": 970,
       "excluded": 0,
-      "inWindow": 60,
+      "inWindow": 61,
       "missing": 0,
-      "windowStart": "2026-10-03",
-      "lastOkToday": "2026-11-17",
-      "lastGoodExpected": 1752,
+      "windowStart": "2026-10-04",
+      "lastOkToday": "2026-11-18",
+      "lastGoodExpected": 1753,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -53,16 +53,16 @@
       "label": "임의공급",
       "status": "ok",
       "operation": "getOPTLttotPblancDetail",
-      "expected": 708,
-      "fetched": 708,
+      "expected": 709,
+      "fetched": 709,
       "pages": 2,
-      "inRegion": 503,
+      "inRegion": 504,
       "excluded": 0,
-      "inWindow": 67,
+      "inWindow": 68,
       "missing": 0,
-      "windowStart": "2026-10-03",
-      "lastOkToday": "2026-11-17",
-      "lastGoodExpected": 708,
+      "windowStart": "2026-10-04",
+      "lastOkToday": "2026-11-18",
+      "lastGoodExpected": 709,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -81,8 +81,8 @@
       "excluded": 31,
       "inWindow": 25,
       "missing": 0,
-      "windowStart": "2026-10-03",
-      "lastOkToday": "2026-11-17",
+      "windowStart": "2026-10-04",
+      "lastOkToday": "2026-11-18",
       "lastGoodExpected": 633,
       "error": null,
       "fill": {
@@ -95,15 +95,15 @@
       "label": "LH 공고",
       "status": "ok",
       "operation": "lhLeaseNoticeInfo1",
-      "expected": 55,
-      "fetched": 55,
+      "expected": 53,
+      "fetched": 53,
       "pages": 4,
-      "inRegion": 55,
-      "excluded": 14,
+      "inRegion": 53,
+      "excluded": 12,
       "inWindow": 22,
       "missing": 1,
-      "windowStart": "2026-10-03",
-      "lastOkToday": "2026-11-17",
+      "windowStart": "2026-10-04",
+      "lastOkToday": "2026-11-18",
       "error": null
     }
   },
@@ -114,7 +114,8 @@
   },
   "warnings": [],
   "newIds": [
-    "opt:2026940256:2026940256"
+    "remndr:2026930045:2026930045",
+    "opt:2026940260:2026940260"
   ],
   "opCache": {
     "apt": "getAPTLttotPblancDetail",
@@ -126,17 +127,17 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-10-03",
+  "windowStart": "2026-10-04",
   "counts": {
-    "stored": 230,
+    "stored": 232,
     "dup": 14,
-    "visible": 216,
-    "active": 23,
-    "pass": 184,
+    "visible": 218,
+    "active": 22,
+    "pass": 185,
     "border": 1,
     "unknown": 9,
-    "over": 22,
-    "activePass": 16
+    "over": 23,
+    "activePass": 14
   },
   "market": {
     "status": "ok",
@@ -1026,30 +1027,6 @@
           "41290"
         ]
       },
-      "경기|양주시": {
-        "n": 1553,
-        "bands": {
-          "s": {
-            "n": 485,
-            "m2": 339
-          },
-          "m": {
-            "n": 989,
-            "m2": 458
-          },
-          "l": {
-            "n": 79,
-            "m2": 328
-          },
-          "all": {
-            "n": 1553,
-            "m2": 424
-          }
-        },
-        "codes": [
-          "41630"
-        ]
-      },
       "서울|송파구": {
         "n": 1893,
         "bands": {
@@ -1072,6 +1049,30 @@
         },
         "codes": [
           "11710"
+        ]
+      },
+      "경기|양주시": {
+        "n": 1553,
+        "bands": {
+          "s": {
+            "n": 485,
+            "m2": 339
+          },
+          "m": {
+            "n": 989,
+            "m2": 458
+          },
+          "l": {
+            "n": 79,
+            "m2": 328
+          },
+          "all": {
+            "n": 1553,
+            "m2": 424
+          }
+        },
+        "codes": [
+          "41630"
         ]
       },
       "경기|오산시": {
@@ -1104,7 +1105,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-11-17T02:31:00.185Z",
+    "checkedAt": "2026-11-18T01:42:36.085Z",
     "warnings": []
   }
 }
