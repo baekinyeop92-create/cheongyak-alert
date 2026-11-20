@@ -1,26 +1,26 @@
 {
   "version": 2,
-  "runAt": "2026-11-19T01:17:42.472Z",
-  "today": "2026-11-19",
-  "prevRunAt": "2026-11-18T01:42:04.526Z",
+  "runAt": "2026-11-20T01:20:53.820Z",
+  "today": "2026-11-20",
+  "prevRunAt": "2026-11-19T01:17:42.472Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-11-19T01:17:42.472Z",
-  "lastSuccessToday": "2026-11-19",
+  "lastSuccessAt": "2026-11-20T01:20:53.820Z",
+  "lastSuccessToday": "2026-11-20",
   "sources": {
     "apt": {
       "label": "아파트",
       "status": "ok",
       "operation": "getAPTLttotPblancDetail",
-      "expected": 2945,
-      "fetched": 2945,
+      "expected": 2948,
+      "fetched": 2948,
       "pages": 6,
-      "inRegion": 1139,
+      "inRegion": 1141,
       "excluded": 0,
-      "inWindow": 55,
+      "inWindow": 57,
       "missing": 0,
-      "windowStart": "2026-10-05",
-      "lastOkToday": "2026-11-19",
-      "lastGoodExpected": 2945,
+      "windowStart": "2026-10-06",
+      "lastOkToday": "2026-11-20",
+      "lastGoodExpected": 2948,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -32,16 +32,16 @@
       "label": "무순위·잔여",
       "status": "ok",
       "operation": "getRemndrLttotPblancDetail",
-      "expected": 1756,
-      "fetched": 1756,
+      "expected": 1758,
+      "fetched": 1758,
       "pages": 4,
       "inRegion": 971,
       "excluded": 0,
       "inWindow": 62,
       "missing": 0,
-      "windowStart": "2026-10-05",
-      "lastOkToday": "2026-11-19",
-      "lastGoodExpected": 1756,
+      "windowStart": "2026-10-06",
+      "lastOkToday": "2026-11-20",
+      "lastGoodExpected": 1758,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -53,16 +53,16 @@
       "label": "임의공급",
       "status": "ok",
       "operation": "getOPTLttotPblancDetail",
-      "expected": 711,
-      "fetched": 711,
+      "expected": 713,
+      "fetched": 713,
       "pages": 2,
-      "inRegion": 506,
+      "inRegion": 508,
       "excluded": 0,
-      "inWindow": 70,
+      "inWindow": 72,
       "missing": 0,
-      "windowStart": "2026-10-05",
-      "lastOkToday": "2026-11-19",
-      "lastGoodExpected": 711,
+      "windowStart": "2026-10-06",
+      "lastOkToday": "2026-11-20",
+      "lastGoodExpected": 713,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -74,16 +74,16 @@
       "label": "오피스텔·도시형",
       "status": "ok",
       "operation": "getUrbtyOfctlLttotPblancDetail",
-      "expected": 633,
-      "fetched": 633,
+      "expected": 634,
+      "fetched": 634,
       "pages": 2,
-      "inRegion": 433,
+      "inRegion": 434,
       "excluded": 31,
-      "inWindow": 25,
+      "inWindow": 26,
       "missing": 0,
-      "windowStart": "2026-10-05",
-      "lastOkToday": "2026-11-19",
-      "lastGoodExpected": 633,
+      "windowStart": "2026-10-06",
+      "lastOkToday": "2026-11-20",
+      "lastGoodExpected": 634,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -102,23 +102,23 @@
       "excluded": 12,
       "inWindow": 22,
       "missing": 3,
-      "windowStart": "2026-10-05",
-      "lastOkToday": "2026-11-19",
+      "windowStart": "2026-10-06",
+      "lastOkToday": "2026-11-20",
       "error": null
     }
   },
   "price": {
-    "calls": 33,
+    "calls": 35,
     "empty": 0,
     "errors": 0
   },
   "warnings": [],
   "newIds": [
-    "remndr:2026930046:2026930046",
-    "opt:2026940263:2026940263",
-    "opt:2026940255:2026940255",
-    "lh:2015122300021114",
-    "lh:2015122300021113"
+    "apt:2026000585:2026000585",
+    "apt:2026000575:2026000575",
+    "opt:2026940261:2026940261",
+    "opt:2026940257:2026940257",
+    "urbty:2026950098:2026950098"
   ],
   "opCache": {
     "apt": "getAPTLttotPblancDetail",
@@ -130,17 +130,17 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-10-05",
+  "windowStart": "2026-10-06",
   "counts": {
-    "stored": 237,
+    "stored": 242,
     "dup": 14,
-    "visible": 223,
-    "active": 22,
-    "pass": 188,
+    "visible": 228,
+    "active": 25,
+    "pass": 193,
     "border": 1,
     "unknown": 11,
     "over": 23,
-    "activePass": 12
+    "activePass": 16
   },
   "market": {
     "status": "ok",
@@ -569,6 +569,32 @@
           "41360"
         ]
       },
+      "경기|고양시": {
+        "n": 5614,
+        "bands": {
+          "s": {
+            "n": 1819,
+            "m2": 592
+          },
+          "m": {
+            "n": 2883,
+            "m2": 701
+          },
+          "l": {
+            "n": 912,
+            "m2": 520
+          },
+          "all": {
+            "n": 5614,
+            "m2": 614
+          }
+        },
+        "codes": [
+          "41281",
+          "41285",
+          "41287"
+        ]
+      },
       "서울|서초구": {
         "n": 1012,
         "bands": {
@@ -956,32 +982,6 @@
           "41173"
         ]
       },
-      "경기|고양시": {
-        "n": 5614,
-        "bands": {
-          "s": {
-            "n": 1819,
-            "m2": 592
-          },
-          "m": {
-            "n": 2883,
-            "m2": 701
-          },
-          "l": {
-            "n": 912,
-            "m2": 520
-          },
-          "all": {
-            "n": 5614,
-            "m2": 614
-          }
-        },
-        "codes": [
-          "41281",
-          "41285",
-          "41287"
-        ]
-      },
       "서울|광진구": {
         "n": 490,
         "bands": {
@@ -1108,7 +1108,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-11-19T01:18:19.513Z",
+    "checkedAt": "2026-11-20T01:21:45.736Z",
     "warnings": []
   }
 }
