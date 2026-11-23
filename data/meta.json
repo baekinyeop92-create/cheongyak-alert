@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "runAt": "2026-11-21T23:51:06.746Z",
-  "today": "2026-11-22",
-  "prevRunAt": "2026-11-21T00:51:43.708Z",
+  "runAt": "2026-11-23T00:21:45.366Z",
+  "today": "2026-11-23",
+  "prevRunAt": "2026-11-21T23:51:06.746Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-11-21T23:51:06.746Z",
-  "lastSuccessToday": "2026-11-22",
+  "lastSuccessAt": "2026-11-23T00:21:45.366Z",
+  "lastSuccessToday": "2026-11-23",
   "sources": {
     "apt": {
       "label": "아파트",
@@ -18,8 +18,8 @@
       "excluded": 0,
       "inWindow": 58,
       "missing": 0,
-      "windowStart": "2026-10-08",
-      "lastOkToday": "2026-11-22",
+      "windowStart": "2026-10-09",
+      "lastOkToday": "2026-11-23",
       "lastGoodExpected": 2954,
       "error": null,
       "fill": {
@@ -39,8 +39,8 @@
       "excluded": 0,
       "inWindow": 62,
       "missing": 0,
-      "windowStart": "2026-10-08",
-      "lastOkToday": "2026-11-22",
+      "windowStart": "2026-10-09",
+      "lastOkToday": "2026-11-23",
       "lastGoodExpected": 1760,
       "error": null,
       "fill": {
@@ -60,8 +60,8 @@
       "excluded": 0,
       "inWindow": 74,
       "missing": 0,
-      "windowStart": "2026-10-08",
-      "lastOkToday": "2026-11-22",
+      "windowStart": "2026-10-09",
+      "lastOkToday": "2026-11-23",
       "lastGoodExpected": 716,
       "error": null,
       "fill": {
@@ -81,8 +81,8 @@
       "excluded": 31,
       "inWindow": 26,
       "missing": 0,
-      "windowStart": "2026-10-08",
-      "lastOkToday": "2026-11-22",
+      "windowStart": "2026-10-09",
+      "lastOkToday": "2026-11-23",
       "lastGoodExpected": 636,
       "error": null,
       "fill": {
@@ -102,8 +102,8 @@
       "excluded": 12,
       "inWindow": 22,
       "missing": 3,
-      "windowStart": "2026-10-08",
-      "lastOkToday": "2026-11-22",
+      "windowStart": "2026-10-09",
+      "lastOkToday": "2026-11-23",
       "error": null
     }
   },
@@ -124,7 +124,7 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-10-08",
+  "windowStart": "2026-10-09",
   "counts": {
     "stored": 245,
     "dup": 14,
@@ -639,54 +639,6 @@
           "41135"
         ]
       },
-      "서울|양천구": {
-        "n": 1087,
-        "bands": {
-          "s": {
-            "n": 351,
-            "m2": 1491
-          },
-          "m": {
-            "n": 562,
-            "m2": 1400
-          },
-          "l": {
-            "n": 174,
-            "m2": 1359
-          },
-          "all": {
-            "n": 1087,
-            "m2": 1441
-          }
-        },
-        "codes": [
-          "11470"
-        ]
-      },
-      "경기|이천시": {
-        "n": 1016,
-        "bands": {
-          "s": {
-            "n": 385,
-            "m2": 225
-          },
-          "m": {
-            "n": 601,
-            "m2": 385
-          },
-          "l": {
-            "n": 30,
-            "m2": 311
-          },
-          "all": {
-            "n": 1016,
-            "m2": 279
-          }
-        },
-        "codes": [
-          "41500"
-        ]
-      },
       "경기|김포시": {
         "n": 2359,
         "bands": {
@@ -853,6 +805,54 @@
         },
         "codes": [
           "41550"
+        ]
+      },
+      "경기|이천시": {
+        "n": 1016,
+        "bands": {
+          "s": {
+            "n": 385,
+            "m2": 225
+          },
+          "m": {
+            "n": 601,
+            "m2": 385
+          },
+          "l": {
+            "n": 30,
+            "m2": 311
+          },
+          "all": {
+            "n": 1016,
+            "m2": 279
+          }
+        },
+        "codes": [
+          "41500"
+        ]
+      },
+      "서울|양천구": {
+        "n": 1087,
+        "bands": {
+          "s": {
+            "n": 351,
+            "m2": 1491
+          },
+          "m": {
+            "n": 562,
+            "m2": 1400
+          },
+          "l": {
+            "n": 174,
+            "m2": 1359
+          },
+          "all": {
+            "n": 1087,
+            "m2": 1441
+          }
+        },
+        "codes": [
+          "11470"
         ]
       },
       "경기|광명시": {
@@ -1078,7 +1078,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-11-21T23:54:54.426Z",
+    "checkedAt": "2026-11-23T00:22:30.216Z",
     "warnings": []
   }
 }
