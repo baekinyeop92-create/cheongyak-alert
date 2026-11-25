@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "runAt": "2026-11-24T04:20:02.000Z",
-  "today": "2026-11-24",
-  "prevRunAt": "2026-11-23T00:21:45.366Z",
+  "runAt": "2026-11-25T03:04:39.789Z",
+  "today": "2026-11-25",
+  "prevRunAt": "2026-11-24T04:20:02.000Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-11-24T04:20:02.000Z",
-  "lastSuccessToday": "2026-11-24",
+  "lastSuccessAt": "2026-11-25T03:04:39.789Z",
+  "lastSuccessToday": "2026-11-25",
   "sources": {
     "apt": {
       "label": "아파트",
@@ -18,8 +18,8 @@
       "excluded": 0,
       "inWindow": 58,
       "missing": 0,
-      "windowStart": "2026-10-10",
-      "lastOkToday": "2026-11-24",
+      "windowStart": "2026-10-11",
+      "lastOkToday": "2026-11-25",
       "lastGoodExpected": 2954,
       "error": null,
       "fill": {
@@ -39,8 +39,8 @@
       "excluded": 0,
       "inWindow": 68,
       "missing": 0,
-      "windowStart": "2026-10-10",
-      "lastOkToday": "2026-11-24",
+      "windowStart": "2026-10-11",
+      "lastOkToday": "2026-11-25",
       "lastGoodExpected": 1767,
       "error": null,
       "fill": {
@@ -60,8 +60,8 @@
       "excluded": 0,
       "inWindow": 74,
       "missing": 0,
-      "windowStart": "2026-10-10",
-      "lastOkToday": "2026-11-24",
+      "windowStart": "2026-10-11",
+      "lastOkToday": "2026-11-25",
       "lastGoodExpected": 716,
       "error": null,
       "fill": {
@@ -81,8 +81,8 @@
       "excluded": 31,
       "inWindow": 26,
       "missing": 0,
-      "windowStart": "2026-10-10",
-      "lastOkToday": "2026-11-24",
+      "windowStart": "2026-10-11",
+      "lastOkToday": "2026-11-25",
       "lastGoodExpected": 636,
       "error": null,
       "fill": {
@@ -102,25 +102,18 @@
       "excluded": 11,
       "inWindow": 22,
       "missing": 3,
-      "windowStart": "2026-10-10",
-      "lastOkToday": "2026-11-24",
+      "windowStart": "2026-10-11",
+      "lastOkToday": "2026-11-25",
       "error": null
     }
   },
   "price": {
-    "calls": 37,
+    "calls": 34,
     "empty": 0,
     "errors": 0
   },
   "warnings": [],
-  "newIds": [
-    "remndr:2026930048:2026930048",
-    "remndr:2026910305:2026910305",
-    "remndr:2026910304:2026910304",
-    "remndr:2026910303:2026910303",
-    "remndr:2026910302:2026910302",
-    "remndr:2026910301:2026910301"
-  ],
+  "newIds": [],
   "opCache": {
     "apt": "getAPTLttotPblancDetail",
     "apt:mdl": "getAPTLttotPblancMdl",
@@ -131,17 +124,17 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-10-10",
+  "windowStart": "2026-10-11",
   "counts": {
     "stored": 251,
     "dup": 14,
     "visible": 237,
-    "active": 29,
+    "active": 18,
     "pass": 200,
     "border": 1,
     "unknown": 11,
     "over": 25,
-    "activePass": 18
+    "activePass": 14
   },
   "market": {
     "status": "ok",
@@ -1085,7 +1078,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-11-24T04:20:33.328Z",
+    "checkedAt": "2026-11-25T03:05:15.871Z",
     "warnings": []
   }
 }
