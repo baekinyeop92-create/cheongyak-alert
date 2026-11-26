@@ -1,11 +1,11 @@
 {
   "version": 2,
-  "runAt": "2026-11-25T03:04:39.789Z",
-  "today": "2026-11-25",
-  "prevRunAt": "2026-11-24T04:20:02.000Z",
+  "runAt": "2026-11-26T02:17:55.637Z",
+  "today": "2026-11-26",
+  "prevRunAt": "2026-11-25T03:04:39.789Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-11-25T03:04:39.789Z",
-  "lastSuccessToday": "2026-11-25",
+  "lastSuccessAt": "2026-11-26T02:17:55.637Z",
+  "lastSuccessToday": "2026-11-26",
   "sources": {
     "apt": {
       "label": "아파트",
@@ -18,8 +18,8 @@
       "excluded": 0,
       "inWindow": 58,
       "missing": 0,
-      "windowStart": "2026-10-11",
-      "lastOkToday": "2026-11-25",
+      "windowStart": "2026-10-12",
+      "lastOkToday": "2026-11-26",
       "lastGoodExpected": 2954,
       "error": null,
       "fill": {
@@ -32,16 +32,16 @@
       "label": "무순위·잔여",
       "status": "ok",
       "operation": "getRemndrLttotPblancDetail",
-      "expected": 1767,
-      "fetched": 1767,
+      "expected": 1768,
+      "fetched": 1768,
       "pages": 4,
       "inRegion": 977,
       "excluded": 0,
       "inWindow": 68,
       "missing": 0,
-      "windowStart": "2026-10-11",
-      "lastOkToday": "2026-11-25",
-      "lastGoodExpected": 1767,
+      "windowStart": "2026-10-12",
+      "lastOkToday": "2026-11-26",
+      "lastGoodExpected": 1768,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -60,8 +60,8 @@
       "excluded": 0,
       "inWindow": 74,
       "missing": 0,
-      "windowStart": "2026-10-11",
-      "lastOkToday": "2026-11-25",
+      "windowStart": "2026-10-12",
+      "lastOkToday": "2026-11-26",
       "lastGoodExpected": 716,
       "error": null,
       "fill": {
@@ -81,8 +81,8 @@
       "excluded": 31,
       "inWindow": 26,
       "missing": 0,
-      "windowStart": "2026-10-11",
-      "lastOkToday": "2026-11-25",
+      "windowStart": "2026-10-12",
+      "lastOkToday": "2026-11-26",
       "lastGoodExpected": 636,
       "error": null,
       "fill": {
@@ -95,20 +95,20 @@
       "label": "LH 공고",
       "status": "ok",
       "operation": "lhLeaseNoticeInfo1",
-      "expected": 52,
-      "fetched": 52,
+      "expected": 53,
+      "fetched": 53,
       "pages": 4,
-      "inRegion": 52,
-      "excluded": 11,
+      "inRegion": 53,
+      "excluded": 12,
       "inWindow": 22,
       "missing": 3,
-      "windowStart": "2026-10-11",
-      "lastOkToday": "2026-11-25",
+      "windowStart": "2026-10-12",
+      "lastOkToday": "2026-11-26",
       "error": null
     }
   },
   "price": {
-    "calls": 34,
+    "calls": 29,
     "empty": 0,
     "errors": 0
   },
@@ -124,17 +124,17 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-10-11",
+  "windowStart": "2026-10-12",
   "counts": {
     "stored": 251,
     "dup": 14,
     "visible": 237,
-    "active": 18,
+    "active": 15,
     "pass": 200,
     "border": 1,
     "unknown": 11,
     "over": 25,
-    "activePass": 14
+    "activePass": 11
   },
   "market": {
     "status": "ok",
@@ -1078,7 +1078,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-11-25T03:05:15.871Z",
+    "checkedAt": "2026-11-26T02:18:25.606Z",
     "warnings": []
   }
 }
