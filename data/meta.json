@@ -1,26 +1,26 @@
 {
   "version": 2,
-  "runAt": "2026-11-27T02:18:10.688Z",
-  "today": "2026-11-27",
-  "prevRunAt": "2026-11-26T02:17:55.637Z",
+  "runAt": "2026-11-28T02:02:49.547Z",
+  "today": "2026-11-28",
+  "prevRunAt": "2026-11-27T02:18:10.688Z",
   "firstRunAt": "2026-09-24T11:41:09.240Z",
-  "lastSuccessAt": "2026-11-27T02:18:10.688Z",
-  "lastSuccessToday": "2026-11-27",
+  "lastSuccessAt": "2026-11-28T02:02:49.547Z",
+  "lastSuccessToday": "2026-11-28",
   "sources": {
     "apt": {
       "label": "아파트",
       "status": "ok",
       "operation": "getAPTLttotPblancDetail",
-      "expected": 2956,
-      "fetched": 2956,
+      "expected": 2965,
+      "fetched": 2965,
       "pages": 6,
-      "inRegion": 1143,
+      "inRegion": 1144,
       "excluded": 0,
-      "inWindow": 59,
+      "inWindow": 60,
       "missing": 0,
-      "windowStart": "2026-10-13",
-      "lastOkToday": "2026-11-27",
-      "lastGoodExpected": 2956,
+      "windowStart": "2026-10-14",
+      "lastOkToday": "2026-11-28",
+      "lastGoodExpected": 2965,
       "error": null,
       "fill": {
         "HOUSE_NM": 1,
@@ -39,8 +39,8 @@
       "excluded": 0,
       "inWindow": 70,
       "missing": 0,
-      "windowStart": "2026-10-13",
-      "lastOkToday": "2026-11-27",
+      "windowStart": "2026-10-14",
+      "lastOkToday": "2026-11-28",
       "lastGoodExpected": 1770,
       "error": null,
       "fill": {
@@ -60,8 +60,8 @@
       "excluded": 0,
       "inWindow": 74,
       "missing": 0,
-      "windowStart": "2026-10-13",
-      "lastOkToday": "2026-11-27",
+      "windowStart": "2026-10-14",
+      "lastOkToday": "2026-11-28",
       "lastGoodExpected": 716,
       "error": null,
       "fill": {
@@ -81,8 +81,8 @@
       "excluded": 31,
       "inWindow": 27,
       "missing": 0,
-      "windowStart": "2026-10-13",
-      "lastOkToday": "2026-11-27",
+      "windowStart": "2026-10-14",
+      "lastOkToday": "2026-11-28",
       "lastGoodExpected": 637,
       "error": null,
       "fill": {
@@ -102,8 +102,8 @@
       "excluded": 12,
       "inWindow": 23,
       "missing": 3,
-      "windowStart": "2026-10-13",
-      "lastOkToday": "2026-11-27",
+      "windowStart": "2026-10-14",
+      "lastOkToday": "2026-11-28",
       "error": null
     }
   },
@@ -114,11 +114,7 @@
   },
   "warnings": [],
   "newIds": [
-    "apt:2026000611:2026000611",
-    "remndr:2026930047:2026930047",
-    "remndr:2026910311:2026910311",
-    "urbty:2026950099:2026950099",
-    "lh:0000061217"
+    "apt:2026000612:2026000612"
   ],
   "opCache": {
     "apt": "getAPTLttotPblancDetail",
@@ -130,13 +126,13 @@
     "urbty": "getUrbtyOfctlLttotPblancDetail",
     "urbty:mdl": "getUrbtyOfctlLttotPblancMdl"
   },
-  "windowStart": "2026-10-13",
+  "windowStart": "2026-10-14",
   "counts": {
-    "stored": 256,
+    "stored": 257,
     "dup": 15,
-    "visible": 241,
+    "visible": 242,
     "active": 16,
-    "pass": 204,
+    "pass": 205,
     "border": 1,
     "unknown": 11,
     "over": 25,
@@ -619,32 +615,6 @@
           "11650"
         ]
       },
-      "경기|성남시": {
-        "n": 3471,
-        "bands": {
-          "s": {
-            "n": 1568,
-            "m2": 2120
-          },
-          "m": {
-            "n": 1264,
-            "m2": 1770
-          },
-          "l": {
-            "n": 639,
-            "m2": 1605
-          },
-          "all": {
-            "n": 3471,
-            "m2": 1862
-          }
-        },
-        "codes": [
-          "41131",
-          "41133",
-          "41135"
-        ]
-      },
       "경기|김포시": {
         "n": 2359,
         "bands": {
@@ -885,6 +855,32 @@
           "41210"
         ]
       },
+      "경기|성남시": {
+        "n": 3471,
+        "bands": {
+          "s": {
+            "n": 1568,
+            "m2": 2120
+          },
+          "m": {
+            "n": 1264,
+            "m2": 1770
+          },
+          "l": {
+            "n": 639,
+            "m2": 1605
+          },
+          "all": {
+            "n": 3471,
+            "m2": 1862
+          }
+        },
+        "codes": [
+          "41131",
+          "41133",
+          "41135"
+        ]
+      },
       "경기|의왕시": {
         "n": 1062,
         "bands": {
@@ -1084,7 +1080,7 @@
   },
   "status": "ok",
   "validation": {
-    "checkedAt": "2026-11-27T02:18:50.872Z",
+    "checkedAt": "2026-11-28T02:03:15.904Z",
     "warnings": []
   }
 }
